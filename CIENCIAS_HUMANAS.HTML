@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Ciências Humanas - Portal ENEM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Estilos Globais baseados na identidade Premium */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #0f172a);
+            background-size: 400% 400%;
+            color: #f1f5f9;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* Topo da página de Simulado */
+        .header-simulado {
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 4px solid #f43f5e; /* Cor das Humanas */
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-simulado h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #f43f5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Card de Configuração Inicial */
+        .config-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .config-card h2 {
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+
+        .config-card p {
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+	
+
+	/* Badge para total de questões do banco */
+        .badge-total {
+            display: inline-block;
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            color: #f43f5e;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        /* Select customizado e controles */
+        .select-wrapper {
+            margin-bottom: 30px;
+        }
+
+        select {
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 2px solid #f43f5e;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+        }
+
+        /* Mensagem de Erro */
+        .erro-mensagem {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Botão Estilizado */
+        .btn {
+            display: inline-block;
+            padding: 14px 35px;
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #be123c 0%, #f43f5e 100%);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(244, 63, 94, 0.4);
+        }
+
+
+
+
+
+
+/* Botão desabilitado */
+        .btn:disabled {
+            background: #475569 !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+
+
+
+
+        /* Barra de Informações do Simulado Ativo */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px 25px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cronometro {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #f43f5e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Container de Questões */
+        #simulado-container {
+            display: none;
+        }
+
+        .questao-card {
+            background: rgba(30, 41, 59, 0.35);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .questao-header {
+            font-size: 0.9rem;
+            color: #f43f5e;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .questao-texto {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            white-space: pre-line;
+            text-align: justify;
+        }
+
+        .alternativas-lista {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alternativa-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alternativa-item:hover {
+            background: rgba(244, 63, 94, 0.1);
+            border-color: rgba(244, 63, 94, 0.4);
+        }
+
+        .alternativa-item.selecionada {
+            background: rgba(244, 63, 94, 0.2);
+            border-color: #f43f5e;
+            box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+        }
+
+        .letra-opcao {
+            font-weight: 700;
+            color: #f43f5e;
+            background: rgba(15, 23, 42, 0.4);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Área do Botão de Ação Inferior */
+        .actions-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        /* Resultados e Gabarito Estilizado */
+        .resultado-card {
+            background: rgba(30, 41, 59, 0.75);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 2px solid #3b82f6;
+            display: none;
+        }
+
+        .resultado-card h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .score-text {
+            font-size: 1.5rem;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        /* Classes de Correção aplicadas via JS */
+        .alternativa-item.correta {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: #10b981 !important;
+            color: #a7f3d0 !important;
+            cursor: not-allowed;
+        }
+
+        .alternativa-item.correta .letra-opcao {
+            color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .alternativa-item.errada {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5 !important;
+            cursor: not-allowed;
+        }
+
+        .alternativa-item.errada .letra-opcao {
+            color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .alternativa-item.bloqueada {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .feedback-label {
+            margin-left: auto;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-simulado">
+        <h1>Ciências Humanas e suas Tecnologias</h1>
+        <p>História • Geografia • Filosofia • Sociologia</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="config-card" class="config-card">
+            <h2>Configurar seu Simulado</h2>
+            <p>Selecione a quantidade de questões aleatórias que deseja resolver para iniciar o teste cronometrado.</p>
+            
+
+<div class="badge-total">
+                <i class="fa-solid fa-database"></i> <span id="total-banco">0</span> Questões cadastradas no banco
+            </div>
+
+
+
+            <div id="erro-mensagem" class="erro-mensagem"></div>
+
+            <div class="select-wrapper">
+                <label for="qtd-questoes" style="display:block; margin-bottom:10px; color:#94a3b8;">Quantidade de Questões:</label>
+                <select id="qtd-questoes">
+                    <option value="5">5 Questões</option>
+                    <option value="10">10 Questões</option>
+                    <option value="20">20 Questões</option>
+                    <option value="30">30 Questões</option>
+                    <option value="50">50 Questões</option>
+                </select>
+            </div>
+
+            <button id="btn-iniciar" class="btn" onclick="iniciarSimulado()">Iniciar Simulado</button>
+        </div>
+
+        <div id="simulado-container">
+            <div class="status-bar">
+                <span id="contador-questoes" style="color: #94a3b8; font-weight: 500;">Questões</span>
+                <div class="cronometro">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="tempo">00:00</span>
+                </div>
+            </div>
+
+            <div id="resultado-card" class="resultado-card">
+                <h2>Resultado do Simulado 🎉</h2>
+                <div class="score-text" id="score-text">Você acertou 0 de 0 questões.</div>
+                <button class="btn" style="background: #3b82f6; margin-top: 15px;" onclick="window.location.reload()">Refazer Novo Simulado</button>
+            </div>
+
+            <div id="questoes-lista"></div>
+
+            <div class="actions-container">
+                <button id="btn-corrigir" class="btn" onclick="corrigirSimulado()">Corrigir e Verificar Nota</button>
+            </div>
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+
+    <script>
+        /* ==========================================================================
+           BANCO DE QUESTÕES (FACILMENTE EXPANSÍVEL)
+           Para adicionar novas questões: copie um bloco {...} e adicione à lista.
+           ========================================================================== */
+        const bancoQuestoes = [
+            {
+                id: 1,
+                origem: "ENEM 2025",
+                texto: `A “invenção” dessa nova anatomia política não deve ser entendida como uma descoberta súbita. Mas como uma multiplicidade de processos muitas vezes mínimos, de origens diferentes, de localizações esparsas, que se recordam, que se repetem, ou se imitam, apoiam-se uns sobre os outros e esboçam aos poucos a fachada de um método geral. Encontramo-los em funcionamento nos colégios, muito cedo; mais tarde, nas escolas primárias, no espaço hospitalar e na organização militar.\n\nO texto indica o seguinte aspectoda disciplina como ferramenta política:`,
+                alternativas: [
+                    "Expansão das técnicas de suplício.",
+                    "Judicialização das relações de poder.",
+                    "Dissolução das distinções de nobreza.",
+                    "Capilarização das práticas de controle.",
+                    "Espetacularização das medidas de penitência."
+                ],
+                correta: 3 // Índice 3 corresponde à alternativa (d)
+            },
+            {
+                id: 2,
+                origem: "ENEM 2025",
+                texto: `A ideia de êxodo urbano assume ares caricaturais. Pega a mais reduzida parte da pirâmide social e projeta para todos seus desejos defensivos. Se o êxodo urbano for compreendido como aquisição de uma segunda residência, então não estamos, de fato, falando de êxodo, mas da reversão de um excedente de renda de uma pequena fração da elite para as franjas metropolitanas. Se o êxodo urbano for compreendido como retorno aos municípios menos povoados, então não estamos, de fato, falando de êxodo urbano, mas de um movimento de migração de pessoas cuja estabilidade no emprego e a elevada renda lhes permitem simular, nas ilhas urbanas do interior agropecuário, a vida urbana metropolitana.\n\nA crítica apresentada no texto evidencia uma dinâmica socioespacial marcada pela:`,
+                alternativas: [
+                    "valorização de tradições rurais.",
+                    "redução de plantações agrícolas.",
+                    "estagnação de atividades comerciais.",
+                    "precariedade de infraestruturas rodoviárias.",
+                    "seletividade de deslocamentos populacionais."
+                ],
+                correta: 4 // Índice 4 corresponde à alternativa (e)
+            },
+            {
+                id: 3,
+                origem: "ENEM 2025",
+                texto: `Por séculos, o Rio Reno tem sido uma rota de navegação confiável, ajudando a criar gigantes fabris ao longo de suas margens. No entanto, esses dias parecem estar no fim, pois o nível da água tem diminuído regularmente, o que impede a navegação fluvial do final do verão até o outono. Isso mostra como a crise climática atinge as economias dos países ricos.\n\nDisponível em: www.estadao.com.br. Acesso em: 10 ago. 2023 (adaptado).\n\nQual é o efeito econômico do problema ambiental apresentado no texto?`,
+                alternativas: [
+                    "Supressão da extração de minério.",
+                    "Intensificação da atividade de pesca.",
+                    "Encarecimento da logística de transporte.",
+                    "Inviabilização da agricultura de subsistência.",
+                    "Sucateamento da indústria de transformação."
+                ],
+                correta: 2 // Índice 2 corresponde à alternativa (c)
+            },
+            {
+                id: 4,
+                origem: "ENEM 2025",
+                texto: `Dos 10 aos 15 anos de idade, Virgínia adorava acompanhar seu pai, aos domingos, naquela sinestésica Feira de São Cristóvão (RJ), talvez por ser o maior elo que ela experimentava com o mundo exterior à sua casa e, visto assim e agora, tão íntimo e próximo de algo que ela ainda não sabia, mas que seria, no futuro, a sua própria casa: a Paraíba. Dona Didi costurava, sob medida, camisas sociais, bermudas, shorts, vestidos, saias, sempre em casa e rodeada pelos quatro filhos pequenos do casal, desdobrando-se para dar conta de toda a responsabilidade sem trégua que isso demandava.\n\nOs itinerários afetivos e socioespaciais mencionados no texto associam-se à vida dos personagens por apresentarem:`,
+                alternativas: [
+                    "histórias conectadas e recordações do lugar.",
+                    "direitos trabalhistas e produção industrial.",
+                    "preconceitos linguísticos e dinâmicas territoriais.",
+                    "lembranças fabris e discriminação dos operários.",
+                    "experiências profissionais e segregação regional."
+                ],
+                correta: 0 // Índice 0 corresponde à alternativa (a)
+            },
+            {
+                id: 5,
+                origem: "ENEM 2025",
+                texto: `Em 1872, havia mais de 1 milhão de votantes, correspondentes a 13% da população livre. Em 1886, votaram nas eleições parlamentares pouco mais de 100 mil eleitores, ou 0,8% da população total. Houve um corte de quase 90% do eleitorado. O dado é chocante, sobretudo se lembrarmos que a tendência de todos os países europeus da época era na direção de ampliar os direitos políticos. O mais grave é que esse retrocesso foi duradouro. A Proclamação da República não alterou o quadro.\n\nDe acordo com o texto, a participação no processo eleitoral brasileiro após a Reforma de 1881 sofreu uma variação que se explica pela:`,
+                alternativas: [
+                    "restrição de gênero.",
+                    "exclusão de imigrantes.",
+                    "comprovação de domicílio.",
+                    "exigência da alfabetização.",
+                    "obrigatoriedade do sufrágio."
+                ],
+                correta: 3 // Índice 3 corresponde à alternativa (d)
+            },
+            {
+                id: 6,
+                origem: "ENEM 2025",
+                texto: `Pela falta de chuvas, a geração de energia eólica, solar e térmica atingiu níveis recordes em agosto de 2021, quando as hidrelétricas ficaram com cerca de 50% do total. Para um professor da Universidade Federal da Bahia, essa queda não é uma surpresa. “Não aconteceu de uma hora para outra. Se olharmos o mapa do Brasil, um dos grandes provedores de água é a Floresta Amazônica. Se você diminui a floresta, diminui a quantidade de água que vai para a atmosfera”, explica.\n\nBORGES, T. O fantasma do apagão. Disponível em: www.correio24horas.com.br. Acesso em: 9 out. 2021 (adaptado).\n\nDe acordo com o texto, a dificuldade na produção de energia é causada pela alteração da(s)`,
+                alternativas: [
+                    "variável em pesquisas meteorológicas.",
+                    "paisagem em locais estratégicos.",
+                    "demandas em regiões industriais.",
+                    "metas em acordos climáticos.",
+                    "geologia em áreas naturais."
+                ],
+                correta: 1 // Índice 1 corresponde à alternativa (b)
+            },
+ {
+                id: 7,
+                origem: "ENEM ADAPTADO",
+                texto: `A expansão do agronegócio brasileiro nas últimas décadas tem contribuído para o aumento da produção e das exportações de commodities agrícolas. Entretanto, esse processo também está associado a transformações no espaço geográfico, envolvendo aspectos econômicos, sociais e ambientais.\n\n Nesse contexto, uma das principais consequências da expansão da fronteira agrícola no Brasil é:`,
+                alternativas: [
+                    "a redução da mecanização agrícola, favorecendo o aumento do emprego rural permanente.",
+                    "a diminuição das exportações de produtos primários, devido à priorização do mercado interno.",
+                    "a intensificação do desmatamento em áreas naturais, associada à incorporação de novas terras à produção.",
+                    "a eliminação dos conflitos fundiários, em razão da modernização das técnicas de cultivo.",
+                    "a substituição completa das monoculturas por sistemas agrícolas diversificados e sustentáveis."
+                ],
+                correta: 2 // Índice 2 corresponde à alternativa (c)
+            },
+{
+        id: 8,
+        origem: "ENEM 2022",
+        texto: `Espera, resignado, o dia 13 daquele mês porque, em tal data, usança avoenga lhe faculta sondar o futuro, interrogando a providência. É a experiência tradicional de Santa Luzia. No dia 12 ao anoitecer expõe ao relento, em linha, seis pedrinhas de sal, que representam, em ordem sucessiva da esquerda para a direita, os seis meses vindouros, de janeiro a junho. Ao alvorecer de 13 observa-as: se estão intactas, pressagiam a seca; se a primeira apenas se deliu, transmudada em aljôfar límpido, é certa a chuva em janeiro; se a segunda, em fevereiro; se a maioria ou todas, é inevitável o inverno benfazejo. Esta experiência é belíssima.\n\nNo experimento descrito, a relação com a paisagem e com a religiosidade permite que o sertanejo seja:`,
+        alternativas: [
+            "afeito à devoção ao aceitar destinos sacralizados.",
+            "acostumado à pobreza ao admitir acasos naturais.",
+            "habituado ao solo ao conhecer terrenos cultiváveis.",
+            "íntimo à Caatinga ao interpretar condições ambientais.",
+            "próximo à vegetação ao identificar espécies arbustivas."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 9,
+        origem: "ENEM 2022",
+        texto: `Eu estava pagando o sapateiro e conversando com um preto que estava lendo um jornal. Ele estava revoltado com um guarda civil que espancou um preto e amarrou numa árvore. O guarda civil é branco. E há certos brancos que transforma preto em bode expiatório. Quem sabe se guarda civil ignora que já foi extinta a escravidão e ainda estamos no regime da chibata?\n\nO texto, que guarda a grafia original da autora, expõe uma característica da sociedade brasileira, que é o(a):`,
+        alternativas: [
+            "Racismo estrutural.",
+            "Desemprego latente.",
+            "Concentração de renda.",
+            "Exclusão informacional.",
+            "Precariedade da educação."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+{
+        id: 10,
+        origem: "ENEM 2022",
+        texto: `Uma nova economia surgiu em escala global no último quartel do século XX. Chamo-a de informacional, global e em rede para identificar suas características fundamentais e diferenciadas e enfatizar sua interligação. É informacional porque depende basicamente de sua capacidade de gerar, processar e aplicar de forma eficiente a informação baseada em conhecimentos. É global porque seus componentes estão organizados em escala global, diretamente ou mediante uma rede de conexões entre agentes econômicos. É rede porque é feita em uma rede global de interação entre redes empresariais.\n\nCASTELLS, M. A sociedade em rede — a era da informação: economia, sociedade e cultura. São Paulo: Paz e Terra, 1999 (adaptado).\n\nQual mudança estrutural é resultado da forma de organização econômica descrita no texto?`,
+        alternativas: [
+            "Fabricação em série.",
+            "Ampliação de estoques.",
+            "Fragilização dos cartéis.",
+            "Padronização de mercadorias.",
+            "Desterritorialização da produção."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 11,
+        origem: "ENEM 2022",
+        texto: `Olhar o Brasil e não ver o sertão\nÉ como negar o queijo com a faca na mão\nEsse gigante em movimento\nMovido a tijolo e cimento\nPrecisa de arroz com feijão\nQue tenha comida na mesa\nQue agradeça sempre a grandeza\nDe cada pedaço de pão\nAgradeça a Clemente\nQue leva a semente\nEm seu embornal\nZezé e o penoso balé\nDe pisar no cacau\nMaria que amanhece o dia\nLá no milharal\n\nVANDER LEE. Do Brasil. In: Pensei que fosse o céu: ao vivo. Rio de Janeiro: Indie Records, 2006 (fragmento).\n\nA letra da canção valoriza uma dimensão do espaço rural brasileiro em sua relação com a cidade ao ressaltar sua função de:`,
+        alternativas: [
+            "fornecer a mão de obra qualificada.",
+            "incorporar a inovação tecnológica.",
+            "preservar a diversidade biológica.",
+            "promover a produção alimentar.",
+            "garantir a moradia básica."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 12,
+        origem: "ENEM 2023",
+        texto: `No Cerrado, o conhecimento local está sendo cada vez mais subordinado à lógica do agronegócio. De um lado, o capital impõe os conhecimentos biotecnológicos, como mecanismo de universalização de práticas agrícolas e de novas tecnologias, e de outro, o modelo capitalista subordina homens e mulheres à lógica do mercado. Assim, as águas, as sementes, os minerais, as terras (bens comuns) tornam-se propriedade privada. Além do mais, há outros fatores negativos, como a mecanização pesada, a “pragatização” dos seres humanos e não humanos, a violência simbólica, a superexploração, as chuvas de veneno e a violência contra a pessoa.\n\nOs elementos descritos no texto, a respeito da territorialização da produção, demonstram que há um:`,
+        alternativas: [
+            "cerco aos camponeses, inviabilizando a manutenção das condições para a vida.",
+            "descaso aos latifundiários, impactando a plantação de alimentos para a exportação.",
+            "desprezo ao assalariado, afetando o engajamento dos sindicatos para o trabalhador.",
+            "desrespeito aos governantes, comprometendo a criação de empregos para o lavrador.",
+            "assédio ao empresariado, dificultando o investimento de maquinários para a produção."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+{
+        id: 13,
+        origem: "ENEM 2023",
+        texto: `TEXTO I\n\nCom uma população de 25 milhões de habitantes (cerca de 60% de minorias muçulmanas, principalmente da etnia Uigur), Xinjiang é uma região estratégica para a China. Faz fronteira com oito países, é uma artéria crucial do megaprojeto de infraestrutura chinês Cinturão e Rota e tem as maiores reservas nacionais de carvão e gás natural.\n\nTEXTO II\n\nDentre as províncias da Região Oeste, Xinjiang se destaca ao receber mais de 1,7 milhão de migrantes entre 2000 e 2010. O principal motivo desse fluxo migratório é que o governo fornece subsídios à população visando aumentar a proporção de chineses da etnia Han em relação à população local de etnias turca e muçulmana.\n\nA política demográfica para a província mencionada nos textos é parte da seguinte ação estratégica do governo chinês:`,
+        alternativas: [
+            "Promover a ocupação rural.",
+            "Favorecer a liberdade religiosa.",
+            "Descentralizar a gestão pública.",
+            "Incentivar a pluralidade cultural.",
+            "Assegurar a integridade territorial."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 14,
+        origem: "ENEM 2023",
+        texto: `TEXTO I\n\nComo presença consciente no mundo não posso escapar à responsabilidade ética no meu mover-me no mundo. Se sou puro produto da determinação genética ou cultural ou de classe, sou irresponsável pelo que faço no meu mover-me no mundo e, se careço de responsabilidade, não posso falar em ética.\n\nFREIRE, P. Pedagogia da autonomia: saberes necessários\n\nTEXTO II\n\nPaulo Freire construiu uma pedagogia da esperança. Na sua concepção, a história não é algo pronto e acabado. As estruturas de opressão e as desigualdades, apesar de serem naturalizadas, são sócio e historicamente construídas. Daí a importância de os educandos tomarem consciência da sua realidade para, assim, transformá-la.\n\nCom base no conceito de ética pedagógica presente nos textos, os educandos tornam-se responsáveis pela:`,
+        alternativas: [
+            "participação sociopolítica.",
+            "definição estético-cultural.",
+            "competição econômica local.",
+            "manutenção do sistema escolar.",
+            "capacitação de mobilidade individual."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+{
+        id: 15,
+        origem: "ENEM 2023",
+        texto: `A Cordilheira do Himalaia tem mais de 50 milhões de anos, sendo classificada como a maior cordilheira do planeta. Originário da língua sânscrito, comum na região, seu nome quer dizer “morada da neve”. É possível encontrar nessa cordilheira as quinze maiores montanhas do mundo. Ao todo, existem mais de cem picos, que contam com altitudes bem maiores que 7 000 m. O Everest, considerado o ponto mais alto da Terra, tem nada menos que 8 848 m de altitude, e continua crescendo, aproximadamente, 0,8 mm a cada ano.\n\nQual dinâmica natural é responsável pelo fenômeno apresentado?`,
+        alternativas: [
+            "Derrame de lava vulcânica.",
+            "Encontro de placas tectônicas.",
+            "Ação do intemperismo químico.",
+            "Sedimentação de erosão eólica.",
+            "Derretimento de geleiras glaciais."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 16,
+        origem: "ENEM 2023",
+        texto: `A diversão é o prolongamento do trabalho sob o capitalismo tardio. Ela é procurada por quem quer escapar ao processo de trabalho mecanizado para se pôr de novo em condições de enfrentá-lo. Mas, ao mesmo tempo, a mecanização atingiu um tal poderio sobre a pessoa em seu lazer e sobre a sua felicidade, ela determina tão profundamente a fabricação das mercadorias destinadas à diversão que essa pessoa não pode mais perceber outra coisa senão as cópias que reproduzem o próprio processo de trabalho.\n\nNo texto, o tempo livre é concebido como:`,
+        alternativas: [
+            "consumo de produtos culturais elaborados no mesmo sistema produtivo do capitalismo.",
+            "forma de realizar as diversas potencialidades da natureza humana.",
+            "alternative para equilibrar tensões psicológicas do dia a dia.",
+            "promoção da satisfação de necessidades artificiais.",
+            "mecanismo de organização do ócio e do prazer."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+{
+        id: 17,
+        origem: "ENEM 2023",
+        texto: `Por trás da “mágica” do Google Assistant de sua capacidade de interpretar 26 idiomas está uma enorme equipe de linguistas distribuídos globalmente, trabalhando como subcontratados, que devem rotular tediosamente os dados de treinamento para que funcione. Eles ganham baixos salários e são rotineiramente forçados a trabalhar horas extras não remuneradas. A inteligência artificial não funciona com um pozinho mágico. Ela funciona por meio de trabalhadores que treinam algoritmos incansavelmente até que eles automatizem seus próprios trabalhos. A Inteligência Artificial (IA) da economia freelancer está vindo atrás de você.\n\nO texto critica a mudança tecnológica em razão da seguinte consequência:`,
+        alternativas: [
+            "Diversificação da função.",
+            "Mobilidade da população.",
+            "Autonomia do empregado.",
+            "Concentração da produção.",
+            "Invisibilidade do profissional."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 18,
+        origem: "ENEM 2023",
+        texto: `Diversos são os fatores causadores da degradação do solo, atuando de forma direta ou indireta, mas quase sempre a grande maioria das terras degradadas inicia esse processo com o desmatamento, que pode ser seguido por diversas formas de ocupação desordenada, como: corte de taludes para a construção de casas, rodovias e ferrovias, agricultura, com uso da queimada, vários tipos de mineração, irrigação excessiva, crescimento desordenado das cidades, superpastoreio, uso do solo para diversos tipos de despejos industriais e domésticos, sem tratamento da área que recebe esses despejos; enfim, de uma forma ou de outra, os solos tornam-se degradados, sendo muitas vezes difícil, ou quase impossível, a sua recuperação.\n\nA partir da ocupação desordenada exposta no texto, o que impede a recuperação do recurso natural destacado é a:`,
+        alternativas: [
+            "elevação da biomassa.",
+            "redução da salinização.",
+            "diminuição da fertilidade.",
+            "ampliação da microfauna.",
+            "decomposição do substrato."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 19,
+        origem: "ENEM 2024",
+        texto: `TEXTO I\n\nUm terremoto de magnitude 5,9 atingiu a cidade de Valparaíso, na costa chilena. O terremoto ocorreu a uma profundidade de 112 quilômetros.\n\nTEXTO II\n\nUm tremor de terra de magnitude 4,8 foi registrado no município de Atalaia do Norte, no interior do estado do Amazonas. O abalo é de magnitude considerada mediana para os níveis do Brasil. Os eventos dessa região costumam ser resultado das atividades da placa de Nazca.\n\nTEXTO III\n\nMoradores usaram as redes sociais para relatar tremores de terra no interior de São Paulo. As atividades foram registradas nas cidades de Júlio Mesquita e Guaimbê e tiveram magnitude 3,0 na escala Richter, o que é considerado pequeno e sem previsão de danos.\n\nAs diferenças entre os eventos geológicos relatados decorrem de distintas posições geográficas das cidades em relação a:`,
+        alternativas: [
+            "Planícies costeiras.",
+            "Bacias continentais.",
+            "Zonas de subducção.",
+            "Áreas de denudação.",
+            "Vertentes escarpadas."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 20,
+        origem: "ENEM 2024",
+        texto: `Tal qual num exército, não se compreende um efetivo composto apenas de oficiais. Também na saúde pública, os funcionários técnicos graduados necessitam ser assistidos por auxiliares em número suficiente e com preparo adequado, constituído pelas enfermeiras de saúde pública, educadoras ou visitadoras sanitárias, técnicos de laboratório, inspetores ou guardas etc., para não falarmos no pessoal burocrático, não especializado.\n\nO texto dos sanitaristas atuantes nas décadas de 1920 e 1930 veicula uma mensagem caracterizada pela:`,
+        alternativas: [
+            "higienização moral.",
+            "imposição eugênica.",
+            "assimilação cultural.",
+            "hegemonização identitária.",
+            "hierarquização profissional."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 21,
+        origem: "ENEM 2024",
+        texto: `O rompimento da barragem de Fundão levou muito consigo. A lama soterrou sonhos e modificou de forma permanente centenas de vidas nascidas e criadas em Bento Rodrigues e Paracatu, em Mariana (MG). Mas não somente. Ao se estender ao longo do rio, outras famílias e histórias foram atingidas de formas diferentes. Ao fugirem dos rejeitos que rapidamente tomaram as localidades, deixaram para trás os resquícios da vida que tiveram até o 5 de novembro de 2015. Nada jamais seria igual.\n\nConforme o texto, o evento gerou o seguinte impacto na relação entre as pessoas e o seu espaço vivido:`,
+        alternativas: [
+            "Flexibilização de parâmetros ambientais.",
+            "Consolidação de identidades regionais.",
+            "Fragilização de vínculos afetivos.",
+            "Supressão de práticas exploratórias.",
+            "Recuperação de tradições ancestrais."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 22,
+        origem: "ENEM 2024",
+        texto: `O Black Lives Matter vai para além do nacionalismo estreito que pode prevalecer no seio das comunidades negras, que se limita a apelar aos negros a amar os negros, viver como os negros e comprar produtos dos negros, e mantém à frente do movimento homens negros heterossexuais. Black Lives Matter estima as vidas dos negros e negras homossexuais e transexuais, pessoas incapacitadas, negros sem documentos ou com antecedentes criminais, mulheres e as vidas de todos os negros de todo o espectro de gêneros.\n\nA reivindicação do movimento norte-americano apresentada no texto consiste na necessidade de:`,
+        alternativas: [
+            "manter a conquista de direitos sociais.",
+            "integrar a diversidade do grupo identitário.",
+            "priorizar a preservação de culturas africanas.",
+            "defender a adoção de valores supremacistas.",
+            "permitir a permanência do modelo androcêntrico."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 23,
+        origem: "ENEM 2024",
+        texto: `Espaços públicos não são produtos dados e acabados, uma instituição que, uma vez estabelecida, traria a paz da consensualidade e a perfeita igualdade. São os lugares em que os problemas aparecem e se transformam em debates, em diálogo e em possibilidade de ajuste e compromissos. Por isso, não anulam os conflitos, ao contrário, são canais de comunicação e de visibilidade de oposições.\n\nAs características descritas no texto exibem a importância dos espaços públicos para:`,
+        alternativas: [
+            "A prática do lazer.",
+            "vigilância da sociedade.",
+            "erradicação da violência.",
+            "construção da democracia.",
+            "diversificação do trabalho."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 24,
+        origem: "ENEM 2024",
+        texto: `Há experiências de lutas sociais de reapropriação cultural da natureza que são movimentos emblemáticos, como a dos seringueiros no Brasil, que da luta sindical para a comercialização da borracha chegaram a inventar o conceito de reserva extrativista e estão avançando para um novo modo de produção, uma nova racionalidade produtiva, mostrando que é possível viver bem, e não apenas sobreviver, em harmonia com a natureza que habitam. O novo planeta que podemos imaginar é feito desses territórios produtivos que não são apenas economias de autossubsistência mas economias que potencializam a produtividade ecológica de seus territórios.\n\nO texto expõe a possibilidade de uma nova racionalidade produtiva por meio de uma gestão territorial que se baseia na:`,
+        alternativas: [
+            "integração de mercados regidos por pressões regionais.",
+            "conexão de valores fundamentados por decisões locais.",
+            "unificação de preços delimitados por demandas nacionais.",
+            "normatização de regras construídas por instituições",
+            "valorização de tradições orientadas por determinações"
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 25,
+        origem: "ENEM 2024",
+        texto: `Como conclusão provisória, parece então que a globalização tem, sim, o efeito de contestar e deslocar as identidades centradas e “fechadas” de uma cultura nacional. Ela tem um efeito pluralizante sobre as identidades, produzindo uma variedade de possibilidades e novas posições de identificação, e tornando as identidades mais posicionais, mais políticas, mais plurais e diversas; menos fixas, unificadas ou trans-históricas.\n\nDe acordo com o texto, o processo apresentado contribuiu para:`,
+        alternativas: [
+            "elevar a renda da população.",
+            "abandonar os valores morais.",
+            "estabelecer a igualdade racial.",
+            "fortalecer as pautas das minorias.",
+            "inverter os fluxos das migrações."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 26,
+        origem: "ENEM 2024",
+        texto: `Em 1960, a primeira pílula anticoncepcional foi comercializada nos EUA, e, em poucos anos, o método contraceptivo se difundiu pelo mundo, inclusive no Brasil. Em nosso país, a chegada das pílulas anticoncepcionais foi simultânea às discussões neomalthusianas sobre a crise demográfica, à aceleração dos processos de modernização e ao boom da indústria farmacêutica multinacional.\n\nQual foi o efeito social resultante do avanço tecnológico mencionado no texto?`,
+        alternativas: [
+            "O afastamento da autoridade médica na regulação da fecundidade.",
+            "A superação do discurso da moralidade pela ação da mídia estatal.",
+            "A ampliação do debate público sobre o planejamento familiar.",
+            "A centralização da pesquisa científica pelo sistema privado de saúde.",
+            "O enrijecimento das doutrinas religiosas sobre a organização da vida doméstica."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 27,
+        origem: "ENEM 2024",
+        texto: `A internet fortalece o engajamento e a visibilidade de populações tradicionais e indígenas por meio de redes sociais, rádios e veículos de mídia digital. Ela também promove a criação e o fortalecimento de mercados e a inovação nos sistemas de financiamento, integrando pequenos agricultores e produtores da comunidade florestal a cadeias de abastecimento maiores.\n\nA adoção da tecnologia mencionada amplia a rentabilidade das comunidades citadas, ao possibilitar o(a):`,
+        alternativas: [
+            "Valorização da economia local.",
+            "Elaboração de projetos culturais.",
+            "Estabelecimento de regras comerciais.",
+            "Incremento da infraestrutura educacional.",
+            "Homogeneização da qualificação profissional."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+{
+        id: 28,
+        origem: "ENEM 2024",
+        texto: `TEXTO I\n\nUma única árvore joga entre 300 e 1000 litros de água por dia para a atmosfera. Considerando a demanda mínima que uma pessoa consome de água, ou seja, 120 litros por dia, uma única árvore pode ser capaz de produzir água para até oito pessoas.\n\nTEXTO II\n\nA Amazônia perdeu diariamente uma área de floresta maior do que 4 mil campos de futebol apenas em setembro de 2021. Em todo o mês, foram devastados 1 224 km², o que corresponde ao tamanho da cidade do Rio de Janeiro e é a pior marca para setembro em 10 anos. Os dados são do Sistema de Alerta de Desmatamento (SAD) do Instituto do Homem e Meio Ambiente da Amazônia (Imazon), que monitora a floresta por meio de imagens de satélites.\n\nPara a região amazônica, a relação entre as informações dos textos indica uma redução do(a):`,
+        alternativas: [
+            "circulação de ventos alísios.",
+            "aquecimento dos solos locais.",
+            "média de temperatura oceânica.",
+            "índice de refletividade superficial.",
+            "intensidade de chuvas convectivas."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 29,
+        origem: "ENEM 2024",
+        texto: `Cada objeto é, em si mesmo, um sistema funcionando sistemicamente. Um grande supermercado ou shopping center seria incapaz de existir se não fossem servidos por vias rápidas, estacionamentos adequados e acessíveis, sistemas de transportes públicos com horários regulares e conhecidos e se, no seu próprio interior, as atividades não estivessem subordinadas a uma coordenação. Esse é o caso dos armazéns, dos silos etc. Os portos, a rede rodoviária de um país e, sobretudo, a rede ferroviária são exemplos de objetos complexos e sistêmicos.\n\nDe acordo com o texto, o território torna-se cada vez mais dotado de objetos com a finalidade de intensificar a:`,
+        alternativas: [
+            "desindustrialização da economia.",
+            "desregulamentação do mercado.",
+            "concentração da produção.",
+            "distribuição de renda.",
+            "dinamização dos fluxos."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 30,
+        origem: "ENEM 2024",
+        texto: `O que alicerça, portanto, o acolhimento de refugiados pelos Estados gira em torno da fronteira erguida entre inclusão e exclusão, admissão e rejeição, desejáveis e indesejáveis; ao mesmo tempo, enseja vulnerabilidade, indefinição e incerteza a esses migrantes internacionais forçados.\n\nA eliminação, para os refugiados, do tipo de fronteira descrita no texto necessita de políticas públicas de:`,
+        alternativas: [
+            "planejamento familiar.",
+            "segregação territorial.",
+            "homogeneização cultural.",
+            "diferenciação étnico-racial.",
+            "integração socioeconômica."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 31,
+        origem: "ENEM Adaptado",
+        texto: `A inteligência artificial generativa transformou os ambientes de trabalho ao automatizar tarefas repetitivas e acelerar processos criativos. No entanto, o uso dessas ferramentas trouxe debates éticos sobre direitos autorais, originalidade e a substituição da mão de obra humana. Empresas e governos buscam agora regulamentar essa tecnologia sem frear a inovação digital.\n\nO debate contemporâneo apresentado no texto reflete uma tensão entre o avanço tecnológico e a:`,
+        alternativas: [
+            "Estagnação da produção de conhecimento científico.",
+            "Necessidade de proteção de direitos e empregos.",
+            "Redução global no consumo de bens tecnológicos.",
+            "Eliminação total do trabalho burocrático e manual.",
+            "Subordinação das diretrizes estatais ao setor privado."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 32,
+        origem: "ENEM Adaptado",
+        texto: `Nas grandes metrópoles, as áreas verdes urbanas deixaram de ser apenas locais de lazer e passaram a ser integradas como soluções para mitigar as \"ilhas de calor\". Parques lineares e tetos verdes absorvem a radiação solar e ajudam na drenagem da água da chuva, reduzindo os impactos das enchentes e melhorando o microclima local.\n\nDe acordo com as transformações no espaço urbano descritas, a implementação dessas infraestruturas verdes visa a:`,
+        alternativas: [
+            "Promover a desindustrialização das periferias metropolitanas.",
+            "Reduzir o custo da especulação imobiliária em áreas centrais.",
+            "Mitigar problemas socioambientais decorrentes da urbanização intensa.",
+            "Substituir o transporte público por modais de circulação ecológica.",
+            "Igualar as condições climáticas entre diferentes regiões do planeta."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 33,
+        origem: "ENEM Adaptado",
+        texto: `A segurança alimentar nas próximas décadas enfrenta o desafio de produzir alimentos para uma população em crescimento em meio a cenários de mudanças climáticas severas. O uso de técnicas como a agricultura de precisão, sementes geneticamente adaptadas à seca e a rotação de culturas são apontados como caminhos necessários para garantir a sustentabilidade do setor e o abastecimento global.\n\nConsiderando os desafios expostos, as estratégias agrícolas mencionadas fundamentam-se na:`,
+        alternativas: [
+            "Expansão contínua de fronteiras agrícolas sobre áreas de floresta.",
+            "Dependência exclusiva de subsídios estatais para a subsistência.",
+            "Padronização global dos hábitos alimentares e de consumo.",
+            "Aplicação da inovação tecnológica voltada à resiliência produtiva.",
+            "Centralização da distribuição de sementes por agências multilaterais."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 34,
+        origem: "ENEM Adaptado",
+        texto: `A literatura de cordel e o jongo, embora originários de contextos históricos e geográficos distintos no Brasil, partilham a característica de terem sido transmitidos predominantemente pela oralidade e pela vivência comunitária. Mais do que simples entretenimento, essas manifestações carregam a memória coletiva de grupos subalternizados, resistindo ao apagamento histórico através das gerações.\n\nConsiderando a dinâmica cultural descrita, a preservação dessas manifestações artísticas é fundamental para a:`,
+        alternativas: [
+            "Comercialização de produtos turísticos em larga escala.",
+            "Manutenção da identidade e salvaguarda do patrimônio imaterial.",
+            "Substituição dos registros históricos oficiais pela tradição oral.",
+            "Uniformização linguística das diversas regiões do território nacional.",
+            "Institucionalização de saberes acadêmicos por agências estatais."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 35,
+        origem: "ENEM Adaptado",
+        texto: `O acesso a serviços públicos essenciais — como agendamento de consultas médicas, emissão de documentos e inscrição em programas sociais — migrou majoritariamente para plataformas digitais. No entanto, parcelas significativas da população ainda carecem de conexão de qualidade ou de letramento digital, encontrando barreiras diárias para exercer direitos básicos.\n\nO cenário de transição tecnológica exposto no texto evidencia um impacto social traduzido pelo(a):`,
+        alternativas: [
+            "Descentralização burocrática dos poderes federais.",
+            "Aprofundamento da exclusão e da desigualdade civil.",
+            "Aumento da eficiência na distribuição de renda nacional.",
+            "Fim das demandas por atendimento presencial no setor público.",
+            "Alinhamento imediato entre capacitação técnica e mercado de trabalho."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 36,
+        origem: "ENEM Adaptado",
+        texto: `A modernização agrícola no Cerrado brasileiro, impulsionada a partir da década de 1970, transformou a região em um dos principais polos de exportação de grãos do mundo. Contudo, a introdução do modelo de monocultura mecanizada e o uso intensivo de insumos químicos resultaram na compactação do solo, contaminação de lençóis freáticos e perda severa da biodiversidade nativa.\n\nA contradição socioeconômica e ambiental exposta no texto caracteriza-se pelo choque entre o(a):`,
+        alternativas: [
+            "Crescimento do mercado interno e a redução da oferta de alimentos.",
+            "Poder regulatório do Estado e a ausência de investimentos privados.",
+            "Expansão do agronegócio exportador e a degradação dos recursos naturais.",
+            "Valorização de saberes tradicionais e a introdução de biotecnologia.",
+            "Isolamento geográfico regional e a integração às redes globais de comércio."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 37,
+        origem: "ENEM Adaptado",
+        texto: `O descarte inadequado de resíduos eletroeletrônicos tornou-se um dos grandes desafios ecológicos globais. Smartphones, computadores e eletrodomésticos velhos, quando jogados em lixões comuns, liberam metais pesados como chumbo e mercúrio no meio ambiente. Por outro lado, o avanço de cooperativas voltadas à mineração urbana mostra que esses resíduos contêm materiais valiosos que podem reentrar na cadeia produtiva.\n\nCom base no texto, a transformação do problema do lixo eletrônico em uma oportunidade sustentável depende da:`,
+        alternativas: [
+            "Proibição do consumo de novas tecnologias de comunicação.",
+            "Estatização completa das indústrias de bens de consumo duráveis.",
+            "Redução dos custos de produção por meio de mão de obra informal.",
+            "Adoção de práticas baseadas nos princípios da economia circular.",
+            "Transferência de resíduos poluentes para países de economia periférica."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 38,
+        origem: "ENEM Adaptado",
+        texto: `A chamada \"uberização\" do trabalho consolida uma transformação profunda nas relações laborais no século XXI. Esse modelo, liderado por plataformas digitais, vende a promessa de autonomia, flexibilidade de horários e a ideia de que o trabalhador é o \"seu próprio chefe\". No entanto, por trás do gerenciamento algorítmico, o que se observa é a transferência total dos riscos do negócio para o indivíduo. Sem garantias de salário mínimo, descanso remunerado ou cobertura em caso de acidentes, o prestador de serviço vê sua jornada se estender para além das 10 ou 12 horas diárias na tentativa de garantir o sustento básico, operando sob uma lógica de constante vigilância digital.\n\nO fenômeno socioeconômico descrito no texto caracteriza uma nova organização do trabalho cuja principal implicação para a classe trabalhadora consiste na:`,
+        alternativas: [
+            "Ampliação da segurança jurídica por meio de contratos flexíveis.",
+            "Erosão de direitos sociais associada à precarização do vínculo laboral.",
+            "Equiparação salarial imediata entre diferentes setores produtivos.",
+            "Redução da jornada semanal em função da eficiência dos algoritmos.",
+            "Emancipação financeira decorrente da ausência de mediação empresarial."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 39,
+        origem: "ENEM Adaptado",
+        texto: `Nas últimas décadas, o conceito de gentrificação passou a desenhar a realidade de diversas áreas centrais e históricas das metrópoles brasileiras. O processo se inicia, geralmente, com investimentos públicos e privados voltados para a revitalização urbana, melhoria de infraestrutura e segurança em bairros antes considerados degradados ou abandonados. Contudo, essa valorização imobiliária resulta no aumento expressivo do custo de vida, dos aluguéis e dos impostos locais. Como consequência direta, as populações de baixa renda que historicamente habitavam e davam identidade cultural àquelas regiões são forçadas a se deslocar para periferias distantes, desprovidas de serviços básicos, enquanto o centro é ocupado por comércios de alto padrão e novos moradores de maior poder aquisitivo.\n\nA dinâmica de transformação do espaço urbano exposta no texto evidencia um conflito socioespacial que se manifesta pelo(a):`,
+        alternativas: [
+            "Democratização do acesso à moradia bem localizada nas grandes cidades.",
+            "Integração harmônica entre preservação histórica e desenvolvimento comercial.",
+            "Segregação socioespacial decorrente da mercantilização do solo urbano.",
+            "Descentralização das atividades industriais rumo ao interior do país.",
+            "Fortalecimento dos laços comunitários e das tradições locais tradicionais."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 40,
+        origem: "ENEM Adaptado",
+        texto: `O conceito de Antropoceno tem sido amplamente debatido por cientistas, geólogos e filósofos para designar uma nova época geológica na qual as atividades humanas passaram a exercer um impacto global e sem precedentes nos sistemas biofísicos da Terra. Não se trata mais apenas de modificações locais na paisagem, mas sim da alteração de ciclos biogeoquímicos fundamentais, como o do carbono e do nitrogênio, a acidificação dos oceanos, o desmatamento em massa e a aceleração da taxa de extinção de espécies. O grande dilema colocado por essa nova era é que o mesmo modelo de desenvolvimento industrial e de consumo predatório que gerou riqueza e avanço tecnológico para parte da humanidade agora coloca em risco as condições de habitabilidade do próprio planeta.\n\nConsiderando a reflexão teórica apresentada, o reconhecimento do Antropoceno impõe a necessidade de reavaliar a relação sociedade-natureza por meio do(a):`,
+        alternativas: [
+            "Estímulo ao consumo de bens duráveis para dinamizar as forças de mercado.",
+            "Superação da lógica desenvolvimentista em prol de uma racionalidade ecológica.",
+            "Aceleração da exploração de combustíveis fósseis em águas profundas.",
+            "Isolamento de comunidades tradicionais para evitar a contaminação cultural.",
+            "Transferência da responsabilidade climática exclusivamente para os indivíduos."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+
+{
+        id: 41,
+        origem: "ENEM 2020",
+        texto: `Embora inegáveis os benefícios que ambas as economias têm auferido do intercâmbio comercial, o Brasil tem reiterado seu objetivo de desenvolver com a China uma relação comercial menos assimétrica. Os números revelam com clareza a assimetria. As exportações brasileiras de produtos básicos, especialmente soja, minério de ferro e petróleo, compõem, dependendo do ano, algo entre 75% e 80% da pauta, ao passo que as importações brasileiras consistem, aproximadamente, em 95% de produtos industrializados chineses, que vão desde os mais variados bens de consumo até máquinas e equipamentos de alto valor.\n\nUma ação estatal de longo prazo capaz de reduzir a assimetria na balança comercial brasileira, conforme exposto no texto, é o(a):`,
+        alternativas: [
+            "expansão do setor extrativista.",
+            "incremento da atividade agrícola.",
+            "diversificação da matriz energética.",
+            "fortalecimento da pesquisa científica.",
+            "monitoramento do fluxo alfandegário."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 42,
+        origem: "ENEM",
+        texto: `As estatísticas mais recentes do Brasil rural revelam um paradoxo que interessa a toda sociedade: o emprego de natureza agrícola definha em praticamente todo o país, mas a população residente no campo voltou a crescer; ou pelo menos parou de cair. Esses sinais trocados sugerem que a dinâmica agrícola, embora fundamental, já não determina sozinha os rumos da demografia no campo. Esse novo cenário é explicado em parte pelo incremento do emprego não agrícola no campo. Ao mesmo tempo, aumentou a massa de desempregados, inativos e aposentados que mantêm residência rural.\n\nSobre o espaço brasileiro, o texto apresenta argumentos que refletem a:`,
+        alternativas: [
+            "heterogeneidade do modo de vida agrário.",
+            "redução do fluxo populacional nas cidades.",
+            "correlação entre força de trabalho e migração sazonal.",
+            "indissociabilidade entre local de moradia e acesso à renda.",
+            "desregulamentação das propriedades nas zonas de fronteira."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+{
+        id: 43,
+        origem: "ENEM 2020",
+        texto: `Nas últimas décadas, uma acentuada feminização no mundo do trabalho vem ocorrendo. Se a participação masculina pouco cresceu no período pós-1970, a intensificação da inserção das mulheres foi o traço marcante. Entretanto, essa presença feminina se dá mais no espaço dos empregos precários, onde a exploração, em grande medida, se encontra mais acentuada.\n\nA transformação descrita no texto tem sido insuficiente para o estabelecimento de uma condição de igualdade de oportunidade em virtude da(s):`,
+        alternativas: [
+            "estagnação de direitos adquiridos e do anacronismo da legislação vigente.",
+            "manutenção do status quo gerencial e dos padrões de socialização familiar.",
+            "desestruturação da herança patriarcal e das mudanças do perfil ocupacional.",
+            "disputas na composição sindical e da presença na esfera político-partidária.",
+            "exigências de aperfeiçoamento profissional e de habilidades na competência diretiva."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 44,
+        origem: "ENEM 2020",
+        texto: `A propriedade compreende, em seu conteúdo e alcance, além do tradicional direito de uso, gozo e disposição por parte de seu titular, a obrigatoriedade do atendimento de sua função social, cuja definição é inseparável do requisito obrigatório do uso racional da propriedade e dos recursos ambientais que lhe são integrantes. O proprietário, como membro integrante da comunidade, se sujeita a obrigações crescentes que, ultrapassando os limites do direito de vizinhança, no âmbito do direito privado, abrangem o campo dos direitos da coletividade, visando o bem-estar geral, no âmbito do direito público.\n\nOs movimentos em prol da reforma agrária, que atuam com base no conceito de direito à propriedade apresentado no texto, propõem-se a:`,
+        alternativas: [
+            "reverter o processo de privatização fundiária.",
+            "ressaltar a inviabilidade da produção latifundiária.",
+            "defender a desapropriação dos espaços improdutivos.",
+            "impedir a produção exportadora nas terras agricultáveis.",
+            "coibir o funcionamento de empresas agroindustriais no campo."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 45,
+        origem: "ENEM 2020",
+        texto: `A expansão das cidades e a formação das aglomerações urbanas no Brasil foram marcadas pela produção industrial e pela consolidação das metrópoles como locais de seu desenvolvimento. Na segunda metade do século XX, as metrópoles brasileiras estenderam-se por áreas de ocupação contínua, configurando densas regiões urbanizadas.\n\nO resultado do processo geográfico descrito foi o(a):`,
+        alternativas: [
+            "valorização da escala local.",
+            "crescimento das áreas periféricas.",
+            "densificação do transporte ferroviário.",
+            "predomínio do planejamento estadual.",
+            "inibição de consórcios intermunicipais."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 46,
+        origem: "ENEM 2020",
+        texto: `Dois grandes eventos históricos tornaram possível um caso como o de Menocchio: a invenção da imprensa e a Reforma. A imprensa lhe permitiu confrontar os livros com a tradição oral em que havia crescido e lhe forneceu as palavras para organizar o amontoado de ideias e fantasias que nele conviviam. A Reforma lhe deu audácia para comunicar o que pensava ao padre do vilarejo, conterrâneos, inquisidores — mesmo não tendo conseguido dizer tudo diante do papa, dos cardeais e dos príncipes, como queria.\n\nOs acontecimentos históricos citados ajudaram esse indivíduo, no século XVI, a repensar a visão católica do mundo ao possibilitarem a:`,
+        alternativas: [
+            "consulta pública das bibliotecas reais.",
+            "sofisticação barroca do ritual litúrgico.",
+            "aceitação popular da educação secular.",
+            "interpretação autônoma dos textos bíblicos.",
+            "correção doutrinária das heresias medievais."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 47,
+        origem: "ENEM 2020",
+        texto: `“Devo estar chegando perto do centro da Terra. Deixe ver: deve ter sido mais de seis mil quilômetros, por aí...” (como se vê, Alice tinha aprendido uma porção de coisas desse tipo na escola, e embora essa não fosse uma oportunidade lá muito boa de demonstrar conhecimentos, já que não havia ninguém por perto para escutá-la, em todo caso era bom praticar um pouco) “... sim, deve ser mais ou menos essa a distância... mas então qual seria a latitude ou longitude em que estou?” (Alice não tinha a menor ideia do que fosse latitude ou longitude, mas achou que eram palavras muito imponentes).\n\nO texto descreve uma confusão da personagem em relação:`,
+        alternativas: [
+            "ao tipo de projeção cartográfica.",
+            "aos contornos dos fusos horários.",
+            "à localização do norte magnético.",
+            "aos referenciais de posição relativa.",
+            "às distorções das formas continentais."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 48,
+        origem: "ENEM 2020",
+        texto: `A arte pré-histórica africana foi incontestavelmente um veículo de mensagens pedagógicas e sociais. Os San, que constituem hoje o povo mais próximo da realidade das representações rupestres, afirmam que seus antepassados lhes explicaram sua visão do mundo a partir desse gigantesco livro de imagens que são as galerias. A educação dos povos que desconhecem a escrita está baseada sobretudo na imagem e no som, no audiovisual.\n\nDe acordo com o texto, a arte mencionada é importante para os povos que a cultivam por colaborar para o(a):`,
+        alternativas: [
+            "transmissão dos saberes acumulados.",
+            "expansão da propriedade individual.",
+            "ruptura da disciplina hierárquica.",
+            "surgimento dos laços familiares.",
+            "rejeição de práticas exógenas."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+{
+        id: 49,
+        origem: "ENEM 2020",
+        texto: `Será que as coisas lhe pareceriam diferentes se, de fato, todas elas existissem apenas na sua mente — se tudo o que você julgasse ser o mundo externo real fosse apenas um sonho ou alucinação gigante, de que você jamais fosse despertar? Se assim fosse, então é claro que você nunca poderia despertar, como faz quando sonha, pois significaria que não há mundo “real” no qual despertar. Logo, não seria exatamente igual a um sonho ou alucinação normal.\n\nO texto confere visibilidade a uma doutrina filosófica contemporânea conhecida como:`,
+        alternativas: [
+            "Personalismo, que vincula a realidade circundante aos domínios do pessoal.",
+            "Falsificacionismo, que estabelece ciclos de problemas para refutar uma conjectura.",
+            "Falibilismo, que rejeita mecanismos mentais para sustentar uma crença inequívoca.",
+            "Idealismo, que nega a existência de objetos independentemente do trabalho cognoscente.",
+            "Solipsismo, que reconhece limitações cognitivas para compreender uma experiência compartilhada."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 50,
+        origem: "ENEM 2020",
+        texto: `A demanda mundial para a produção de alimentos aumenta progressivamente a taxas muito altas. Atualmente, na maioria dos países, continentes e regiões, a água consumida na agricultura é de cerca de 70% da disponibilidade total.\n\nPara que haja a redução da pressão sobre o recurso natural mencionado, a expansão da agricultura demanda melhorias no(a):`,
+        alternativas: [
+            "fertilização química do solo.",
+            "escoamento hídrico do terreno.",
+            "manutenção de poços artesianos.",
+            "eficiência das técnicas de irrigação.",
+            "velocidade das máquinas colheitadeiras."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 51,
+        origem: "ENEM 2020",
+        texto: `No caso do Departamento de Defesa dos Estados Unidos, a ênfase está posta no traçado de uma estratégia geral de desarticulação, não só dos inimigos reais como dos potenciais, inserida na concepção preventiva que supõe que a mínima dissidência é um sinal de perigo e de guerra futura. Deve-se ter capacidade para responder a uma guerra convencional tanto quanto para enfrentar um inimigo difuso, atentando simultaneamente para todas as áreas geográficas do planeta. Trata-se, sem dúvida, da estratégia com pretensões mais abrangentes que se desenvolveu até agora.\n\nTomando o texto como parâmetro, qual tendência contemporânea impulsiona a formulação de estratégias mais abrangentes por parte do Estado americano?`,
+        alternativas: [
+            "Erradicação dos conflitos em territórios.",
+            "Propagação de organizações em redes.",
+            "Eliminação das diferenças regionais.",
+            "Ampliação de modelo democrático.",
+            "Projeção da diplomacia mundial."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 52,
+        origem: "ENEM 2020",
+        texto: `O planejamento deixou de controlar o crescimento urbano e passou a encorajá-lo por todos os meios possíveis e imagináveis. Cidades, a nova mensagem soou em alto e bom som, eram máquinas de produzir riquezas; o primeiro e principal objetivo do planejamento devia ser o de azeitar a máquina.\n\nO modelo de planejamento urbano problematizado no texto é marcado pelo(a):`,
+        alternativas: [
+            "primazia da gestão popular.",
+            "uso de práticas sustentáveis.",
+            "construção do bem-estar social.",
+            "soberania do poder governamental.",
+            "ampliação da participação empresarial."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 53,
+        origem: "ENEM 2020",
+        texto: `Escudos antigos ou maciços cristalinos são blocos imensos de rochas antigas. Estes escudos são constituídos por rochas cristalinas (magmático-plutônicas), formadas em eras pré-cambrianas, ou por rochas metamórficas (material sedimentar) do Paleozoico. São resistentes, estáveis, porém bastante desgastadas. Correspondem a 36% da área territorial e dividem-se em duas grandes porções: o Escudo das Guianas (norte da Planície Amazônica) e o Escudo Brasileiro (porção centro-oriental brasileira).\n\ As estruturas geológicas indicadas no texto são importantes economicamente para o Brasil por concentrarem:`,
+        alternativas: [
+            "fontes de águas termais.",
+            "afloramentos de sal-gema.",
+            "jazidas de minerais metálicos.",
+            "depósitos de calcário agrícola.",
+            "reservas de combustível fóssil."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 54,
+        origem: "ENEM",
+        texto: `Em A morte de Ivan Ilitch, Tolstoi descreve com detalhes repulsivos o terror de encarar a morte iminente. Ilitch adoece depois de um pequeno acidente e logo compreende que se encaminha para o fim de modo impossível de parar. “Nas profundezas de seu coração, ele sabia estar morrendo, mas em vez de se acostumar com a ideia, simplesmente não o fazia e não conseguia compreendê-la”.\n\nO texto descreve a experiência do personagem de Tolstoi diante de um aspecto incontornável de nossas vidas. Esse aspecto foi um tema central na tradição filosófica:`,
+        alternativas: [
+            "marxista, no contexto do materialismo histórico.",
+            "logicista, no propósito de entendimento dos fatos.",
+            "utilitarista, no sentido da racionalidade das ações.",
+            "pós-modernista, na discussão da fluidez das relações.",
+            "existencialista, na questão do reconhecimento de si."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 55,
+        origem: "ENEM 2020",
+        texto: `A Divisão Internacional do Trabalho significa que alguns países se especializam em ganhar e outros, em perder. Nossa comarca no mundo, que hoje chamamos América Latina, foi precoce: especializou-se em perder desde os remotos tempos em que os europeus do Renascimento se aventuraram pelos mares e lhe cravaram os dentes na garganta. Passaram-se os séculos e a América Latina aprimorou suas funções.\n\nEscrito na década de 1970, o texto considera a participação da América Latina na Divisão Internacional do Trabalho marcada pela:`,
+        alternativas: [
+            "produção inovadora de padrões de tecnologia.",
+            "superação paulatina do caráter agroexportador.",
+            "apropriação imperialista dos recursos territoriais.",
+            "valorização econômica dos saberes tradicionais.",
+            "dependência externa do suprimento de alimentos."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 56,
+        origem: "ENEM",
+        texto: `Sexto rei sumério (governante entre os séculos XVIII e XVII a.C.) e nascido em Babel, “Khammu-rabi” (pronúncia em babilônio) foi fundador do I Império Babilônico (correspondente ao atual Iraque), unificando amplamente o mundo mesopotâmico, unindo os semitas e os sumérios e levando a Babilônia ao máximo esplendor. O nome de Hamurabi permanece indissociavelmente ligado ao código jurídico tido como o mais remoto já descoberto: o Código de Hamurabi. O legislador babilônico consolidou a tradição jurídica, harmonizou os costumes e estendeu o direito e a lei a todos os súditos.\n\nNesse contexto de organização da vida social, as leis contidas no Código citado tinham o sentido de:`,
+        alternativas: [
+            "assegurar garantias individuais aos cidadãos livres.",
+            "tipificar regras referentes aos atos dignos de punição.",
+            "conceder benefícios de indulto aos prisioneiros de guerra.",
+            "promover distribuição de terras aos desempregados urbanos.",
+            "conferir prerrogativas políticas aos descendentes de estrangeiros."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 57,
+        origem: "ENEM 2020",
+        texto: `Desde o mundo antigo e sua filosofia, que o trabalho tem sido compreendido como expressão de vida e degradação, criação e infelicidade, atividade vital e escravidão, felicidade social e servidão. Trabalho e fadiga. Na Modernidade, sob o comando do mundo da mercadoria e do dinheiro, a prevalência do negócio (negar o ócio) veio sepultar o império do repouso, da folga e da preguiça, criando uma ética positiva do trabalho.\n\nO processo de ressignificação do trabalho nas sociedades modernas teve início a partir do surgimento de uma nova mentalidade, influenciada pela:`,
+        alternativas: [
+            "reforma higienista, que combateu o caráter excessivo e insalubre do trabalho fabril.",
+            "Reforma Protestante, que expressou a importância das atividades laborais no mundo secularizado.",
+            "força do sindicalismo, que emergiu no esteio do anarquismo reivindicando direitos trabalhistas.",
+            "participação das mulheres em movimentos sociais, defendendo o direito ao trabalho.",
+            "visão do catolicismo, que, desde a Idade Média, defendia a dignidade do trabalho e do lucro."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 58,
+        origem: "ENEM",
+        texto: `É difícil imaginar que nos anos 1990, num país com setores da população na pobreza absoluta e sem uma rede de benefícios sociais em que se apoiar, um governo possa abandonar o papel de promotor de programas de geração de emprego, de assistência social, de desenvolvimento da infraestrutura e de promoção de regiões excluídas, na expectativa de que o mercado venha algum dia a dar uma resposta adequada a tudo isso.\n\nNesse contexto, a criticada postura dos governos frente à situação social do país coincidiu com a priorização de que medidas?`,
+        alternativas: [
+            "Expansão dos investimentos nas empresas públicas e nos bancos estatais.",
+            "Democratização do crédito habitacional e da aquisição de moradias populares.",
+            "Enxugamento da carga fiscal individual e da contribuição tributária empresarial.",
+            "Reformulação do acesso ao ensino superior e do financiamento científico nacional.",
+            "Reforma das políticas macroeconômicas e dos mecanismos de controle inflacionário."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 59,
+        origem: "ENEM",
+        texto: `A sociedade como um sistema justo de cooperação social consiste em uma das ideias familiares fundamentais, que dá estrutura e organização à justiça como equidade. A cooperação social guia-se por regras e procedimentos publicamente reconhecidos e aceitos por aqueles que cooperam como sendo apropriados para regular a sua conduta. Diz-se que a cooperação é justa porque seus termos são tais que todos os participantes podem razoavelmente aceitar, desde que todos os demais também o aceitem.\n\nNo contexto do pensamento político, a ideia apresentada mostra-se consoante o(a):`,
+        alternativas: [
+            "ideal republicano de governo.",
+            "corrente tripartite dos poderes.",
+            "posicionamento crítico do socialismo.",
+            "legitimidade do absolutismo monárquico.",
+            "entendimento do contratualismo moderno."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 60,
+        origem: "ENEM",
+        texto: `Com efeito, até a destruição de Cartago, o povo e o Senado romano governavam a República em harmonia e sem paixão, e não havia entre os cidadãos luta por glória ou dominação; o medo do inimigo mantinha a cidade no cumprimento do dever. Mas, assim que o medo desapareceu dos espíritos, introduziram-se os males pelos quais a prosperidade tem predileção, isto é, a libertinagem e o orgulho.\n\nO acontecimento histórico mencionado no texto de Salústio, datado de I a.C., manteve correspondência com o processo de:`,
+        alternativas: [
+            "demarcação de terras públicas.",
+            "imposição da escravidão por dívidas.",
+            "restrição da cidadania por parentesco.",
+            "restauração de instituições ancestrais.",
+            "expansão das fronteiras extrapeninsulares."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 61,
+        origem: "ENEM 2020",
+        texto: `O cântico da terra\n\nEu sou a terra, eu sou a vida.\nA ti, ó lavrador, tudo quanto é meu.\nTeu arado, tua foice, teu machado.\nO berço pequenino de teu filho.\nO algodão de tua veste\ne o pão de tua casa.\nE um dia bem distante\na mim tu voltarás.\nE no canteiro materno de meu seio\ntranquilo dormirás.\nPlantemos a roça.\nLavremos a gleba.\n\nNo contexto das distintas formas de apropriação da terra, o poema de Cora Coralina valoriza a relação entre:`,
+        alternativas: [
+            "grileiros e controle territorial.",
+            "meeiros e divisão do trabalho.",
+            "camponeses e uso da natureza.",
+            "indígenas e manejo agroecológico.",
+            "latifundiários e fertilização do solo."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 62,
+        origem: "ENEM 2020",
+        texto: `Montaigne deu o nome para um novo gênero literário; foi dos primeiros a instituir na literatura moderna um espaço privado, o espaço do “eu”, do texto íntimo. Ele cria um novo processo de escrita filosófica, no qual hesitações, autocríticas, correções entram no próprio texto.\n\nO novo gênero de escrita aludido no texto é o(a):`,
+        alternativas: [
+            "confissão, que relata experiências de transformação.",
+            "ensaio, que expõe concepções subjetivas de um tema.",
+            "carta, que comunica informações para um conhecido.",
+            "meditação, que propõe preparações para o conhecimento.",
+            "diálogo, que discute assuntos com diferentes interlocutores."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 63,
+        origem: "ENEM 2020",
+        texto: `Declaração de Salamanca – 1994\n\nAcreditamos e proclamamos que: toda criança tem direito fundamental à educação e deve ser dada a oportunidade de atingir e manter o nível adequado de aprendizagem; toda criança possui características, interesses, habilidades e necessidades de aprendizagem que são únicas; sistemas educacionais deveriam ser designados e programas educacionais deveriam ser implementados no sentido de se levar em conta a vasta diversidade de tais características e necessidades.\n\nComo signatário da Declaração citada, o Brasil comprometeu-se com a elaboração de políticas públicas educacionais que contemplem a:`,
+        alternativas: [
+            "criação de privilégios.",
+            "contenção dos gastos.",
+            "pluralidade dos sujeitos.",
+            "padronização do currículo.",
+            "valorização da meritocracia."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 64,
+        origem: "ENEM 2020",
+        texto: `TEXTO I\nOs meus pensamentos são todos sensações.\nPenso com os olhos e com os ouvidos\nE com as mãos e os pés\nE com o nariz e a boca.\n\nTEXTO II\nTudo aquilo que sei do mundo, mesmo por ciência, eu o sei a partir de uma visão minha ou de uma experiência do mundo sem a qual os símbolos da ciência não poderiam dizer nada.\n\nOs textos mostram-se alinhados a um entendimento acerca da ideia de conhecimento, numa perspectiva que ampara a:`,
+        alternativas: [
+            "anterioridade da razão no domínio cognitivo.",
+            "confirmação da existência de saberes inatos.",
+            "valorização do corpo na apreensão da realidade.",
+            "verificabilidade de proposições no campo da lógica.",
+            "possibilidade de contemplação de verdades atemporais."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 65,
+        origem: "ENEM",
+        texto: `Afirmar que a cartografia da época moderna integrou o processo de invenção da América por parte dos europeus significa que os conhecimentos dos ameríndios sobre o território foram ignorados pela cartografia europeia ou que eles foram privados de sua representação territorial e da autoridade que seus conhecimentos tinham sobre o espaço.\n\nNa análise contida no texto, a representação cartográfica da América foi marcada por:`,
+        alternativas: [
+            "asserção da cultura dos nativos.",
+            "avanço dos estudos do ambiente.",
+            "afirmação das formas de dominação.",
+            "exatidão da demarcação das regiões.",
+            "aprimoramento do conceito de fronteira."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 66,
+        origem: "ENEM",
+        texto: `A principal característica da situação social dos anglo-americanos é seu caráter eminentemente democrático. Afirmei anteriormente que reinava uma igualdade muito grande entre os emigrantes que foram se estabelecer na Nova Inglaterra. Para isso contribuiu a influência das leis de sucessão. Estabelecidas de uma maneira, as leis de sucessão reúnem, concentram e agrupam em um só a propriedade e o poder. Estabelecidas por outros princípios, produzem o oposto: dividem, partilham e disseminam os bens e o poder.\n\nO texto tematiza o papel desempenhado por uma norma na criação de um ambiente propício ao(à):`,
+        alternativas: [
+            "emprego do trabalho escravo.",
+            "consolidação dos valores burgueses.",
+            "banimento das dissidências religiosas.",
+            "contenção da identificação nacionalista.",
+            "hierarquização dos agentes econômicos."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 67,
+        origem: "ENEM 2020",
+        texto: `O toyotismo, a partir dos anos 1970, teve grande impacto no mundo ocidental, quando se mostrou para os países avançados como uma opção possível para a superação de uma crise de acumulação.\n\nA característica organizacional do modelo em questão, requerida no contexto de crise, foi o(a):`,
+        alternativas: [
+            "expansão dos grandes estoques.",
+            "incremento da fabricação em massa.",
+            "adequação da produção à demanda.",
+            "aumento da mecanização do trabalho.",
+            "centralização das etapas de planejamento."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 68,
+        origem: "ENEM",
+        texto: `O fenômeno histórico conhecido como “tráfico de coolies” esteve associado diretamente ao período que vai do final da década de 1840 até o ano de 1874, quando milhares de chineses foram encaminhados principalmente para Cuba e Peru e muitos abusos no recrutamento de mão de obra foram identificados. O tráfico de coolies ou, em outros termos, o transporte por meios coativos de mão de obra de um lugar para outro, foi comparado ao tráfico africano de escravos por muitos periodistas e analistas do século XIX.\n\nA comparação mencionada no texto foi possível em razão da seguinte característica:`,
+        alternativas: [
+            "Oferta de contrato formal.",
+            "Origem étnica dos grupos de trabalhadores.",
+            "Conhecimento das tarefas desenvolvidas.",
+            "Controle opressivo das vidas dos indivíduos.",
+            "Investimento requerido dos empregadores."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 69,
+        origem: "ENEM 2020",
+        texto: `Os seringueiros amazônicos eram invisíveis no cenário nacional nos anos 1970. Começaram a se articular como um movimento agrário no início dos anos 1980, e na década seguinte conseguiram reconhecimento nacional, obtendo a implantação das primeiras reservas extrativas após o assassinato de Chico Mendes. Assim, em vinte anos, os camponeses da floresta passaram da invisibilidade à posição de paradigma de desenvolvimento sustentável com participação popular.\n\nDe acordo com o texto, a visibilidade dos seringueiros amazônicos foi estabelecida pela relação entre:`,
+        alternativas: [
+            "crescimento econômico e migração de trabalhadores.",
+            "produção de borracha e escassez de recursos naturais.",
+            "reivindicação de terra e preservação de mata nativa.",
+            "incentivo governamental e conservação de territórios.",
+            "modernização de plantio e comércio de látex."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 70,
+        origem: "ENEM",
+        texto: `Porque todos confessamos não se poder viver sem alguns escravos, que busquem a lenha e a água, e façam cada dia o pão que se come, e outros serviços que não são possíveis poderem-se fazer pelos Irmãos Jesuítas, máxime sendo tão poucos, que seria necessário deixar as confissões e tudo mais. Pareceme que a Companhia de Jesus deve ter e adquirir escravos, justamente, por meios que as Constituições permitem, quando puder para nossos colégios e casas de meninos.\n\nO texto explicita premissas da expansão ultramarina portuguesa ao buscar justificar a:`,
+        alternativas: [
+            "propagação do ideário cristão.",
+            "valorização do trabalho braçal.",
+            "adoção do cativeiro na Colônia.",
+            "adesão ao ascetismo contemplativo.",
+            "alfabetização dos indígenas nas Missões."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 71,
+        origem: "ENEM 2020",
+        texto: `Ao abrigo do teto, sua jornada de fé começava na sala de jantar. Na pequena célula cristã, dividia-se a refeição e durante elas os crentes conversavam, rezavam e liam cartas de correligionários residentes em locais diferentes do Império Romano (século II da Era Cristã). Esse ambiente garantia peculiar apoio emocional às experiências intensamente individuais que abrigava.\n\nUm motivo que explica a ambientação da prática descrita no texto encontra-se no(a):`,
+        alternativas: [
+            "regra judaica, que pregava a superioridade espiritual dos cultos das sinagogas.",
+            "moralismo da legislação, que dificultava as reuniões abertas da juventude livre.",
+            "adesão do patriciado, que subvertia o conceito original dos valores estrangeiros.",
+            "decisão política, que censurava as manifestações públicas da doutrina dissidente.",
+            "violência senhorial, que impunha a desestruturação forçada das famílias escravas."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 72,
+        origem: "ENEM",
+        texto: `A colisão entre uma placa continental e uma oceânica provocará a subducção desta última sob a placa continental, que, a exemplo dos arcos e ilhas, produzirá um arco magmático na borda do continente, composto por rochas vulcânicas acompanhado de deformações e metamorfismo tanto de rochas preexistentes como de parte das rochas formadas no processo.\n\nQual feição fisiográfica é gerada pelo processo tectônico apresentado?`,
+        alternativas: [
+            "Planícies abissais.",
+            "Planaltos cristalinos.",
+            "Depressões absolutas.",
+            "Bacias sedimentares.",
+            "Dobramentos modernos."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 73,
+        origem: "ENEM 2020",
+        texto: `O movimento sedicioso ocorrido na capitania de Pernambuco, no ano 1817, foi analisado de formas diferentes por dois meios de comunicação daquela época. O Correio Braziliense apontou para o fato de ser “a comoção no Brasil motivada por um descontentamento geral, e não por maquinações de alguns indivíduos”. Já a Gazeta do Rio de Janeiro considerou o movimento como um “pontual desvio de norma, apenas uma ‘mancha’ nas ‘páginas da História Portuguesa’, tão distinta pelos testemunhos de amor e respeito que os vassalos desta nação consagram ao seu soberano”.\n\nOs fragmentos das matérias jornalísticas sobre o acontecimento, embora com percepções diversas, relacionam-se a um aspectodo processo de independência da colônia luso-americana expresso em dissensões entre:`,
+        alternativas: [
+            "quadros dirigentes em torno da abolição da ordem escravocrata.",
+            "grupos regionais acerca da configuração político-territorial.",
+            "intelectuais laicos acerca da revogação do domínio eclesiástico.",
+            "homens livres em torno da extensão do direito de voto.",
+            "elites locais acerca da ordenação do monopólio fundiário."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 74,
+        origem: "ENEM",
+        texto: `Na Grécia, o conceito de povo abrange tão somente aqueles indivíduos considerados cidadãos. Assim é possível perceber que o conceito de povo era muito restritivo. Mesmo tendo isso em conta, a forma democrática vivenciada e experimentada pelos gregos atenienses nos séculos IV e V a.C. pode ser caracterizada, fundamentalmente, como direta.\n\nNaquele contexto, a emergência do sistema de governo mencionado no excerto promoveu o(a):`,
+        alternativas: [
+            "competição para a escolha de representantes.",
+            "campanha pela revitalização das oligarquias.",
+            "estabelecimento de mandatos temporários.",
+            "declínio da sociedade civil organizada.",
+            "participação no exercício do poder."
+        ],
+        correta: 4 // Índice 4 corresponds to alternative (e)
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ];
+
+        /* Lógica e Variáveis Globais de Execução */
+        let questoesSelecionadas = [];
+        let respostasEstudante = {};
+        let tempoSegundos = 0;
+        let cronometroInterval;
+
+
+	// Contagem automática pelo tamanho da lista (ignora IDs repetidos)
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('total-banco').textContent = bancoQuestoes.length;
+        });
+
+
+
+        // Inicia o Simulado e Escolhe as questões aleatoriamente
+        function iniciarSimulado() {
+            const qtdDesejada = parseInt(document.getElementById('qtd-questoes').value);
+            const divErro = document.getElementById('erro-mensagem');
+
+            // Verifica se há questões suficientes em estoque
+            if (bancoQuestoes.length < qtdDesejada) {
+                divErro.innerText = `Erro: O banco de dados possui apenas ${bancoQuestoes.length} questões cadastradas. Não é possível gerar um simulado de ${qtdDesejada} questões.`;
+                divErro.style.display = 'block';
+                return;
+            }
+
+            divErro.style.display = 'none';
+            document.getElementById('config-card').style.display = 'none';
+            document.getElementById('simulado-container').style.display = 'block';
+
+            // Embaralha e corta o array de questões pelo tamanho solicitado
+            questoesSelecionadas = [...bancoQuestoes].sort(() => 0.5 - Math.random()).slice(0, qtdDesejada);
+            
+            document.getElementById('contador-questoes').innerText = `Simulado: ${qtdDesejada} Questões Selecionadas`;
+            
+            renderizarQuestoes();
+            iniciarCronometro();
+        }
+
+        // Renderiza as questões tratadas no HTML dinamicamente
+        function renderizarQuestoes() {
+            const container = document.getElementById('questoes-lista');
+            container.innerHTML = '';
+            const letras = ['A', 'B', 'C', 'D', 'E'];
+
+            questoesSelecionadas.forEach((questao, indexGrid) => {
+                const card = document.createElement('div');
+                card.className = 'questao-card';
+                card.id = `q-card-${questao.id}`;
+
+                const header = document.createElement('div');
+                header.className = 'questao-header';
+                header.innerText = `Questão ${indexGrid + 1} • ${questao.origem}`;
+
+                const texto = document.createElement('div');
+                texto.className = 'questao-texto';
+                texto.innerText = questao.texto;
+
+                const listaAlternativas = document.createElement('ul');
+                listaAlternativas.className = 'alternativas-lista';
+
+                questao.alternativas.forEach((alternativa, indexAlt) => {
+                    const item = document.createElement('li');
+                    item.className = 'alternativa-item';
+                    item.id = `alt-${questao.id}-${indexAlt}`;
+                    item.onclick = () => selecionarAlternativa(questao.id, indexAlt);
+
+                    const letra = document.createElement('span');
+                    letra.className = 'letra-opcao';
+                    letra.innerText = letras[indexAlt];
+
+                    const textoOpcao = document.createElement('span');
+                    textoOpcao.innerText = alternativa;
+
+                    item.appendChild(letra);
+                    item.appendChild(textoOpcao);
+                    listaAlternativas.appendChild(item);
+                });
+
+                card.appendChild(header);
+                card.appendChild(texto);
+                card.appendChild(listaAlternativas);
+                container.appendChild(card);
+            });
+        }
+
+        // Registra a alternativa clicada pelo usuário
+        function selecionarAlternativa(questaoId, alternativaIndex) {
+            // Remove seleção anterior da mesma questão
+            const q = questoesSelecionadas.find(item => item.id === questaoId);
+            q.alternativas.forEach((_, idx) => {
+                const el = document.getElementById(`alt-${questaoId}-${idx}`);
+                if (el) el.classList.remove('selecionada');
+            });
+
+            // Aplica a nova seleção
+            const itemSelecionado = document.getElementById(`alt-${questaoId}-${alternativaIndex}`);
+            if (itemSelecionado) itemSelecionado.classList.add('selecionada');
+
+            respostasEstudante[questaoId] = alternativaIndex;
+        }
+
+        // Gerenciamento de Tempo
+        function iniciarCronometro() {
+            tempoSegundos = 0;
+            cronometroInterval = setInterval(() => {
+                tempoSegundos++;
+                const minutos = Math.floor(tempoSegundos / 60).toString().padStart(2, '0');
+                const segundos = (tempoSegundos % 60).toString().padStart(2, '0');
+                document.getElementById('tempo').innerText = `${minutos}:${segundos}`;
+            }, 1000);
+        }
+
+        // Processa as respostas e aplica as formatações visuais pós-gabarito
+        function corrigirSimulado() {
+            clearInterval(cronometroInterval); // Trava o relógio
+            let acertos = 0;
+
+            questoesSelecionadas.forEach((questao) => {
+                const respostaUsuario = respostasEstudante[questao.id];
+                const respostaCorreta = questao.correta;
+
+                // Bloqueia e colore todas as alternativas do card de acordo com o gabarito
+                questao.alternativas.forEach((_, idx) => {
+                    const item = document.getElementById(`alt-${questao.id}-${idx}`);
+                    item.classList.add('bloqueada'); // impede novos cliques
+
+                    if (idx === respostaCorreta) {
+                        item.classList.add('correta');
+                        if (respostaUsuario === respostaCorreta && idx === respostaUsuario) {
+                            // Se acertou, mostra o indicador de acerto
+                            const span = document.createElement('span');
+                            span.className = 'feedback-label';
+                            span.innerHTML = '<i class="fa-solid fa-check"></i> Você Acertou';
+                            item.appendChild(span);
+                        } else {
+                            // Se errou, indica qual era a resposta correta esperada
+                            const span = document.createElement('span');
+                            span.className = 'feedback-label';
+                            span.innerText = 'Gabarito Oficial';
+                            item.appendChild(span);
+                        }
+                    }
+
+                    if (respostaUsuario !== undefined && respostaUsuario !== respostaCorreta && idx === respostaUsuario) {
+                        item.classList.add('errada');
+                        const span = document.createElement('span');
+                        span.className = 'feedback-label';
+                        span.innerHTML = '<i class="fa-solid fa-xmark"></i> Sua Resposta';
+                        item.appendChild(span);
+                    }
+                });
+
+                if (respostaUsuario === respostaCorreta) {
+                    acertos++;
+                }
+            });
+
+            // Exibe e atualiza o topo de placar final
+            const cardResultado = document.getElementById('resultado-card');
+            document.getElementById('score-text').innerText = `Você acertou ${acertos} de ${questoesSelecionadas.length} questões!`;
+            cardResultado.style.display = 'block';
+
+            // Oculta botão de envio após o uso e rola a tela para o topo ver o resultado
+            document.getElementById('btn-corrigir').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
