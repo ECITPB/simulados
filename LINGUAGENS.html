@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Linguagens - Portal ENEM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Estilos Globais baseados na identidade Premium */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #0f172a);
+            background-size: 400% 400%;
+            color: #f1f5f9;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* Topo da página de Simulado */
+        .header-simulado {
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 4px solid #38bdf8; /* Tom Linguagens */
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-simulado h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Card de Configuração Inicial */
+        .config-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .config-card h2 {
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+
+        .config-card p {
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        /* Badge para total de questões do banco */
+        .badge-total {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        /* Select customizado e controles */
+        .select-wrapper {
+            margin-bottom: 30px;
+        }
+
+        select {
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 2px solid #38bdf8;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Mensagem de Erro */
+        .erro-mensagem {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Botão Estilizado */
+        .btn {
+            display: inline-block;
+            padding: 14px 35px;
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Botão desabilitado */
+        .btn:disabled {
+            background: #475569 !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Barra de Informações do Simulado Ativo */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px 25px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cronometro {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Container de Questões */
+        #simulado-container {
+            display: none;
+        }
+
+        .questao-card {
+            background: rgba(30, 41, 59, 0.35);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .questao-header {
+            font-size: 0.9rem;
+            color: #38bdf8;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .questao-texto {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            white-space: pre-line;
+            text-align: justify;
+        }
+
+        .alternativas-lista {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alternativa-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alternativa-item:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .alternativa-item.selecionada {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        .letra-opcao {
+            font-weight: 700;
+            color: #38bdf8;
+            background: rgba(15, 23, 42, 0.4);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Área do Botão de Ação Inferior */
+        .actions-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        /* Resultados e Gabarito Estilizado */
+        .resultado-card {
+            background: rgba(30, 41, 59, 0.75);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 2px solid #38bdf8;
+            display: none;
+        }
+
+        .resultado-card h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .score-text {
+            font-size: 1.5rem;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        /* Classes de Correção aplicadas via JS */
+        .alternativa-item.correta {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: #10b981 !important;
+            color: #a7f3d0 !important;
+            cursor: not-allowed;
+        }
+
+        .alternativa-item.correta .letra-opcao {
+            color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .alternativa-item.errada {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5 !important;
+            cursor: not-allowed;
+        }
+
+        .alternativa-item.errada .letra-opcao {
+            color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .alternativa-item.bloqueada {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .feedback-label {
+            margin-left: auto;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-simulado">
+        <h1>Linguagens, Códigos e suas Tecnologias</h1>
+        <p>Língua Portuguesa • Literatura • Artes • Educação Física • Língua Estrangeira</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="config-card" class="config-card">
+            <h2>Configurar seu Simulado</h2>
+            <p>Selecione a quantidade de questões aleatórias que deseja resolver para iniciar o teste cronometrado.</p>
+            
+            <div class="badge-total">
+                <i class="fa-solid fa-database"></i> <span id="total-banco">0</span> Questões cadastradas no banco
+            </div>
+
+            <div id="erro-mensagem" class="erro-mensagem"></div>
+
+            <div class="select-wrapper">
+                <label for="qtd-questoes" style="display:block; margin-bottom:10px; color:#94a3b8;">Quantidade de Questões:</label>
+                <select id="qtd-questoes">
+                    <option value="5">5 Questões</option>
+                    <option value="10">10 Questões</option>
+                    <option value="20">20 Questões</option>
+                    <option value="30">30 Questões</option>
+                    <option value="50">50 Questões</option>
+                </select>
+            </div>
+
+            <button id="btn-iniciar" class="btn" onclick="iniciarSimulado()">Iniciar Simulado</button>
+        </div>
+
+        <div id="simulado-container">
+            <div class="status-bar">
+                <span id="contador-questoes" style="color: #94a3b8; font-weight: 500;">Questões</span>
+                <div class="cronometro">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="tempo">00:00</span>
+                </div>
+            </div>
+
+            <div id="resultado-card" class="resultado-card">
+                <h2>Resultado do Simulado 🎉</h2>
+                <div class="score-text" id="score-text">Você acertou 0 de 0 questões.</div>
+                <button class="btn" style="background: #0284c7; margin-top: 15px;" onclick="window.location.reload()">Refazer Novo Simulado</button>
+            </div>
+
+            <div id="questoes-lista"></div>
+
+            <div class="actions-container">
+                <button id="btn-corrigir" class="btn" onclick="corrigirSimulado()">Corrigir e Verificar Nota</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        /* ==========================================================================
+           BANCO DE QUESTÕES (Linguagens e Códigos)
+           ========================================================================== */
+        const bancoQuestoes = [
+           
+
+
+
+
+
+
+
+
+
+<!-- QUESTÕES! -->
+<!-- questões linguagens 2018 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+        id: 1,
+        origem: "ENEM 2018",
+        texto: `Lava Mae: Creating Showers on Wheels for the Homeless\n\nSan Francisco, according to recent city numbers, has 4,300 people living on the streets. Among the many problems the homeless face is little or no access to showers. San Francisco only has about 16 to 20 shower stalls to accommodate them.\n\nBut Doniece Sandoval has made it her mission to change that. The 51-year-old former marketing executive started Lava Mae, a sort of showers on wheels, a new project that aims to turn decommissioned city buses into shower stations for the homeless. Each bus will have two shower stations and Sandoval expects that they'll be able to provide 2,000 showers a week.\n\nANDREANO, C. Disponível em: http://abcnews.go.com. Acesso em: 26 jun. 2015 (adaptado).\n\nA relação dos vocábulos shower, bus e homeless, no texto, refere-se a:`,
+        alternativas: [
+            "empregar moradores de rua em lava a jatos para ônibus.",
+            "criar acesso a banhos gratuitos para moradores de rua.",
+            "comissionar sem-teto para dirigir os ônibus da cidade.",
+            "exigir das autoridades que os ônibus municipais tenham banheiros.",
+            "abrigar dois mil moradores de rua em ônibus que foram adaptados."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+
+{
+        id: 2,
+        origem: "ENEM 2018",
+        texto: `TEXTO I\nA Free World-class Education for Anyone Anywhere\n\nThe Khan Academy is an organization on a mission. We're a not-for-profit with the goal of changing education for the better by providing a free world-class education to anyone anywhere. All of the site's resources are available to anyone. The Khan Academy's materials and resources are available to you completely free of charge.\n\nDisponível em: www.khanacademy.org. Acesso em: 24 fev. 2012 (adaptado).\n\nTEXTO II\nI didn't have a problem with Khan Academy site until very recently. For me, the problem is the way Khan Academy is being promoted. The way the media sees it as “revolutionizing education”. The way people with power and money view education as simply “sit-and-get”. If your philosophy of education is “sit-and-get”, i.e., teaching is telling and learning is listening, then Khan Academy is way more efficient than classroom lecturing. Khan Academy does it better. But TRUE progressive educators, TRUE education visionaries and revolutionaries don't want to do these things better. We want to DO BETTER THINGS.\n\nDisponível em: http://fnoschese.wordpress.com. Acesso em: 2 mar. 2012.\n\nCom o impacto das tecnologias e a ampliação das redes sociais, consumidores encontram na internet possibilidades de opinar sobre serviços oferecidos. Nesse sentido, o segundo texto, que é um comentário sobre o site divulgado no primeiro, apresenta a intenção do autor de:`,
+        alternativas: [
+            "elogiar o trabalho proposto para a educação nessa era tecnológica.",
+            "reforçar como a mídia pode contribuir para revolucionar a educação.",
+            "chamar a atenção das pessoas influentes para o significado da educação.",
+            "destacar que o site tem melhores resultados do que a educação tradicional.",
+            "criticar a concepção de educação em que se baseia a organização."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+
+{
+        id: 3,
+        origem: "ENEM 2018",
+        texto: `1984 (excerpt)\n\n‘Is it your opinion, Winston, that the past has real existence?’ [...] O'Brien smiled faintly. ‘I will put it more precisely. Does the past exist concretely, in space? Is there somewhere or other a place, a world of solid objects, where the past is still happening?’\n‘No.’\n‘Then where does the past exist, if at all?’\n‘In records. It is written down.’\n‘In records. And — —?’\n‘In the mind. In human memories.’\n‘In memory. Very well, then. We, the Party, control all records, and we control all memories. Then we control the past, do we not?’\n\nORWELL, G. Nineteen Eighty-Four. New York: Signet Classics, 1977.\n\nO romance 1984 descreve os perigos de um Estado totalitário. A ideia evidenciada nessa passagem é que o controle do Estado se dá por meio do(a):`,
+        alternativas: [
+            "boicote a ideais libertários.",
+            "veto ao culto das tradições.",
+            "poder sobre memórias e registros.",
+            "censura a produções orais e escritas.",
+            "manipulação de pensamentos individuais."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 4,
+        origem: "ENEM 2018",
+        texto: `El día en que lo iban a matar, Santiago Nasar se levantó a las 5:30 de la mañana para esperar el buque en que llegaba el obispo. Había soñado que atravesaba un bosque de higuerones donde caía una llovizna tierna, y por un instante fue feliz en el sueño, pero al despertar se sintió por completo salpicado de cagada de pájaros. “Siempre soñaba con árboles”, me dijo Plácida Linero, su madre, evocando 27 años después los pormenores de aquel lunes ingrato. “La semana anterior había soñado que iba solo en un avión de papel de estaño que volaba sin tropezar por entre los almendros”, me dijo. Tenía una reputación muy bien ganada de intérprete certera de los sueños ajenos, siempre que se los contaran en ayunas, pero no había advertido ningún augurio aciago en esos dos sueños de su hijo, ni en los otros sueños con árboles que él le había contado en las mañanas que precedieron a su muerte.\n\nMÁRQUEZ, G. G. Crónica de una muerte anunciada. Disponível em: http://biblio3.url.edu.gt. Acesso em: 2 jan. 2015.\n\nNa introdução do romance, o narrador resgata lembranças de Plácida Linero relacionadas a seu filho Santiago Nasar. Nessa introdução, o uso da expressão augurio aciago remete ao(à):`,
+        alternativas: [
+            "relação mística que se estabelece entre Plácida e seu filho Santiago.",
+            "destino trágico de Santiago, que Plácida foi incapaz de prever nos sonhos.",
+            "descompasso entre a felicidade de Santiago nos sonhos e seu azar na realidade.",
+            "crença de Plácida na importância da interpretação dos sonhos para mudar o futuro.",
+            "presença recorrente de elementos sombrios que se revelam nos sonhos de Santiago."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 5,
+        origem: "ENEM 2018",
+        texto: `Revolución en la arquitectura china\nLevantar rascacielos en 19 días\n\nUn rascacielos de 57 pisos no llama la atención en la China del siglo XXI. Salvo que se haya construido en 19 días, claro. Y eso es precisamente lo que ha conseguido Broad Sustainable Building (BSB), una empresa dedicada a la fabricación de purificadores de aire y de equipos de aire acondicionado para grandes infraestructuras que ahora se ha empeñado en liderar una revolución con su propio modelo de arquitectura modular prefabricada. Como subraya su presidente, Zhang Yue, es una fórmula económica, ecológica, segura, y limpia. Ese último término, además, lo utiliza tanto para referirse al polvo que se produce en la construcción como a los gruesos sobres que suelen circular por debajo de las mesas en adjudicaciones y permisos varios. “Quiero que nuestros edificios alumbren una nueva era en la arquitectura, y que se conviertan en símbolo de la lucha contra la contaminación y el cambio climático, que es la mayor amenaza a la que se enfrenta la humanidad”, sentencia.\n\n“Es como montar un Lego. Apenas hay subcontratación, lo cual ayuda a mantener un costo bajo y un control de calidad estricto, y nos permite eliminar también la corrupción inherente al sector”, explica la vicepresidenta de BSB y responsable del mercado internacional, Jiang Yan.\n\nDisponível em: http://tecnologia.elpais.com. Acesso em: 23 jun. 2015 (adaptado).\n\nNo texto, alguns dos benefícios de se utilizar estruturas pré-moldadas na construção de altos edifícios estão expressos por meio da palavra limpia. Essa expressão indica que, além de produzir menos resíduos, o uso desse tipo de estrutura:`,
+        alternativas: [
+            "reduz o contingente de mão de obra.",
+            "inibe a corrupção na construção civil.",
+            "facilita o controle da qualidade da obra.",
+            "apresenta um modelo arquitetônico conciso.",
+            "otimiza os custos da construção de edifícios."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 6,
+        origem: "ENEM 2018",
+        texto: `¿Qué es la X Solidaria?\n\nLa X Solidaria es una equis que ayuda a las personas más vulnerables. Podrás marcarla cuando hagas la declaración de la renta. Es la casilla que se denomina “Fines Sociales”. Nosotros preferimos llamarla X Solidaria:\n• porque al marcarla haces que se destine un 0,7% de tus impuestos a programas sociales que realizan las ONG.\n• porque se benefician los colectivos más desfavorecidos, sin ningún coste económico para ti.\n• porque NO marcarla es tomar una actitud pasiva, y dejar que sea el Estado quien decida el destino de esa parte de tus impuestos.\n• porque marcándola te conviertes en contribuyente activo solidario.\n\nDisponível em: http://xsolidaria.org. Acesso em: 20 fev. 2012 (adaptado).\n\nAs ações solidárias contribuem para o enfrentamento de problemas sociais. No texto, a ação solidária ocorre quando o contribuinte:`,
+        alternativas: [
+            "delega ao governo o destino de seus impostos.",
+            "escolhe projetos que terão isenção de impostos.",
+            "destina parte de seus impostos para custeio de programas sociais.",
+            "determina a criação de impostos para implantação de projetos sociais.",
+            "seleciona programas para beneficiar cidadãos vulneráveis socialmente."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 7,
+        origem: "ENEM 2018",
+        texto: `¿Cómo gestionar la diversidad lingüística en el aula?\n\nEl aprendizaje de idiomas es una de las demandas de la sociedad en la escuela: los alumnos tienen que finalizar la escolarización con un buen conocimiento, por lo menos, de las tres lenguas curriculares: catalán, castellano e inglés (o francés, portugués...).\n\nLa metodología que promueve el aprendizaje integrado de idiomas en la escuela tiene en cuenta las relaciones entre las diferentes lenguas: la mejor enseñanza de una lengua incide en la mejora de todas las demás. Se trata de educar en y para la diversidad lingüística y cultural.\n\nPor eso, la V Jornada de Buenas Prácticas de Gestión del Multilingüismo, que se celebrará en Barcelona, debatirá sobre la gestión del multilingüismo en el aula. El objetivo es difundir propuestas para el aprendizaje integrado de idiomas y presentar experiencias prácticas de gestión de la diversidad lingüística presente en las aulas.\n\nDisponível em: www10.gencat.cat. Acesso em: 15 set. 2010 (adaptado).\n\nNa região da Catalunha, Espanha, convivem duas línguas oficiais: o catalão e o espanhol. Além dessas, ensinam-se outras línguas nas escolas. De acordo com o texto, para administrar a variedade linguística nas aulas, é necessário:`,
+        alternativas: [
+            "ampliar o número de línguas ofertadas para enriquecer o conteúdo.",
+            "divulgar o estudo de diferentes idiomas e culturas para atrair os estudantes.",
+            "privilegiar o estudo de línguas maternas para valorizar os aspectos regionais.",
+            "explorar as relações entre as línguas estudadas para promover a diversidade.",
+            "debater as práticas sobre multilinguismo para formar melhor os professores de línguas."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+{
+        id: 8,
+        origem: "ENEM 2018",
+        texto: `Mayo\n15\nQue mañana no sea otro nombre de hoy\n\nEn el año 2011, miles de jóvenes, despojados de sus casas y de sus empleos, ocuparon las plazas y las calles de varias ciudades de España.\n\nY la indignación se difundió. La buena salud resultó más contagiosa que las pestes, y las voces de los indignados atravesaron las fronteras dibujadas en los mapas. Así resonaron en el mundo:\n\nNos dijeron “¡a la puta calle!”, y aquí estamos.\nApaga la tele y enciende la calle.\nLa llaman crisis, pero es estafa.\nNo falta dinero: sobran ladrones.\nLos mercados gobiernan. Yo no los voté.\nEllos toman decisiones por nosotros, sin nosotros.\nSe alquila esclavo económico.\nEstoy buscando mis derechos. ¿Alguien los ha visto?\nSi no nos dejan soñar, no los dejaremos dormir.\n\nGALEANO, E. Los hijos de los días. Buenos Aires: Siglo Veintiuno, 2012.\n\nAo elencar algumas frases proferidas durante protestos na Espanha, o enunciador transcreve, de forma direta, as reivindicações dos manifestantes para:`,
+        alternativas: [
+            "provocá-los de forma velada.",
+            "dar voz ao movimento popular.",
+            "fomentar o engajamento do leitor.",
+            "favorecer o diálogo entre governo e sociedade.",
+            "instaurar dúvidas sobre a legitimidade da causa."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 9,
+        origem: "ENEM 2018",
+        texto: `“A Declaração Universal dos Direitos Humanos está completando 70 anos em tempos de desafios crescentes, quando o ódio, a discriminação e a violência permanecem vivos”, disse a diretora-geral da Organização das Nações Unidas para a Educação, a Ciência e a Cultura (Unesco), Audrey Azoulay.\n\n“Ao final da Segunda Guerra Mundial, a humanidade inteira resolveu promover a dignidade humana em todos os lugares e para sempre. Nesse espírito, as Nações Unidas adotaram a Declaração Universal dos Direitos Humanos como um padrão comum de conquistas para todos os povos e todas as nações”, disse Audrey.\n\n“Centenas de milhões de mulheres e homens são destituídos e privados de condições básicas de subsistência e de oportunidades. Movimentos populacionais forçados geram violações aos direitos em uma escala sem precedentes. A Agenda 2030 para o Desenvolvimento Sustentável promete não deixar ninguém para trás – e os direitos humanos devem ser o alicerce para todo o progresso.”\n\nSegundo ela, esse processo precisa começar o quanto antes nas carteiras das escolas. Diante disso, a Unesco lidera a educação em direitos humanos para assegurar que todas as meninas e meninos saibam seus direitos e os direitos dos outros.\n\nDisponível em: https://nacoesunidas.org. Acesso em: 3 abr. 2018 (adaptado).\n\nDefendendo a ideia de que “os direitos humanos devem ser o alicerce para todo o progresso”, a diretora-geral da Unesco aponta, como estratégia para atingir esse fim, a:`,
+        alternativas: [
+            "inclusão de todos na Agenda 2030.",
+            "extinção da intolerância entre os indivíduos.",
+            "discussão desse tema desde a educação básica.",
+            "conquista de direitos para todos os povos e nações.",
+            "promoção da dignidade humana em todos os lugares."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 10,
+        origem: "ENEM 2018",
+        texto: `— Famigerado? [...]\n— Famigerado é “inóxio”, é “célebre”, “notório”, “notável”...\n— Vosmecê mal não veja em minha grossaria no não entender. Mais me diga: é desaforado? É caçoável? É de arrenegar? Farsância? Nome de ofensa?\n— Vilta nenhuma, nenhum doesto. São expressões neutras, de outros usos...\n— Pois... e o que é que é, em fala de pobre, linguagem de em dia de semana?\n— Famigerado? Bem. É: “importante”, que merece louvor, respeito...\n\nROSA, G. Famigerado. In: Primeiras estórias. Rio de Janeiro: Nova Fronteira, 2001.\n\nNesse texto, a associação de vocábulos da língua portuguesa a determinados dias da semana remete ao:`,
+        alternativas: [
+            "local de origem dos interlocutores.",
+            "estado emocional dos interlocutores.",
+            "grau de coloquialidade da comunicação.",
+            "nível de intimidade entre os interlocutores.",
+            "conhecimento compartilhado na comunicação."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 11,
+        origem: "ENEM 2018",
+        texto: `Na sociologia e na literatura, o brasileiro foi por vezes tratado como cordial e hospitaleiro, mas não é isso o que acontece nas redes sociais: a democracia racial apregoada por Gilberto Freyre passa ao largo do que acontece diariamente nas comunidades virtuais do país. Levantamento inédito realizado pelo projeto Comunica que Muda [...] mostra em números a intolerância do internauta tupiniquim. Entre abril e junho, um algoritmo vasculhou plataformas [...] atrás de mensagens e textos sobre temas sensíveis, como racismo, posicionamento político e homofobia. Foram identificadas 393 284 menções, sendo 84% delas com abordagem negativa, de exposição do preconceito e da discriminação.\n\nDisponível em: https://oglobo.globo.com. Acesso em: 6 dez. 2017 (adaptado).\n\nAo abordar a postura do internauta brasileiro mapeada por meio de uma pesquisa em plataformas virtuais, o texto:`,
+        alternativas: [
+            "minimiza o alcance da comunicação digital.",
+            "refuta ideias preconcebidas sobre o brasileiro.",
+            "relativiza responsabilidades sobre a noção de respeito.",
+            "exemplifica conceitos contidos na literatura e na sociologia.",
+            "expõe a ineficácia dos estudos para alterar tal comportamento."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 12,
+        origem: "ENEM 2018",
+        texto: `Quebranto\n\nàs vezes sou o policial que me suspeito\nme peço documentos\ne mesmo de posse deles\nme prendo e me dou porrada\n\nàs vezes sou o porteiro\nnão me deixando entrar em mim mesmo\na não ser\npela porta de serviço\n[...]\nàs vezes faço questão de não me ver\ne entupido com a visão deles\nsinto-me a miséria concebida como um eterno\ncomeço\n\nfecho-me o cerco\nsendo o gesto que me nego\na pinga que me bebo e me embebedo\no dedo que me aponto\ne denuncio\no ponto em que me entrego.\nàs vezes!...\n\nCUTI. Negroesia. Belo Horizonte: Mazza, 2007 (fragmento).\n\nNa literatura de temática negra produzida no Brasil, é recorrente a presença de elementos que traduzem experiências históricas de preconceito e violência. No poema, essa vivência revela que o eu lírico:`,
+        alternativas: [
+            "incorpora seletivamente o discurso do seu opressor.",
+            "submete-se à discriminação como meio de fortalecimento.",
+            "engaja-se na denúncia do passado de opressão e injustiças.",
+            "sofre uma perda de identidade e de noção de pertencimento.",
+            "acredita esporadicamente na utopia de uma sociedade igualitária."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 13,
+        origem: "ENEM 2018",
+        texto: `Deficientes visuais já podem ir a algumas salas de cinema e teatros para curtir, em maior intensidade, as atrações em cartaz. Quem ajuda na tarefa é o aplicativo Whatscine, recém-chegado ao Brasil e disponível para os sistemas operacionais iOS (Apple) ou Android (Google). Ao ser conectado à rede wi-fi de cinemas e teatros, o app sincroniza um áudio que descreve o que ocorre na tela ou no palco com o espetáculo em andamento: o usuário, então, pode ouvir a narração em seu celular.\n\nO programa foi desenvolvido por pesquisadores da Universidade Carlos III, em Madri. “Na Espanha, 200 salas de cinema já oferecem o recurso e filmes de grandes estúdios já são exibidos com o recurso do Whatscine!”, diz o brasileiro Luis Mauch, que trouxe a tecnologia para o país. “No Brasil, já fechamos parceria com a São Paulo Companhia de Dança para adaptar os espetáculos deles! Isso já é um avanço. Concorda?”\n\nDisponível em: http://veja.abril.com.br. Acesso em: 25 jun. 2014 (adaptado).\n\nPor ser múltipla e apresentar peculiaridades de acordo com a intenção do emissor, a linguagem apresenta funções diferentes. Nesse fragmento, predomina a função referencial da linguagem, porque há a presença de elementos que:`,
+        alternativas: [
+            "buscam convencer o leitor, incitando o uso do aplicativo.",
+            "definem o aplicativo, revelando o ponto de vista da autora.",
+            "evidenciam a subjetividade, explorando a entonação emotiva.",
+            "expõem dados sobre o aplicativo, usando linguagem denotativa.",
+            "objetivam manter um diálogo com o leitor, recorrendo a uma indagação."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 14,
+        origem: "ENEM 2018",
+        texto: `No tradicional concurso de miss, as candidatas apresentaram dados de feminicídio, abuso sexual e estupro no país.\n\nNo lugar das medidas de altura, peso, busto, cintura e quadril, dados da violência contra as mulheres no Peru. Foi assim que as 23 candidatas ao Miss Peru 2017 protestaram contra os altos índices de feminicídio e abuso sexual no país no tradicional desfile em trajes de banho.\n\nO tom político, porém, marcou a atração desde o começo: logo no início, quando as peruanas se apresentaram, uma a uma, denunciaram os abusos morais e físicos, a exploração sexual, o assédio, entre outros crimes contra as mulheres.\n\nDisponível em: www.cartacapital.com.br. Acesso em: 29 nov. 2017.\n\nQuanto à materialização da linguagem, a apresentação de dados relativos à violência contra a mulher:`,
+        alternativas: [
+            "configura uma discussão sobre os altos índices de abuso físico contra as peruanas.",
+            "propõe um novo formato no enredo dos concursos de beleza feminina.",
+            "condena o rigor estético exigido pelos concursos tradicionais.",
+            "recupera informações sensacionalistas a respeito desse tema.",
+            "subverte a função social da fala das candidatas a miss."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+{
+        id: 15,
+        origem: "ENEM 2018",
+        texto: `Dia 20/10\n\nÉ preciso não beber mais. Não é preciso sentir vontade de beber e não beber: é preciso não sentir vontade de beber. É preciso não dar de comer aos urubus. É preciso fechar para balanço e reabrir. É preciso não dar de comer aos urubus. Nem esperanças aos urubus. É preciso sacudir a poeira. É preciso poder beber sem se oferecer em holocausto. É preciso. É preciso não morrer por enquanto. É preciso sobreviver para verificar. Não pensar mais na solidão de Rogério, e deixá-lo. É preciso não dar de comer aos urubus. É preciso enquanto é tempo não morrer na via pública.\n\nTORQUATO NETO. In: MENDONÇA, J. (Org.) Poesia (im)popular brasileira. São Bernardo do Campo: Lamparina Luminosa, 2012.\n\nO processo de construção do texto formata uma mensagem por ele dimensionada, uma vez que:`,
+        alternativas: [
+            "configura o estreitamento da linguagem poética.",
+            "reflete as lacunas da lucidez em desconstrução.",
+            "projeta a persistência das emoções reprimidas.",
+            "repercute a consciência da agonia antecipada.",
+            "revela a fragmentação das relações humanas."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 16,
+        origem: "ENEM 2018",
+        texto: `Somente uns tufos secos de capim empedrados crescem na silenciosa baixada que se perde de vista. Somente uma árvore, grande e esgalhada mas com pouquíssimas folhas, abre-se em farrapos de sombra. Único ser nas cercanias, a mulher é magra, ossuda, seu rosto está lanhado de vento. Não se vê o cabelo, coberto por um pano desidratado. Mas seus olhos, a boca, a pele – tudo é de uma aridez sufocante. Ela está de pé. A seu lado está uma pedra. O sol explode.\n\nEla estava de pé no fim do mundo. Como se andasse para aquela baixada largando para trás suas noções de si mesma. Não tem retratos na memória. Desapossada e despojada, não se abate em autoacusações e remorsos. Vive.\n\nSua sombra somente é que lhe faz companhia. Sua sombra, que se derrama em traços grossos na areia, é que adoça como um gesto a claridade esquelética. A mulher esvaziada emudece, se dessangra, se cristaliza, se mineraliza. Já é quase de pedra como a pedra a seu lado. Mas os traços de sua sombra caminham e, tornando-se mais longos e finos, esticam-se para os farrapos de sombra da ossatura da árvore, com os quais se enlaçam.\n\nFRÓES, L. Vertigens: obra reunida. Rio de Janeiro: Rocco, 1998.\n\nNa apresentação da paisagem e da personagem, o narrador estabelece uma correlação de sentidos em que esses elementos se entrelaçam. Nesse processo, a condição humana configura-se:`,
+        alternativas: [
+            "amalgamada pelo processo comum de desertificação e de solidão.",
+            "fortalecida pela adversidade extensiva à terra e aos seres vivos.",
+            "redimensionada pela intensidade da luz e da exuberância local.",
+            "imersa num drama existencial de identidade e de origem.",
+            "imobilizada pela escassez e pela opressão do ambiente."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 17,
+        origem: "ENEM 2018",
+        texto: `Aconteceu mais de uma vez: ele me abandonou. Como todos os outros. O quinto. A gente já estava junto há mais de um ano. Parecia que dessa vez seria para sempre. Mas não: ele desapareceu de repente, sem deixar rastro. Quando me dei conta, fiquei horas ligando sem parar – mas só chamava, chamava, e ninguém atendia. E então fiz o que precisava ser feito: bloqueei a linha.\n\nA verdade é que nenhum telefone celular me suporta. Já tentei de todas as marcas e operadoras, apenas para descobrir que eles são todos iguais: na primeira oportunidade, dão no pé. Esse último aproveitou que eu estava distraído e não desceu do táxi junto comigo. Ou será que ele já tinha pulado do meu bolso no momento em que eu embarcava no táxi? Tomara que sim. Depois de fazer o que me fez, quero mais é que ele tenha ido parar na sarjeta. [...] Se ainda fossem embora do jeito que chegaram, tudo bem. [...] Mas já sei o que vou fazer. No caminho da loja de celulares, vou passar numa papelaria. Pensando bem, nenhuma das minhas agendinhas de papel jamais me abandonou.\n\nFREIRE, R. Começar de novo. O Estado de S. Paulo, 24 nov. 2006.\n\nNesse fragmento, a fim de atrair a atenção do leitor e de estabelecer um fio condutor de sentido, o autor utiliza-se de:`,
+        alternativas: [
+            "primeira pessoa do singular para imprimir subjetividade ao relato de mais uma desilusão amorosa.",
+            "ironia para tratar da relação com os celulares na era de produtos altamente descartáveis.",
+            "frases feitas na apresentação de situações amorosas estereotipadas para construir a ambientação do texto.",
+            "quebra de expectativa como estratégia argumentativa para ocultar informações.",
+            "verbos no tempo pretérito para enfatizar uma aproximação com os fatos abordados ao longo do texto."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 18,
+        origem: "ENEM 2018",
+        texto: `Enquanto isso, nos bastidores do universo\n\nVocê planeja passar um longo tempo em outro país, trabalhando e estudando, mas o universo está preparando a chegada de um amor daqueles de tirar o chão, um amor que fará você jogar fora seu atlas e criar raízes no quintal como se fosse uma figueira.\n\nVocê treina para a maratona mais desafiadora de todas, mas não chegará com as duas pernas intactas na hora da largada, e a primeira perplexidade será esta: a experiência da frustração.\n\nO universo nunca entrega o que promete. Aliás, ele nunca prometeu nada, você é que escuta vozes.\n\nNo dia em que você pensa que não tem nada a dizer para o analista, faz a revelação mais bombástica dos seus dois anos de terapia. O resultado de um exame de rotina coloca sua rotina de cabeça para baixo.\n\nVocê não imaginava que iriam tantos amigos à sua festa, e tampouco imaginou que justo sua grande paixão não iria. Quando achou que estava bela, não arrasou corações. Quando saiu sem maquiagem e com uma camiseta puída, chamou a atenção. E assim seguem os dias à prova de planejamento e contrariando nossas vontades, pois, por mais que tenhamos ensaiado nossa fala e estejamos preparados para a melhor cena, nos bastidores do universo alguém troca nosso papel de última hora, tornando surpreendente a nossa vida.\n\nMEDEIROS, M. O Globo, 21 jun. 2015.\n\nEntre as estratégias argumentativas utilizadas para sustentar a tese apresentada nesse fragmento, destaca-se a recorrência de:`,
+        alternativas: [
+            "estruturas sintáticas semelhantes, para reforçar a velocidade das mudanças da vida.",
+            "marcas de interlocução, para aproximar o leitor das experiências vividas pela autora.",
+            "formas verbais no presente, para exprimir reais possibilidades de concretização das ações.",
+            "construções de oposição, para enfatizar que as expectativas são afetadas pelo inesperado.",
+            "sequências descritivas, para promover a identificação do leitor com as situações apresentadas."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 19,
+        origem: "ENEM 2018",
+        texto: `Vó Clarissa deixou cair os talheres no prato, fazendo a porcelana estalar. Joaquim, meu primo, continuava com o queixo suspenso, batendo com o garfo nos lábios, esperando a resposta. Beatriz ecoou a palavra como pergunta, “o que é lésbica?”. Eu fiquei muda. Joaquim sabia sobre mim e me entregaria para a vó e, mais tarde, para toda a família. Senti um calor letal subir pelo meu pescoço e me doer atrás das orelhas. Previ a cena: vó, a senhora é lésbica? Porque a Joana é. A vergonha estava na minha cara e me denunciava antes mesmo da delação. Apertei os olhos e contraí o peito, esperando o tiro. [...]\n\n[...] Pensei na naturalidade com que Taís e eu levávamos a nossa história. Pensei na minha insegurança de contar isso à minha família, pensei em todos os colegas e professores que já sabiam, fechei os olhos e vi a boca da minha vó e a boca da tia Carolina se tocando, apesar de todos os impedimentos. Eu quis saber mais, eu quis saber tudo, mas não consegui perguntar.\n\nPOLESSO, N. B. Vó, a senhora é lésbica? Amora. Porto Alegre: Não Editora, 2015 (fragmento).\n\nA situação narrada revela uma tensão fundamentada na perspectiva do:`,
+        alternativas: [
+            "conflito com os interesses de poder.",
+            "silêncio em nome do equilíbrio familiar.",
+            "medo instaurado pelas ameaças de punição.",
+            "choque imposto pela distância entre as gerações.",
+            "apego aos protocolos de conduta segundo os gêneros."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 20,
+        origem: "ENEM 2018",
+        texto: `Ó Pátria amada,\nIdolatrada,\nSalve! Salve!\nBrasil, de amor eterno seja símbolo\nO lábaro que ostentas estrelado,\nE diga o verde-louro dessa flâmula\n— “Paz no futuro e glória no passado.”\nMas, se ergues da justiça a clava forte,\nVerás que um filho teu não foge à luta,\nNem teme, quem te adora, a própria morte.\nTerra adorada,\nEntre outras mil,\nÉs tu, Brasil,\nÓ Pátria amada!\nDos filhos deste solo és mãe gentil,\nPátria amada, Brasil!\n\nHino Nacional do Brasil. Letra: Joaquim Osório Duque Estrada. Música: Francisco Manuel da Silva (fragmento).\n\nO uso da norma-padrão na letra do Hino Nacional do Brasil é justificado por tratar-se de um(a):`,
+        alternativas: [
+            "reverência de um povo a seu país.",
+            "gênero solene de característica protocolar.",
+            "canção concebida sem interferência da oralidade.",
+            "escrita de uma fase mais antiga da língua portuguesa.",
+            "artefato cultural respeitado por todo o povo brasileiro."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 21,
+        origem: "ENEM 2018",
+        texto: `O trabalho não era penoso: colar rótulos, meter vidros em caixas, etiquetá-las, selá-las, envolvê-las em papel celofane, branco, verde, azul, conforme o produto, separá-las em dúzias... Era fastidioso. Para passar mais rapidamente as oito horas havia o remédio: conversar. Era proibido, mas quem ia atrás de proibições? O patrão vinha? Vinha o encarregado do serviço? Calavam o bico, aplicavam-se ao trabalho. Mal viravam as costas, voltavam a taramelar. As mãos não paravam, as línguas não paravam. Nessas conversas intermináveis, de linguagem solta e assuntos crus, Leniza se completou. Isabela, Afonsina, Idália, Jurete, Deolinda – foram mestras. O mundo acabou de se desvendar. Leniza perdeu o tom ingênuo que ainda podia ter. Ganhou um jogar de corpo que convida, um quebrar de olhos que promete tudo, à toa, gratuitamente. Modificou-se o timbre de sua voz. Ficou mais quente. A própria inteligência se transformou. Tornou-se mais aguda, mais trepidante.\n\nREBELO, M. A estrela sobe. Rio de Janeiro: José Olympio, 2009.\n\nO romance, de 1939, traz à cena tipos e situações que espelham o Rio de Janeiro daquela década. No fragmento, o narrador delineia esse contexto centrado no:`,
+        alternativas: [
+            "julgamento da mulher fora do espaço doméstico.",
+            "relato sobre as condições de trabalho no Estado Novo.",
+            "destaque a grupos populares na condição de protagonistas.",
+            "processo de inclusão do palavrão nos hábitos de linguagem.",
+            "vínculo entre as transformações urbanas e os papéis femininos."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 22,
+        origem: "ENEM 2018",
+        texto: `Tanto os Jogos Olímpicos quanto os Paralímpicos são mais que uma corrida por recordes, medalhas e busca da excelência. Por trás deles está a filosofia do barão Pierre de Coubertin, fundador do Movimento Olímpico. Como educador, ele viu nos Jogos a oportunidade para que os povos desenvolvessem valores, que poderiam ser aplicados não somente ao esporte, mas à educação e à sociedade. Existem atualmente sete valores associados aos Jogos. Os valores olímpicos são: a amizade, a excelência e o respeito, enquanto os valores paralímpicos são: a determinação, a coragem, a igualdade e a inspiração.\n\nMIRAGAYA, A. Valores para toda a vida. Disponível em: www.esporteessencial.com.br. Acesso em: 9 ago. 2017 (adaptado).\n\nNo contexto das aulas de Educação Física escolar, os valores olímpicos e paralímpicos podem ser identificados quando o colega:`,
+        alternativas: [
+            "procura entender o próximo, assumindo atitudes positivas como simpatia, empatia, honestidade, compaixão, confiança e solidariedade, o que caracteriza o valor da igualdade.",
+            "faz com que todos possam ser iguais e receber o mesmo tratamento, assegurando imparcialidade, oportunidades e tratamentos iguais para todos, o que caracteriza o valor da amizade.",
+            "dá o melhor de si na vivência das diversas atividades relacionadas ao esporte ou aos jogos, participando e progredindo de acordo com seus objetivos, o que caracteriza o valor da coragem.",
+            "manifesta a habilidade de enfrentar a dor, o sofrimento, o medo, a incerteza e a intimidação nas atividades, agindo corretamente contra a vergonha, a desonra e o desânimo, o que caracteriza o valor da determinação.",
+            "inclui em suas ações o fair play (jogo limpo), a honestidade, o sentimento positivo de consideração por outra pessoa, o conhecimento dos seus limites, a valorização de sua própria saúde e o combate ao doping, o que caracteriza o valor do respeito."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 23,
+        origem: "ENEM 2018",
+        texto: `Mais big do que bang\n\nA comunidade científica mundial recebeu, na semana passada, a confirmação oficial de uma descoberta sobre a qual se falava com enorme expectativa há alguns meses. Pesquisadores do Centro de Astrofísica Harvard-Smithsonian revelaram ter obtido a mais forte evidência até agora de que o universo em que vivemos começou mesmo pelo Big Bang, mas este não foi explosão, e sim uma súbita expansão de matéria e energia infinitas concentradas em um ponto microscópico que, sem muitas opções semânticas, os cientistas chamam de “singularidade”. Essa semente cósmica permanecia em estado latente e, sem que exista ainda uma explicação definitiva, começou a inchar rapidamente [...]. No intervalo de um piscar de olhos, por exemplo, seria possível, portanto, que ocorressem mais de 10 trilhões de Big Bangs.\n\nALLEGRETTI, F. Veja, 26 mar. 2014 (adaptado).\n\nNo título proposto para esse texto de divulgação científica, ao dissociar os elementos da expressão Big Bang, a autora revela a intenção de:`,
+        alternativas: [
+            "evidenciar a descoberta recente que comprova a explosão de matéria e energia.",
+            "resumir os resultados de uma pesquisa que trouxe evidências para a teoria do Big Bang.",
+            "sintetizar a ideia de que a teoria da expansão de matéria e energia substitui a teoria da explosão.",
+            "destacar a experiência que confirma uma investigação anterior sobre a teoria de matéria e energia.",
+            "condensar a conclusão de que a explosão de matéria e energia ocorre em um ponto microscópico."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+{
+        id: 24,
+        origem: "ENEM 2018",
+        texto: `Eu sobrevivi do nada, do nada\nEu não existia\nNão tinha uma existência\nNão tinha uma matéria\nComecei existir com quinhentos milhões\ne quinhentos mil anos\nLogo de uma vez, já velha\nEu não nasci criança, nasci já velha\nDepois é que eu virei criança\nE agora continuei velha\nMe transformei novamente numa velha\nVoltei ao que eu era, uma velha\n\nPATROCÍNIO, S. In: MOSÉ, V. (Org.). Reino dos bichos e dos animais é meu nome. Rio de Janeiro: Azougue, 2009.\n\nNesse poema de Stela do Patrocínio, a singularidade da expressão lírica manifesta-se na:`,
+        alternativas: [
+            "representação da infância, redimensionada no resgate da memória.",
+            "associação de imagens desconexas, articuladas por uma fala delirante.",
+            "expressão autobiográfica, fundada no relato de experiências de alteridade.",
+            "incorporação de elementos fantásticos, explicitada por versos incoerentes.",
+            "transgressão à razão, ecoada na desconstrução de referências temporais."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 25,
+        origem: "ENEM 2018",
+        texto: `A história do futebol é uma triste viagem do prazer ao dever. [...] O jogo se transformou em espetáculo, com poucos protagonistas e muitos espectadores, futebol para olhar, e o espetáculo se transformou num dos negócios mais lucrativos do mundo, que não é organizado para ser jogado, mas para impedir que se jogue. A tecnocracia do esporte profissional foi impondo um futebol de pura velocidade e muita força, que renuncia à alegria, atrofia a fantasia e proíbe a ousadia. Por sorte ainda aparece nos campos, [...] algum atrevido que sai do roteiro e comete o disparate de driblar o time adversário inteirinho, além do juiz e do público das arquibancadas, pelo puro prazer do corpo que se lança na proibida aventura da liberdade.\n\nGALEANO, E. Futebol ao sol e à sombra. Porto Alegre: L&PM Pockets, 1995 (adaptado).\n\nO texto indica que as mudanças nas práticas corporais, especificamente no futebol:`,
+        alternativas: [
+            "fomentaram uma tecnocracia, promovendo uma vivência mais lúdica e irreverente.",
+            "promoveram o surgimento de atletas mais habilidosos, para que fossem inovadores.",
+            "incentivaram a associação dessa manifestação à fruição, favorecendo o improviso.",
+            "tornaram a modalidade em um produto a ser consumido, negando sua dimensão criativa.",
+            "contribuíram para esse esporte ter mais jogadores, bem como acompanhado de torcedores."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 26,
+        origem: "ENEM 2018",
+        texto: `A trajetória de Liesel Meminger é contada por uma narradora mórbida, surpreendentemente simpática. Ao perceber que a pequena ladra de livros lhe escapa, a Morte afeiçoa-se à menina e rastreia suas pegadas de 1939 a 1943. Traços de uma sobrevivente: a mãe comunista, perseguida pelo nazismo, envia Liesel e o irmão para o subúrbio pobre de uma cidade alemã, onde um casal se dispõe a adotá-los por dinheiro. O garoto morre no trajeto e é enterrado por um coveiro que deixa cair um livro na neve. É o primeiro de uma série que a menina vai surrupiar ao longo dos anos. O único vínculo com a família é esta obra, que ela ainda não sabe ler.\n\nA vida ao redor é a pseudorrealidade criada em torno do culto a Hitler na Segunda Guerra. Ela assiste à eufórica celebração do aniversário do Führer pela vizinhança. A Morte, perplexa diante da violência humana, dá um tom leve e divertido à narrativa deste duro confronto entre a infância perdida e a crueldade do mundo adulto, um sucesso absoluto – e raro – de crítica e público.\n\nDisponível em: www.odevoradordelivros.com. Acesso em: 24 jun. 2014.\n\nOs gêneros textuais podem ser caracterizados, dentre outros fatores, por seus objetivos. Esse fragmento é um(a):`,
+        alternativas: [
+            "reportagem, pois busca convencer o interlocutor da tese defendida ao longo do texto.",
+            "resumo, pois promove o contato rápido do leitor com uma informação desconhecida.",
+            "sinopse, pois sintetiza as informações relevantes de uma obra de modo impessoal.",
+            "instrução, pois ensina algo por meio de explicações sobre uma obra específica.",
+            "resenha, pois apresenta uma produção intelectual de forma crítica."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 27,
+        origem: "ENEM 2018",
+        texto: `o que será que ela quer\nessa mulher de vermelho\nalguma coisa ela quer\npra ter posto esse vestido\nnão pode ser apenas\numa escolha casual\npodia ser um amarelo\nverde ou talvez azul\nmas ela escolheu vermelho\nela sabe o que ela quer\ne ela escolheu vestido\ne ela é uma mulher\nentão com base nesses fatos\neu já posso afirmar\nque conheço o seu desejo\ncaro watson, elementar:\no que ela quer sou euzinho\nsou euzinho o que ela quer\nsó pode ser euzinho\no que mais podia ser\n\nFREITAS, A. Um útero é do tamanho de um punho. São Paulo: Cosac Naify, 2013.\n\nNo processo de elaboração do poema, a autora confere ao eu lírico uma identidade que aqui representa a:`,
+        alternativas: [
+            "hipocrisia do discurso alicerçado sobre o senso comum.",
+            "mudança de paradigmas de imagem atribuídos à mulher.",
+            "tentativa de estabelecer preceitos da psicologia feminina.",
+            "importância da correlação entre ações e efeitos causados.",
+            "valorização da sensibilidade como característica de gênero."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 28,
+        origem: "ENEM 2018",
+        texto: `O rio que fazia uma volta atrás de nossa casa era a imagem de um vidro mole que fazia uma volta atrás de casa.\nPassou um homem e disse: Essa volta que o rio faz por trás de sua casa se chama enseada.\nNão era mais a imagem de uma cobra de vidro que fazia uma volta atrás de casa.\nEra uma enseada.\nAcho que o nome empobreceu a imagem.\n\nBARROS, M. O livro das ignorãças. Rio de Janeiro: Best Seller, 2008.\n\nO sujeito poético questiona o uso do vocábulo “enseada” porque a:`,
+        alternativas: [
+            "terminologia mencionada é incorreta.",
+            "nomeação minimiza a percepção subjetiva.",
+            "palavra é aplicada a outro espaço geográfico.",
+            "designação atribuída ao termo é desconhecida.",
+            "definição modifica o significado do termo no dicionário."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 29,
+        origem: "ENEM 2018",
+        texto: `“Acuenda o Pajubá”: conheça o “dialeto secreto” utilizado por gays e travestis\nCom origem no iorubá, linguagem foi adotada por travestis e ganhou a comunidade\n\n“Nhaí, amapô! Não faça a loka e pague meu acué, deixe de equê se não eu puxo teu picumã!” Entendeu as palavras dessa frase? Se sim, é porque você manja alguma coisa de pajubá, o “dialeto secreto” dos gays e travestis.\n\nAdepto do uso das expressões, mesmo nos ambientes mais formais, um advogado afirma: “É claro que eu não vou falar durante uma audiência ou numa reunião, mas na firma, com meus colegas de trabalho, eu falo de ‘acué’ o tempo inteiro”, brinca. “A gente tem que ter cuidado de falar outras palavras porque hoje o pessoal já entende, né? Tá na internet, tem até dicionário...”, comenta.\n\nO dicionário a que ele se refere é o Aurélia, a dicionária da língua afiada, lançado no ano de 2006 e escrito pelo jornalista Angelo Vip e por Fred Libi. Na obra, há mais de 1 300 verbetes revelando o significado das palavras do pajubá.\n\nNão se sabe ao certo quando essa linguagem surgiu, mas sabe-se que há claramente uma relação entre o pajubá e a cultura africana, numa costura iniciada ainda na época do Brasil colonial.\n\nDisponível em: www.midiamax.com.br. Acesso em: 4 abr. 2017 (adaptado).\n\nDa perspectiva do usuário, o pajubá ganha status de dialeto, caracterizando-se como elemento de patrimônio linguístico, especialmente por:`,
+        alternativas: [
+            "ter mais de mil palavras conhecidas.",
+            "ter palavras diferentes de uma linguagem secreta.",
+            "ser consolidado por objetos formais de registro.",
+            "ser utilizado por advogados em situações formais.",
+            "ser comum em conversas no ambiente de trabalho."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 30,
+        origem: "ENEM 2018",
+        texto: `Certa vez minha mãe surrou-me com uma corda nodosa que me pintou as costas de manchas sangrentas. Moído, virando a cabeça com dificuldade, eu distinguia nas costelas grandes lanhos vermelhos. Deitaram-me, enrolaram-me em panos molhados com água de sal – e houve uma discussão na família. Minha avó, que nos visitava, condenou o procedimento da filha e esta afligiu-se. Irritada, ferira-me à toa, sem querer. Não guardei ódio a minha mãe: o culpado era o nó.\n\nRAMOS, G. Infância. Rio de Janeiro: Record, 1998.\n\nNum texto narrativo, a sequência dos fatos contribui para a progressão temática. No fragmento, esse processo é indicado pela:`,
+        alternativas: [
+            "alternância das pessoas do discurso que determinam o foco narrativo.",
+            "utilização de formas verbais que marcam tempos narrativos variados.",
+            "indeterminação dos sujeitos de ações que caracterizam os eventos narrados.",
+            "justaposição de frases que relacionam semanticamente os acontecimentos narrados.",
+            "recorrência de expressões adverbiais que organizam temporalmente a narrativa."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 31,
+        origem: "ENEM 2018",
+        texto: `ABL lança novo concurso cultural:\n“Conte o conto sem aumentar um ponto”\n\nEm razão da grande repercussão do concurso de Microcontos do Twitter da ABL, o Abletras, a Academia Brasileira de Letras lançou no dia do seu aniversário de 113 anos um novo concurso cultural intitulado “Conte o conto sem aumentar um ponto”, baseado na obra A cartomante, de Machado de Assis.\n\n“Conte o conto sem aumentar um ponto” tem como objetivo dar um final distinto do original ao conto A cartomante, de Machado de Assis, utilizando-se o mesmo número de caracteres – ou inferior – que Machado concluiu seu trabalho, ou seja, 1 778 caracteres.\n\nVale ressaltar que, para participar do concurso, o concorrente deverá ser seguidor do Twitter da ABL, o Abletras.\n\nDisponível em: www.academia.org.br. Acesso em: 18 out. 2015 (adaptado).\n\nO Twitter é reconhecido por promover o compartilhamento de textos. Nessa notícia, essa rede social foi utilizada como veículo/suporte para um concurso literário por causa do(a):`,
+        alternativas: [
+            "limite predeterminado de extensão do texto.",
+            "interesse pela participação de jovens.",
+            "atualidade do enredo proposto.",
+            "fidelidade a fatos cotidianos.",
+            "dinâmica da sequência narrativa."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 32,
+        origem: "ENEM 2018",
+        texto: `A Casa de Vidro\n\nHouve protestos.\nDeram uma bola a cada criança e tempo para brincar. Elas aprenderam malabarismos incríveis e algumas viajavam pelo mundo exibindo sua alegre habilidade.\n(O problema é que muitos, a maioria, não tinham jeito e eram feios de noite, assustadores. Seria melhor prender essa gente – havia quem dissesse.)\nHouve protestos.\nAumentaram o preço da carne, liberaram os preços dos cereais e abriram crédito a juros baixos para o agricultor. O dinheiro que sobrasse, bem, digamos, ora o dinheiro que sobrasse!\nHouve protestos.\nDiminuíram os salários (infelizmente aumentou o número de assaltos) porque precisamos combater a inflação e, como se sabe, quando os salários estão acima do índice de produtividade eles se tornam altamente inflacionários, de modo que.\nHouve protestos.\nProibiram os protestos.\nE no lugar dos protestos nasceu o ódio. Então surgiu a Casa de Vidro, para acabar com aquele ódio.\n\nÂNGELO, I. A casa de vidro. São Paulo: Círculo do Livro, 1985.\n\nPublicado em 1979, o texto compartilha com outras obras da literatura brasileira escritas no período as marcas do contexto em que foi produzido, como a:`,
+        alternativas: [
+            "referência à censura e à opressão para alegorizar a falta de liberdade de expressão característica da época.",
+            "valorização de situações do cotidiano para atenuar os sentimentos de revolta em relação ao governo instituído.",
+            "utilização de metáforas e ironias para expressar um olhar crítico em relação à situação social e política do país.",
+            "tendência realista para documentar com verossimilhança o drama da população brasileira durante o Regime Militar.",
+            "sobreposição das manifestações populares pelo discurso oficial para destacar o autoritarismo do momento histórico."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 33,
+        origem: "ENEM 2018",
+        texto: `Encontrando base em argumentos supostamente científicos, o mito do sexo frágil contribuiu historicamente para controlar as práticas corporais desempenhadas pelas mulheres. Na história do Brasil, exatamente na transição entre os séculos XIX e XX, destacam-se os esforços para impedir a participação da mulher no campo das práticas esportivas. As desconfianças em relação à presença da mulher no esporte estiveram culturalmente associadas ao medo de masculinizar o corpo feminino pelo esforço físico intenso. Em relação ao futebol feminino, o mito do sexo frágil atuou como obstáculo ao consolidar a crença de que o esforço físico seria inapropriado para proteger a feminilidade da mulher “normal”. Tal mito sustentou um forte movimento contrário à aceitação do futebol como prática esportiva feminina. Leis e propagandas buscaram desacreditar o futebol, considerando-o inadequado à delicadeza. Na verdade, as mulheres eram consideradas incapazes de se adequar às múltiplas dificuldades do “esporte-rei”.\n\nTEIXEIRA, F. L. S.; CAMINHA, I. O. Preconceito no futebol feminino: uma revisão sistemática. Movimento, Porto Alegre, n. 1, 2013 (adaptado).\n\nNo contexto apresentado, a relação entre a prática do futebol e as mulheres é caracterizada por um:`,
+        alternativas: [
+            "argumento biológico para justificar desigualdades históricas e sociais.",
+            "discurso midiático que atua historicamente na desconstrução do mito do sexo frágil.",
+            "apelo para a preservação do futebol como uma modalidade praticada apenas pelos homens.",
+            "olhar feminista que qualifica o futebol como uma atividade masculinizante para as mulheres.",
+            "receio de que sua inserção subverta o “esporte-rei” ao demonstrarem suas capacidades de jogo."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+
+{
+        id: 34,
+        origem: "ENEM 2018",
+        texto: `Farejador de Plágio: uma ferramenta contra a cópia ilegal\n\nNo mundo acadêmico ou nos veículos de comunicação, as cópias ilegais podem surgir de diversas maneiras, sendo integrais, parciais ou paráfrases. Para ajudar a combater esse crime, o professor Maximiliano Zambonatto Pezzin, engenheiro de computação, desenvolveu junto com os seus alunos o programa Farejador de Plágio.\n\nO programa é capaz de detectar: trechos contínuos e fragmentados, frases soltas, partes de textos reorganizadas, frases reescritas, mudanças na ordem dos períodos e erros fonéticos e sintáticos.\n\nMas como o programa realmente funciona? Considerando o texto como uma sequência de palavras, a ferramenta analisa e busca trecho por trecho nos sites de busca, assim como um professor desconfiado de um aluno faria. A diferença é que o programa permite que se pesquise em vários buscadores, gerando assim muito mais resultados.\n\nSegundo o texto, a ferramenta Farejador de Plágio alcança seu objetivo por meio da:`,
+        alternativas: [
+            "seleção de cópias integrais.",
+            "busca em sites especializados.",
+            "simulação da atividade docente.",
+            "comparação de padrões estruturais.",
+            "identificação de sequência de fonemas."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- questões linguagens 2017 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+        id: 35,
+        origem: "ENEM 2017",
+        texto: `One of the things that made an incredible impression on me in the film was Frida’s comfort in and celebration of her own unique beauty. She didn’t try to fit into conventional ideas or images about womanhood or what makes someone or something beautiful. Instead, she fully inhabited her own unique gifts, not particularly caring what other people thought. She was magnetic and beautiful in her own right. She painted for years, not to be a commercial success or to be discovered, but to express her own inner pain, joy, family, love and culture. She absolutely and resolutely was who she was. The trueness of her own unique vision and her ability to stand firmly in her own truth was what made her successful in the end.\n\nHUTZLER, L. Disponível em: www.etbscreenwriting.com. Acesso em: 6 maio 2013.\n\nA autora desse comentário sobre o filme Frida mostra-se impressionada com o fato de a pintora:`,
+        alternativas: [
+            "ter uma aparência exótica.",
+            "vender bem a sua imagem.",
+            "ter grande poder de sedução.",
+            "assumir sua beleza singular.",
+            "recriar-se por meio da pintura."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 36,
+        origem: "ENEM 2017",
+        texto: `British Government to Recruit Teens as Next Generation of Spies\n\nIn the 50 years since the first James Bond movie created a lasting impression of a British secret agent, a completely different character is about to emerge. Britain’s intelligence agencies are to recruit their next generation of cyber spies by harnessing the talents of the “Xbox generation”.\n\nIn an expansion of a pilot program, Foreign Secretary William Hague announced Thursday that up to 100 18-year-olds will be given the chance to train for a career in Britain’s secret services. The move to recruit school-leavers marks a break with the past, when agencies mainly drew their staff from among university graduates.\n\n“Young people are the key to our country’s future success, just as they were during the War”, Hague said. “Today we are not at war, but I see evidence every day of deliberate, organized attacks against intellectual property and government networks in the United Kingdom.”\n\nThe new recruitment program, called the Single Intelligence Account apprenticeship scheme will enable students with suitable qualifications in science, technology or engineering, to spend two years learning about communications, security and engineering through formal education, technical training and work placements.\n\nJEARY, P. Disponível em: http://worldnews.nbcnews.com. Acesso em: 19 nov. 2012.\n\nSegundo informações veiculadas pela NBC News, a geração digital já tem seu espaço conquistado nas agências britânicas de inteligência. O governo britânico decidiu que:`,
+        alternativas: [
+            "enfrentará a guerra vigente e deliberada contra a propriedade intelectual no Reino Unido.",
+            "abandonará a política de contratação de universitários como agentes secretos.",
+            "recrutará jovens jogadores de Xbox como ciberespiões das agências de inteligência.",
+            "implantará um esquema de capacitação de adolescentes para atuarem como agentes secretos.",
+            "anunciará os nomes dos jovens a serem contratados pelas agências de inteligência."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 37,
+        origem: "ENEM 2017",
+        texto: `Letters\nChildren and Guns\nPublished: May 7, 2013\n\nTo the Editor: Re “Girl’s Death by Gunshot Is Rejected as Symbol” (news article, May 6):\n\nI find it abhorrent that the people of Burkesville, Ky., are not willing to learn a lesson from the tragic shooting of a 2-year-old girl by her 5-year-old brother. I am not judging their lifestyle of introducing guns to children at a young age, but I do feel that it’s irresponsible not to practice basic safety with anything potentially lethal — guns, knives, fire and so on. How can anyone justify leaving guns lying around, unlocked and possibly loaded, in a home with two young children?\n\nI wish the family of the victim comfort during this difficult time, but to dismiss this as a simple accident leaves open the potential for many more such “accidents” to occur. I hope this doesn’t have to happen several more times for legislators to realize that something needs to be changed.\n\nEMILY LOUBATON\nBrooklyn, May 6, 2013\nDisponível em: www.nytimes.com. Acesso em: 10 maio 2013.\n\nNo que diz respeito à tragédia ocorrida em Burkesville, a autora da carta enviada ao The New York Times busca:`,
+        alternativas: [
+            "reconhecer o acidente noticiado como um fato isolado.",
+            "responsabilizar o irmão da vítima pelo incidente ocorrido.",
+            "apresentar versão diferente da notícia publicada pelo jornal.",
+            "expor sua indignação com a negligência de portadores de armas.",
+            "reforçar a necessidade de proibição do uso de armas por crianças."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 38,
+        origem: "ENEM 2017",
+        texto: `Israel Travel Guide\n\nIsrael has always been a standout destination. From the days of prophets to the modern day nomad this tiny slice of land on the eastern Mediteranean has long attracted visitors. While some arrive in the ‘Holy Land’ on a spiritual quest, many others are on cultural tours, beach holidays and eco-tourism trips. Weeding through Israel’s convoluted history is both exhilarating and exhausting. There are crumbling temples, ruined cities, abandoned forts and hundreds of places associated with the Bible. And while a sense of adventure is required, most sites are safe and easily accessible. Most of all, Israel is about its incredibly diverse population. Jews come from all over the world to live here, while about 20% of the population is Muslim. Politics are hard to get away from in Israel as everyone has an opinion on how to move the country forward — with a ready ear you’re sure to hear opinions from every side of the political spectrum.\n\nDisponível em: www.worldtravelguide.net. Acesso em: 15 jun. 2012.\n\nAntes de viajar, turistas geralmente buscam informações sobre o local para onde pretendem ir. O trecho do guia de viagens de Israel:`,
+        alternativas: [
+            "descreve a história desse local para que turistas valorizem seus costumes milenares.",
+            "informa hábitos religiosos para auxiliar turistas a entenderem as diferenças culturais.",
+            "divulga os principais pontos turísticos para ajudar turistas a planejarem sua viagem.",
+            "recomenda medidas de segurança para alertar turistas sobre possíveis riscos locais.",
+            "apresenta aspectos gerais da cultura do país para continuar a atrair turistas estrangeiros."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 39,
+        origem: "ENEM 2017",
+        texto: `El carpintero\n\nOrlando Goicoechea reconoce las maderas por el olor, de qué árboles vienen, qué edad tienen, y oliéndolas sabe si fueron cortadas a tiempo o a destiempo y les adivina los posibles contratiempos.\n\nAl cabo de tantos años de trabajo, Orlando se ha dado el lujo de comprarse un video, y ve una película tras otra.\n\nNo sabía que eras loco por cine le dice el vecino.\n\nY Orlando le explica que no, que a él ni le va ni le viene, pero gracias al video puede detener las películas para estudiar los muebles.\n\nGALEANO, E. Disponível em: http://elcajondesastre.blogcindarrio.com. Acesso em: 18 abr. 2012.\n\nNo conto de Galeano, a expressão ni le va ni le viene encerra uma opinião a respeito de cinema que:`,
+        alternativas: [
+            "desconstrói a ideia central do conto sobre a importância das atividades de lazer.",
+            "contradiz a percepção que o narrador tem em relação à profissão exercida por Orlando.",
+            "revela o descaso do narrador com relação ao ofício desempenhado por Orlando.",
+            "reforça a impressão do vizinho de que Orlando gostava de filmes.",
+            "evidencia a extrema devoção do carpinteiro ao seu ofício."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 40,
+        origem: "ENEM 2017",
+        texto: `El virus del papiloma humano (HPV) también es un problema de hombres\n\nPara algunos hombres, el virus del papiloma humano (HPV) es algo muy lejano. Se olvidan de que ellos también se infectan y de que, al contagiarnos, nos están regalando un pasaporte mágico para el cáncer cérvico-uterino — segunda causa de muerte entre las mujeres de México —; incluso me ha tocado escuchar en boca de algunos de ellos que “sólo se trata de una infeccioncita”. Pues bien, el HPV también es un problema de hombres, no sólo porque propaga la infección entre la población femenina, sino también porque este virus produce otros problemas de salud tanto en hombres como en mujeres, incluyendo verrugas genitales y cáncer de boca y garganta que, si bien no son tan conocidos o alarmantes por su cantidad, como otros tipos de cáncer, también constituyen un riesgo. Por lo anterior, la Academia Americana de Pediatría decidió enfrentarse al HPV mediante vacunas que se ponen tanto a mujeres como hombres. Los especialistas afirman que la vacuna es más efectiva si se administra antes de que el niño se vuelva sexualmente activo, y responde mejor en el organismo de varones entre 9 y 15 años.\n\nALBITER, K. Disponível em: http://vivirmexico.com. Acesso em: 10 jul. 2012 (adaptado).\n\nO texto aborda a temática do HPV. Ao discorrer sobre o contágio e a prevenção do papiloma humano, a autora informa aos leitores que esse vírus é:`,
+        alternativas: [
+            "estudado pela Academia Americana de Pediatría por seus efeitos em crianças.",
+            "responsável pelo aumento de casos de câncer na população jovem mexicana.",
+            "ignorado pelos homens por se restringir à população feminina.",
+            "combatido por vacinas que devem ser aplicadas tanto em mulheres quanto em homens.",
+            "classificado como um problema superável pela facilidade com que se enfrenta a infecção."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 41,
+        origem: "ENEM 2017",
+        texto: `Aquí estoy establecido,\nEn los Estados Unidos,\nDiez años pasaron ya,\nEn que crucé de mojado,\nPapeles no he arreglado,\nSigo siendo un ilegal.\nTengo mi esposa y mis hijos,\nQue me los traje muy chicos,\nY se han olvidado ya,\nDe mi México querido,\nDel que yo nunca me olvido,\nY no puedo regresar.\n[...]\nMis hijos no hablan conmigo,\nOtro idioma han aprendido,\nY olvidado el español,\nPiensan como americanos,\nNiegan que son mexicanos,\nAunque tengan mi color.\n\nLOS TIGRES DEL NORTE. Jaula de oro. Woodland Hills, Califórnia: Fonovisa, 1986 (fragmento).\n\nA letra de canção coloca em cena um dilema por vezes vivenciado por imigrantes. Esse dilema se configura no sentimento do pai em relação ao(à):`,
+        alternativas: [
+            "diluição de sua identidade latino-americana, advinda do contato cotidiano com o outro.",
+            "distanciamento dos filhos, gerado pela apropriação da língua e da cultura do outro.",
+            "preconceito étnico-racial sofrido pelos imigrantes mexicanos no novo país.",
+            "desejo de se integrar à nova cultura e de se comunicar na outra língua.",
+            "vergonha perante os filhos de viver ilegalmente em outro país."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 42,
+        origem: "ENEM 2017",
+        texto: `Emotivo encuentro en la universidad pública\n\nEl entonces mandatario uruguayo recibió el cariño de sus compatriotas residentes en Nueva York e informó sobre la evolución del país, las políticas de gobierno, los avances y cuentas pendientes. Como en ocasiones similares, se multiplicaron las muestras de respeto y emoción. “Una nación es un formidable sentimiento de un ‘nosotros’”, dijo.\n\nMujica comenzó su discurso relatando lo recogido de otras experiencias de comunidades en el exilio. “Muchos de ustedes echaron raíces, tienen hijos y no pueden cometer la agresión de descuajarle la vida. Tienen que cargar con esa nostalgia de ser de allá, pero estar acá”, dijo.\n\n“Estamos metidos en la lucha por mejorar las circunstancias, con el sueño de que las generaciones que vengan, puedan venir con más soltura, con más apoyo”, dijo el Presidente.\n\nMujica se refirió a algunas críticas que reciben algunas políticas sociales. “Nos acusan de que damos sin contrapartida. Nos dicen ‘a la gente no hay que darle pescado, sino enseñarle a pescar’. Sí — razonó el Presidente —, pero cuando le afanaste la caña, le afanaste el bote, ¿qué le vas a pedir? Para atrás no arreglamos, arreglamos para adelante.”\n\nDisponível em: www.republica.com.uy. Acesso em: 26 set. 2013 (adaptado).\n\nNo discurso dirigido aos compatriotas radicados em Nova York, o então presidente Mujica expressa o desejo de que os cidadãos que vivem no Uruguai:`,
+        alternativas: [
+            "apoiem as políticas públicas afirmativas.",
+            "integrem-se ao processo de globalização.",
+            "cultivem o sentimento nacionalista.",
+            "ofereçam uma contrapartida à nação.",
+            "tenham melhores condições de vida."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 43,
+        origem: "ENEM 2017",
+        texto: `El eclipse\n\nCuando Fray Bartolomé Arrazola se sintió perdido aceptó que ya nada podría salvarlo. La selva poderosa de Guatemala lo había apresado, implacable y definitiva. Ante su ignorancia topográfica se sentó con tranquilidad a esperar la muerte. Al despertar se encontró rodeado por un grupo de indígenas de rostro impasible que se disponía a sacrificarlo ante un altar, un altar que a Bartolomé le pareció como el lecho en que descansaría, al fin, de sus temores, de su destino, de sí mismo. Tres años en el país le habían conferido un mediano dominio de las lenguas nativas. Intentó algo. Dijo algunas palabras que fueron comprendidas. Entonces floreció en él una idea que tuvo por digna de su talento y de su cultura universal y de su arduo conocimiento de Aristóteles. Recordó que para ese día se esperaba un eclipse total de sol. Y dispuso, en lo más íntimo, valerse de aquel conocimiento para engañar a sus opresores y salvar la vida. — Si me matáis — les dijo — puedo hacer que el sol se oscurezca en su altura. Los indígenas lo miraron fijamente y Bartolomé sorprendió la incredulidad en sus ojos. Vio que se produjo un pequeño consejo, y esperó confiado, no sin cierto desdén.\n\nDos horas después el corazón de Fray Bartolomé Arrazola chorreaba su sangre vehemente sobre la piedra de los sacrificios (brillante bajo la opaca luz de un sol eclipsado), mientras uno de los indígenas recitaba sin ninguna inflexión de voz, sin prisa, una por una las infinitas fechas en que se producirían eclipses solares y lunares, que los astrónomos de la comunidad maya habían previsto y anotado en sus códices sin la valiosa ayuda de Aristóteles.\n\nMONTERROSO, A. Obras completas y otros cuentos. Bogotá: Norma, 1994 (adaptado).\n\nNo texto, confrontam-se duas visões de mundo: a da cultura ocidental, representada por Frei Bartolomé Arrazola, e a da mítica pré-hispânica, representada pela comunidade indígena maia. Segundo a narrativa:`,
+        alternativas: [
+            "os catequizadores espanhóis avalizam os saberes produzidos pelas comunidades indígenas hispanoamericanas.",
+            "os indígenas da comunidade maia mostram-se perplexos diante da superioridade do conhecimento aristotélico do frei espanhol.",
+            "o catequizador espanhol Arrazola apresenta-se adaptado às culturas autóctones, ao promover a interlocução entre os conhecimentos aristotélico e indígena.",
+            "o episódio representa, de forma neutra, o significado do conhecimento ancestral indígena, quando comparado ao conhecimento ocidental.",
+            "os conhecimentos acadêmicos de Arrazola são insuficientes para salvá-lo da morte, ante a sabedoria astronômica da cultura maia."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 44,
+        origem: "ENEM 2017",
+        texto: `Romanos usavam redes sociais há dois mil anos, diz livro\n\nAo tuitar ou comentar embaixo do post de um de seus vários amigos no Facebook, você provavelmente se sente privilegiado por viver em um tempo na história em que é possível alcançar de forma imediata uma vasta rede de contatos por meio de um simples clique no botão “enviar”. Você talvez também reflita sobre como as gerações passadas puderam viver sem mídias sociais, desprovidas da capacidade de verem e serem vistas, de receber, gerar e interagir com uma imensa carga de informações. Mas o que você talvez não saiba é que os seres humanos usam ferramentas de interação social há mais de dois mil anos. É o que afirma Tom Standage, autor do livro Writing on the Wall — Social Media, The first 2 000 Years (Escrevendo no mural — mídias sociais, os primeiros 2 mil anos, em tradução livre).\n\nSegundo Standage, Marco Túlio Cícero, filósofo e político romano, teria sido, junto com outros membros da elite romana, precursor do uso de redes sociais. O autor relata como Cícero usava um escravo, que posteriormente tornou-se seu escriba, para redigir mensagens em rolos de papiro que eram enviados a uma espécie de rede de contatos. Estas pessoas, por sua vez, copiavam seu texto, acrescentavam seus próprios comentários e repassavam adiante. “Hoje temos computadores e banda larga, mas os romanos tínham escravos e escribas que transmitiam suas mensagens”, disse Standage à BBC Brasil. “Membros da elite romana escreviam entre si constantemente, comentando sobre as últimas movimentações políticas e expressando opiniões.”\n\nAlém do papiro, outra plataforma comumente utilizada pelos romanos era uma tábua de cera do tamanho e da forma de um tablet moderno, em que escreviam recados, perguntas ou transmitiam os principais pontos da acta diurna, um “jornal” exposto diariamente no Fórum de Roma. Essa tábua, o “iPad da Roma Antiga”, era levada por um mensageiro até o destinatário, que respondia embaixo da mensagem.\n\nNIDECKER, F. Disponível em: www.bbc.co.uk. Acesso em: 7 nov. 2013 (adaptado).\n\nNa reportagem, há uma comparação entre tecnologias de comunicação antigas e atuais. Quanto ao gênero mensagem, identifica-se como característica que perdura ao longo dos tempos o(a):`,
+        alternativas: [
+            "imediatismo das respostas.",
+            "compartilhamento de informações.",
+            "interferência direta de outros no texto original.",
+            "recorrência de seu uso entre membros da elite.",
+            "perfil social dos envolvidos na troca comunicativa."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+
+{
+        id: 45,
+        origem: "ENEM 2017",
+        texto: `Garcia tinha-se chegado ao cadáver, levantara o lenço e contemplara por alguns instantes as feições defuntas. Depois, como se a morte espiritualizasse tudo, inclinou-se e beijou-a na testa. Foi nesse momento que Fortunato chegou à porta. Estacou assombrado; não podia ser o beijo da amizade, podia ser o epílogo de um livro adúltero [...].\nEntretanto, Garcia inclinou-se ainda para beijar outra vez o cadáver, mas então não pôde mais. O beijo rebentou em soluços, e os olhos não puderam conter as lágrimas, que vieram em borbotões, lágrimas de amor calado, e irremediável desespero. Fortunato, à porta, onde ficara, saboreou tranquilo essa explosão de dor moral que foi longa, muito longa, deliciosamente longa.\n\nASSIS, M. A causa secreta. Disponível em: www.dominiopublico.gov.br. Acesso em: 9 out. 2015.\n\nNo fragmento, o narrador adota um ponto de vista que acompanha a perspectiva de Fortunato. O que singulariza esse procedimento narrativo é o registro do(a):`,
+        alternativas: [
+            "indignação face à suspeita do adultério da esposa.",
+            "tristeza compartilhada pela perda da mulher amada.",
+            "espanto diante da demonstração de afeto de Garcia.",
+            "prazer da personagem em relação ao sofrimento alheio.",
+            "superação do ciúme pela comoção decorrente da morte."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 46,
+        origem: "ENEM 2017",
+        texto: `Mas assim que penetramos no universo da web, descobrimos que ele constitui não apenas um imenso “território” em expansão acelerada, mas que também oferece inúmeros “mapas”, filtros, seleções para ajudar o navegante a orientar-se. O melhor guia para a web é a própria web. Ainda que seja preciso ter a paciência de explorá-la. Ainda que seja preciso arriscar-se a ficar perdido, aceitar “a perda de tempo” para familiarizar-se com esta terra estranha. Talvez seja preciso ceder por um instante a seu aspecto lúdico para descobrir, no desvio de um link, os sites que mais se aproximam de nossos interesses profissionais ou de nossas paixões e que poderão, portanto, alimentar da melhor maneira possível nossa jornada pessoal.\n\nLÉVY, P. Cibercultura. São Paulo: Editora 34, 1999.\n\nO usuário iniciante sente-se não raramente desorientado no oceano de informações e possibilidades disponíveis na rede mundial de computadores. Nesse sentido, Pierre Lévy destaca como um dos principais aspectos da internet o(a):`,
+        alternativas: [
+            "espaço aberto para a aprendizagem.",
+            "grande número de ferramentas de pesquisa.",
+            "ausência de mapas ou guias explicativos.",
+            "infinito número de páginas virtuais.",
+            "dificuldade de acesso aos sites de pesquisa."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 47,
+        origem: "ENEM 2017",
+        texto: `TEXTO I\nTerezinha de Jesus\nDe uma queda foi ao chão\nAcudiu três cavalheiros\nTodos os três de chapéu na mão\nO primeiro foi seu pai\nO segundo, seu irmão\nO terceiro foi aquele\nA quem Tereza deu a mão\n\nBATISTA, M. F. B. M.; SANTOS, I. M. F. (Org.). Cancioneiro da Paraíba. João Pessoa: Grafset, 1993 (adaptado).\n\nTEXTO II\nOutra interpretação é feita a partir das condições sociais daquele tempo. Para a ama e para a criança para quem cantava a cantiga, a música falava do casamento como um destino natural na vida da mulher, na sociedade brasileira do século XIX, marcada pelo patriarcalismo. A música prepara a moça para o seu destino não apenas inexorável, mas desejável: o casamento, estabelecendo uma hierarquia de obediência (pai, irmão mais velho, marido), de acordo com a época e circunstâncias de sua vida.\n\nDisponível em: http://provsjose.blogspot.com.br. Acesso em: 5 dez. 2012.\n\nO comentário do Texto II sobre o Texto I evoca a mobilização da língua oral que, em determinados contextos:`,
+        alternativas: [
+            "assegura a existência de pensamentos contrários à ordem vigente.",
+            "mantém a heterogeneidade das formas de relações sociais.",
+            "conserva a influência religiosa sobre certas culturas.",
+            "preserva a diversidade cultural e comportamental.",
+            "reforça comportamentos e padrões culturais."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 48,
+        origem: "ENEM 2017",
+        texto: `Essas moças tinham o vezo de afirmar o contrário do que desejavam. Notei a singularidade quando principiaram a elogiar o meu paletó cor de macaco. Examinavam-no sérias, achavam o pano e os aviamentos de qualidade superior, o feitio admirável. Envaideci-me: nunca havia reparado em tais vantagens. Mas os gabos se prolongaram, trouxeram-me desconfiança. Percebi afinal que elas zombavam e não me susceptibilizei. Longe disso: achei curiosa aquela maneira de falar pelo avesso, diferente das grosserias a que me habituara. Em geral me diziam com franqueza que a roupa não me assentava no corpo, sobrava nos sovacos.\n\nRAMOS, G. Infância. Rio de Janeiro: Record, 1994.\n\nPor meio de recursos linguísticos, os textos mobilizam estratégias para introduzir e retomar ideias, promovendo a progressão do tema. No fragmento transcrito, um novo aspecto do tema é introduzido pela expressão:`,
+        alternativas: [
+            "“a singularidade”.",
+            "“tais vantagens”.",
+            "“os gabos”.",
+            "“Longe disso”.",
+            "“Em geral”."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 49,
+        origem: "ENEM 2017",
+        texto: `A língua tupi no Brasil\nHá 300 anos, morar na vila de São Paulo de Piratininga (peixe seco, em tupi) era quase sinônimo de falar língua de índio. Em cada cinco habitantes da cidade, só dois conheciam o português. Por isso, em 1698, o governador da província, Artur de Sá e Meneses, implorou a Portugal que só mandasse padres que soubessem “a língua geral dos índios”, pois “aquela gente não se explica em outro idioma”.\nDerivado do dialeto de São Vicente, o tupi de São Paulo se desenvolveu e se espalhou no século XVII, graças ao isolamento geográfico da cidade e à atividade pouco cristã dos mamelucos paulistas: as bandeiras, expedições ao sertão em busca de escravos índios. Muitos bandeirantes nem sequer falavam o português ou se expressavam mal. Domingos Jorge Velho, o paulista que destruiu o Quilombo dos Palmares em 1694, foi descrito pelo bispo de Pernambuco como “um bárbaro que nem falar sabe”. Em suas andanças, essa gente batizou lugares como Avanhandava (lugar onde o índio corre), Pindamonhangaba (lugar de fazer anzol) e Itu (cachoeira). E acabou inventando uma nova língua.\n“Os escravos dos bandeirantes vinham de mais de 100 tribos diferentes”, conta o historiador e antropólogo John Monteiro, da Universidade Estadual de Campinas. “Isso mudou o tupi paulista, que, além da influência do português, ainda recebia palavras de outros idiomas.” O resultado da mistura ficou conhecido como língua geral do sul, uma espécie de tupi facilitado.\n\nÂNGELO, C. Disponível em: http://super.abril.com.br. Acesso em: 8 ago. 2012 (adaptado).\n\nO texto trata de aspectos sócio-históricos da formação linguística nacional. Quanto ao papel do tupi na formação do português brasileiro, depreende-se que essa língua indígena:`,
+        alternativas: [
+            "contribuiu efetivamente para o léxico, com nomes relativos aos traços característicos dos lugares designados.",
+            "originou o português falado em São Paulo no século XVII, em cuja base gramatical também está a fala de variadas etnias indígenas.",
+            "desenvolveu-se sob influência dos trabalhos de catequese dos padres portugueses, vindos de Lisboa.",
+            "misturou-se aos falares africanos, em razão das interações entre portugueses e negros nas investidas contra o Quilombo dos Palmares.",
+            "expandiu-se paralelamente ao português falado pelo colonizador, e juntos originaram a língua dos bandeirantes paulistas."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 50,
+        origem: "ENEM 2017",
+        texto: `O farrista\nQuando o almirante Cabral\nPôs as patas no Brasil\nO anjo da guarda dos índios\nEstava passeando em Paris.\nQuando ele voltou de viagem\nO holandês já está aqui.\nO anjo respira alegre:\n“Não faz mal, isto é boa gente,\nVou arejar outra vez.”\nO anjo transpôs a barra,\nDiz adeus a Pernambuco,\nFaz barulho, vuco-vuco,\nTal e qual o zepelim\nMas deu um vento no anjo,\nEle perdeu a memória...\nE não voltou nunca mais.\n\nMENDES, M. História do Brasil. Rio de Janeiro: Nova Fronteira, 1992.\n\nA obra de Murilo Mendes situa-se na fase inicial do Modernismo, cujas propostas estéticas transparecem, no poema, por um eu lírico que:`,
+        alternativas: [
+            "configura um ideal de nacionalidade pela integração regional.",
+            "remonta ao colonialismo assente sob um viés iconoclasta.",
+            "repercute as manifestações do sincretismo religioso.",
+            "descreve a gênese da formação do povo brasileiro.",
+            "promove inovações no repertório linguístico."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 51,
+        origem: "ENEM 2017",
+        texto: `PROPAGANDA — O exame dos textos e mensagens de Propaganda revela que ela apresenta posições parciais, que refletem apenas o pensamento de uma minoria, como se exprimissem, em vez disso, a convicção de uma população; trata-se, no fundo, de convencer o ouvinte ou o leitor de que, em termos de opinião, está fora do caminho certo, e de induzi-lo a aderir às teses que lhes são apresentadas, por um mecanismo bem conhecido da psicologia social, o do conformismo induzido por pressões do grupo sobre o indivíduo isolado.\n\nBOBBIO, N.; MATTEUCCI, N.; PASQUINO, G. Dicionário de política. Brasília: UnB, 1998 (adaptado).\n\nDe acordo com o texto, as estratégias argumentativas e o uso da linguagem na produção da propaganda favorecem a:`,
+        alternativas: [
+            "reflexão da sociedade sobre os produtos anunciados.",
+            "difusão do pensamento e das preferências das grandes massas.",
+            "imposição das ideias e posições de grupos específicos.",
+            "decisão consciente do consumidor a respeito de sua compra.",
+            "identificação dos interesses do responsável pelo produto divulgado."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 52,
+        origem: "ENEM 2017",
+        texto: `Sítio Gerimum\nEste é o meu lugar [...]\nMeu Gerimum é com g\nVocê pode ter estranhado\nGerimum em abundância\nAqui era plantado\nE com a letra g\nMeu lugar foi registrado.\n\nOLIVEIRA, H. D. Língua Portuguesa, n. 88, fev. 2013 (fragmento).\n\nNos versos de um menino de 12 anos, o emprego da palavra “Gerimum” grafada com a letra “g” tem por objetivo:`,
+        alternativas: [
+            "valorizar usos informais caracterizadores da norma nacional.",
+            "confirmar o uso da norma-padrão em contexto da linguagem poética.",
+            "enfatizar um processo recorrente na transformação da língua portuguesa.",
+            "registrar a diversidade étnica e linguística presente no território brasileiro.",
+            "reafirmar discursivamente a forte relação do falante com seu lugar de origem."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 53,
+        origem: "ENEM 2017",
+        texto: `Textos e hipertextos: procurando o equilíbrio\nHá um medo por parte dos pais e de alguns professores de as crianças desaprenderem quando navegam, medo de elas viciarem, de obterem informação não confiável, de elas se isolarem do mundo real, como se o computador fosse um agente do mal, um vilão. Esse medo é reforçado pela mídia, que costuma apresentar o computador como um agente negativo na aprendizagem e na socialização dos usuários. Nós sabemos que ninguém corre o risco de desaprender quando navega, seja em ambientes digitais ou em materiais impressos, mas é preciso ver o que se está aprendendo e algumas vezes interferir nesse processo a fim de otimizar ou orientar a aprendizagem, mostrando aos usuários outros temas, outros caminhos, outras possibilidades diferentes daquelas que eles encontraram sozinhos ou daquelas que eles costumam usar. É preciso, algumas vezes, negociar o uso para que ele não seja exclusivo, uma vez que há outros meios de comunicação, outros meios de informação e outras alternativas de lazer. É uma questão de equilibrar e não de culpar.\n\nCOSCARELLI, C. V. Linguagem em (Dis)curso, n. 3, set.-dez. 2009.\n\nA autora incentiva o uso da internet pelos estudantes, ponderando sobre a necessidade de orientação a esse uso, pois essa tecnologia:`,
+        alternativas: [
+            "está repleta de informações confiáveis que constituem fonte única para a aprendizagem dos alunos.",
+            "exige dos pais e professores que proíbam seu uso abusivo para evitar que se torne um vício.",
+            "tende a se tornar um agente negativo na aprendizagem e na socialização de crianças e jovens.",
+            "possibilita maior ampliação do conhecimento de mundo quando a aprendizagem é direcionada.",
+            "leva ao isolamento do mundo real e ao uso exclusivo do computador se a navegação for desmedida."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 54,
+        origem: "ENEM 2017",
+        texto: `O mundo revivido\nSobre esta casa e as árvores que o tempo\nesqueceu de levar. Sobre o curral\nde pedra e paz e de outras vacas tristes\nchorando a lua e a noite sem bezerros.\nSobre a parede larga deste açude\nonde outras cobras verdes se arrastavam,\ne pondo o sol nos seus olhos parados\niam colhendo sua safra de sapos.\nSob as constelações do sul que a noite\narmava e desarmava: as Três Marias,\no Cruzeiro distante e o Sete-Estrelo.\nSobre este mundo revivido em vão,\na lembrança de primos, de cavalos,\nde silêncio perdido para sempre.\n\nDOBAL, H. A província deserta. Rio de Janeiro: Artenova, 1974.\n\nNo processo de reconstituição do tempo vivido, o eu lírico projeta um conjunto de imagens cujo lirismo se fundamenta no:`,
+        alternativas: [
+            "inventário das memórias evocadas afetivamente.",
+            "reflexo da saudade no desejo de voltar à infância.",
+            "sentimento de inadequação com o presente vivido.",
+            "ressentimento com as perdas materiais e humanas.",
+            "lapso no fluxo temporal dos eventos trazidos à cena."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 55,
+        origem: "ENEM 2017",
+        texto: `A ascensão social por meio do esporte mexe com o imaginário das pessoas, pois em poucos anos um adolescente pode se tornar milionário caso tenha um bom desempenho esportivo. Muitos meninos de famílias pobres jogam com o objetivo de conseguir dinheiro para oferecer uma boa qualidade de vida à família. Isso aproximou mais ainda o futebol das camadas mais pobres da sociedade, tornando-o cada vez mais popular.\nAcontece que esses jovens sonham com fama e dinheiro, enxergando no futebol o único caminho possível para o sucesso. No entanto, eles não sabem da grande dificuldade que existe no início dessa jornada em que a minoria alcança a carreira profissional. Esses garotos abandonam a escola pela ilusão de vencer no futebol, à qual a maioria sucumbe.\nO caminho até o profissionalismo acontece por meio de um longo processo seletivo que os jovens têm de percorrer. Caso não seja selecionado, esse atleta poderá ter que abandonar a carreira involuntariamente por falta de uma equipe que o acolha. Alguns podem acabar em subempregos, à margem da sociedade, ou até mesmo em vícios decorrentes desse fracasso e dessa desilusão. Isso acontece porque no auge da sua formação escolar e na condição juvenil de desenvolvimento, eles não se preparam e não são devidamente orientados para buscar alternativas de experiências mais amplas de ocupação fora e além do futebol.\n\nBALZANO, O. N.; MORAIS, J. S. A formação do jogador de futebol e sua relação com a escola. EFDeportes, n. 172, set. 2012 (adaptado).\n\nAo abordar o fato de, no Brasil, muitos jovens depositarem suas esperanças de futuro no futebol, o texto critica o(a):`,
+        alternativas: [
+            "despreparo dos jogadores de futebol para ajudarem suas famílias a superar a miséria.",
+            "garantia de ascensão social dos jovens pela carreira de jogador de futebol.",
+            "falta de investimento dos clubes para que os atletas possam atuar profissionalmente e viver do futebol.",
+            "investimento reduzido dos atletas profissionais em sua formação escolar, gerando frustração e desilusão profissional no esporte.",
+            "despreocupação dos sujeitos com uma formação paralela à esportiva, para habilitá-los a atuar em outros setores da vida."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 56,
+        origem: "ENEM 2017",
+        texto: `Declaração de amor\nEsta é uma confissão de amor: amo a língua portuguesa. Ela não é fácil. Não é maleável. […] A língua portuguesa é um verdadeiro desafio para quem escreve. Sobretudo para quem escreve tirando das coisas e das pessoas a primeira capa de superficialismo.\nÀs vezes ela reage diante de um pensamento mais complicado. Às vezes se assusta com o imprevisível de uma frase. Eu gosto de manejá-la — como gostava de estar montada num cavalo e guiá-lo pelas rédeas, às vezes a galope. Eu queria que a língua portuguesa chegasse ao máximo em minhas mãos. E este desejo todos os que escrevem têm. Um Camões e outros iguais não bastaram para nos dar para sempre uma herança de língua já feita. Todos nós que escrevemos estamos fazendo do túmulo do pensamento alguma coisa que lhe dê vida.\nEssas dificuldades, nós as temos. Mas não falei do encantamento de lidar com uma língua que não foi aprofundada. O que recebi de herança não me chega. Se eu fosse muda e também não pudesse escrever, e me perguntassem a que língua eu queria pertencer, eu diria: inglês, que é preciso e belo. Mas, como não nasci muda e pude escrever, tornou-se absolutamente claro para mim que eu queria mesmo era escrever em português. Eu até queria não ter aprendido outras línguas: só para que a minha abordagem do português fosse virgem e límpida.\n\nLISPECTOR, C. A descoberta do mundo. Rio de Janeiro: Rocco, 1999 (adaptado).\n\nO trecho em que Clarice Lispector declara seu amor pela língua portuguesa, acentuando seu caráter patrimonial e sua capacidade de renovação, é:`,
+        alternativas: [
+            "“A língua portuguesa é um verdadeiro desafio para quem escreve.”",
+            "“Um Camões e outros iguais não bastaram para nos dar para sempre uma herança de língua já feita.”",
+            "“Todos nós que escrevemos estamos fazendo do túmulo do pensamento alguma coisa que lhe dê vida.”",
+            "“Mas não falei do encantamento de lidar com uma língua que não foi aprofundada.”",
+            "“Eu até queria não ter aprendido outras línguas: só para que a minha abordagem do português fosse virgem e límpida.”"
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 57,
+        origem: "ENEM 2017",
+        texto: `TEXTO I\nA língua ticuna é o idioma mais falado entre os indígenas brasileiros. De acordo com o pesquisador Aryon Rodrigues, há 40 mil índios que falam o idioma. A maioria mora ao longo do Rio Solimões, no Alto Amazonas. É a maior nação indígena do Brasil, sendo também encontrada no Peru e na Colômbia. Os ticunas falam uma língua considerada isolada, que não mantém semelhança com nenhuma outra língua indígena e apresenta complexidades em sua fonologia e sintaxe. Sua característica principal é o uso de diferentes alturas na voz.\nO uso intensivo da língua não chega a ser ameaçado pela proximidade de cidades ou mesmo pela convivência com falantes de outras línguas no interior da própria área ticuna: nas aldeias, esses outros falantes são minoritários e acabam por se submeter à realidade ticuna, razão pela qual, talvez, não representem uma ameaça linguística.\n\nLíngua Portuguesa, n. 52, fev. 2010 (adaptado).\n\nTEXTO II\nRiqueza da língua\n“O inglês está destinado a ser uma língua mundial em sentido mais amplo do que o latim foi na era passada e o francês é na presente”, dizia o presidente americano John Adams no século XVIII. A profecia se cumprriu: o inglês é hoje a língua franca da globalização. No extremo oposto da economia linguística mundial, estão as línguas de pequenas comunidades declinantes. Calcula-se que hoje se falem de 6 000 a 7 000 línguas no mundo todo. Quase metade delas deve desaparecer nos próximos 100 anos. A última edição do Ethnologue — o mais abrangente estudo sobre as línguas mundiais —, de 2005, listava 516 línguas em risco de extinção.\n\nVeja, n. 36, set. 2007 (adaptado).\n\nOs textos tratam de línguas de culturas completamente diferentes, cujas realidades se aproximam em função do(a):`,
+        alternativas: [
+            "semelhança no modo de expansão.",
+            "preferência de uso na modalidade falada.",
+            "modo de organização das regras sintáticas.",
+            "predomínio em relação às outras línguas de contato.",
+            "fato de motivarem o desaparecimento de línguas."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+
+{
+        id: 58,
+        origem: "ENEM 2017",
+        texto: `As atrizes\nNaturalmente\nEla sorria\nMas não me dava trela\nTrocava a roupa\nNa minha frente\nE ia bailar sem mais aquela\nEscolhia qualquer um\nLançava olhares\nDebaixo do meu nariz\nDançava colada\nEm novos pares\nCom um pé atrás\nCom um pé a fim\nSurgiram outras\nNaturalmente\nSem nem olhar a minha cara\nTomavam banho\nNa minha frente\nPara sair com outro cara\nPorém nunca me importei\nCom tais amantes\n[...]\nCom tantos filmes\nNa minha mente\nÉ natural que toda atriz\nPresentemente represente\nMuito para mim\n\nCHICO BUARQUE. Carioca. Rio de Janeiro: Biscoito Fino, 2006 (fragmento).\n\nNa canção, Chico Buarque trabalha uma determinada função da linguagem para marcar a subjetividade do eu lírico ante as atrizes que ele admira. A intensidade dessa admiração está marcada em:`,
+        alternativas: [
+            "\"Naturalmente/ Ela sorria/ Mas não me dava trela\".",
+            "\"Tomavam banho/ Na minha frente/ Para sair com outro cara\".",
+            "\"Surgiram outras/ Naturalmente/ Sem nem olhar a minha cara\".",
+            "\"Escolhia qualquer um/ Lançava olhares/ Debaixo do meu nariz\".",
+            "\"É natural que toda atriz/ Presentemente represente/ Muito para mim\"."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 59,
+        origem: "ENEM 2017",
+        texto: `E aqui, antes de continuar este espetáculo, é necessário que façamos uma advertência a todos e a cada um. Neste momento, achamos fundamental que cada um tome uma posição definida. Sem que cada um tome uma posição definida, não é possível continuarmos. É fundamental que cada um tome uma posição, seja para a esquerda, seja para a direita. Admitimos mesmo que alguns tomem uma posição neutra, fiquem de braços cruzados. Mas é preciso que cada um, uma vez tomada sua posição, fique nela! Porque senão, companheiros, as cadeiras do teatro rangem muito e ninguém ouve nada.\n\nFERNANDES, M.; RANGEL, F. Liberdade, liberdade. Porto Alegre: L&PM, 2009.\n\nA peça Liberdade, liberdade, encenada em 1964, apresenta o impasse vivido pela sociedade brasileira em face do regime vigente. Esse impasse é representado no fragmento pelo(a):`,
+        alternativas: [
+            "barulho excessivo produzido pelo ranger das cadeiras do teatro.",
+            "indicação da neutralidade como a melhor opção ideológica naquele momento.",
+            "constatação da censura em função do engajamento social do texto dramático.",
+            "correlação entre o alinhamento político e a posição corporal dos espectadores.",
+            "interrupção do espetáculo em virtude do comportamento inadequado do público."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 60,
+        origem: "ENEM 2017",
+        texto: `Uma noite em 67, de Renato Terra e Ricardo Calil. Editora Planeta, 296 páginas.\nMas foi uma noite, aquela noite de sábado 21 de outubro de 1967, que parou o nosso país. Parou pra ver a finalíssima do III Festival da Record, quando um jovem de 24 anos chamado Eduardo Lobo, o Edu Lobo, saiu carregado do Teatro Paramount em São Paulo depois de ganhar o prêmio máximo do festival com Ponteio, que cantou acompanhado da charmosa e iniciante Marília Medalha.\nFoi naquela noite que Chico Buarque entoou sua Roda viva ao lado do MPB-4 de Magro, o arranjador. Que Caetano Veloso brilhou cantando Alegria, alegria com a plateia ao som das guitarras dos Beat Boys, que Gilberto Gil apresentou a tropicalista Domingo no parque com os Mutantes.\nAquela noite que acabou virando filme, em 2010, nas mãos de Renato Terra e Ricardo Calil, agora virou livro. O livro que está sendo lançado agora é a história daquela noite, ampliada e em estado que no jargão jornalístico chamamos de matéria bruta. Quem viu o filme vai se deliciar com as histórias — e algumas fofocas — que cada um tem para contar, agora sem os cortes necessários que um filme exige. E quem não viu o filme tem diante de si um livro de histórias, pensando bem, de História.\n\nVILLAS, A. Disponível em: www.cartacapital.com.br. Acesso em: 18 jun. 2014 (adaptado).\n\nConsiderando os elementos constitutivos dos gêneros textuais circulantes na sociedade, nesse fragmento de resenha predominam:`,
+        alternativas: [
+            "caracterizações de personalidades do contexto musical brasileiro dos anos 1960.",
+            "questões polêmicas direcionadas à produção musical brasileira nos anos 1960.",
+            "relatos de experiências de artistas sobre os festivais de música de 1967.",
+            "explicações sobre o quadro cultural do Brasil durante a década de 1960.",
+            "opiniões a respeito de uma obra sobre a cena musical de 1967."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 61,
+        origem: "ENEM 2017",
+        texto: `Apesar de muitas crianças e adolescentes terem a Barbie como um exemplo de beleza, um infográfico feito pelo site Rehabs.com comprovou que, caso uma mulher tivesse as medidas da boneca de plástico, ela nem estaria viva.\nNão é exatamente uma novidade que as proporções da boneca mais famosa do mundo são absurdas para o mundo real. Ativistas que lutam pela construção de uma autoimagem mais saudável, pesquisadores de distúrbios alimentares e pessoas que se preocupam com o impacto da indústria cultural na psique humana apontam, há anos, a influência de modelos como a Barbie na distorção do corpo feminino.\n\nPescoço\nCom um pescoço duas vezes mais longo e 15 centímetros mais fino do que o de uma mulher, a Barbie seria incapaz de manter sua cabeça levantada.\nCintura\nCom uma cintura de 40 centímetros (menor do que a sua cabeça), a Barbie da vida real só teria espaço em seu corpo para acomodar metade de um rim e alguns centímetros de intestino.\nQuadril\nO índice que mede a relação entre a cintura e o quadril da Barbie é de 0,56, o que significa que a medida da sua cintura representa 56% da circunferência de seu quadril. Esse mesmo índice, em uma mulher americana média, é de 0,8.\n\nDisponível em: http://oglobo.globo.com. Acesso em: 2 maio 2015.\n\nAo abordar as possíveis influências da indústria de brinquedos sobre a representação do corpo feminino, o texto analisa a:`,
+        alternativas: [
+            "noção de beleza globalizada veiculada pela indústria cultural.",
+            "influência da mídia para a adoção de um estilo de vida salutar pelas mulheres.",
+            "relação entre a alimentação saudável e o padrão de corpo institutedo pela boneca.",
+            "proporcionalidade entre a representação do corpo da boneca e a do corpo humano.",
+            "influência mercadológica na construção de uma autoimagem positiva do corpo feminino."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 62,
+        origem: "ENEM 2017",
+        texto: `Nuances\nEuforia: alegria barulhenta. Felicidade: alegria silenciosa.\nGravar: quando o ator é de televisão. Filmar: quando ele quer deixar claro que não é de televisão.\nGrávida: em qualquer ocasião. Gestante: em filas e assentos preferenciais.\nGuardar: na gaveta. Salvar: no computador. Salvaguardar: no Exército.\nMenta: no sorvete, na bala ou no xarope. Hortelã: na horta ou no suco de abacaxi.\nPeça: quando você vai assistir. Espetáculo: quando você está em cartaz com ele.\n\nDUVIVIER, G. Folha de S. Paulo, 24 mar. 2014 (adaptado).\n\nO texto trata da diferença de sentido entre vocábulos muito próximos. Essa diferença é apresentada considerando-se a(s):`,
+        alternativas: [
+            "alternâncias na sonoridade.",
+            "adequação às situações de uso.",
+            "marcação flexional das palavras.",
+            "grafia na norma-padrão da língua.",
+            "categorias gramaticais das palavras."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 63,
+        origem: "ENEM 2017",
+        texto: `TEXTO I\nFundamentam-se as regras da Gramática Normativa nas obras dos grandes escritores, em cuja linguagem as classes ilustradas põem o seu ideal de perfeição, porque nela é que se espelha o que o uso idiomático estabilizou e consagrou.\n\nLIMA, C. H. R. Gramática normativa da língua portuguesa. Rio de Janeiro: José Olympio, 1989.\n\nTEXTO II\nGosto de dizer. Direi melhor: gosto de palavrar. As palavras são para mim corpos tocáveis, sereias visíveis, sensualidades incorporadas. Talvez porque a sensualidade real não tem para mim interesse de nenhuma espécie — nem sequer mental ou de sonho —, transmudou-se-me o desejo para aquilo que em mim cria ritmos verbais, ou os escuta de outros. Estremeço se dizem bem. Tal página de Fialho, tal página de Chateaubriand, fazem formigar toda a minha vida em todas as veias, fazem-me raivar tremulamente quieto de um prazer inatingível que estou tendo. Tal página, até, de Vieira, na sua fria perfeição de engenharia sintáctica, me faz tremer como um ramo ao vento, num delírio passivo de coisa movida.\n\nPESSOA, F. O livro do desassossego. São Paulo: Brasiliense, 1986.\n\nA linguagem cumpre diferentes funções no processo de comunicação. A função que predomina nos textos I e II:`,
+        alternativas: [
+            "destaca o “como” se elabora a mensagem, considerando-se a seleção, combinação e sonoridade do texto.",
+            "coloca o foco no “com o quê” se constrói a mensagem, sendo o código utilizado o seu próprio objeto.",
+            "focaliza o “quem” produz a mensagem, mostrando seu posicionamento e suas impressões pessoais.",
+            "orienta-se no “para quem” se dirige a mensagem, estimulando a mudança de seu comportamento.",
+            "enfatiza sobre “o quê” versa a mensagem, apresentada com palavras precisas e objetivas."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 64,
+        origem: "ENEM 2017",
+        texto: `Contranarciso\nem mim\neu vejo o outro\ne outro\ne outro\nenfim dezenas\ntrens passando\nvagões cheios de gente\ncentenas\no outro\nque há em mim\né você\nvocê\ne você\nassim como\neu estou em você\neu estou nele\nem nós\ne só quando\nestamos em nós\nestamos em paz\nmesmo que estejamos a sós\n\nLEMINSKI, P. Toda poesia. São Paulo: Cia. das Letras, 2013.\n\nA busca pela identidade constitui uma faceta da tradição literária, redimensionada pelo olhar contemporâneo. No poema, essa nova dimensão revela a:`,
+        alternativas: [
+            "ausência de traços identitários.",
+            "angústia com a solidão em público.",
+            "valorização da descoberta do “eu” autêntico.",
+            "percepção da empatia como fator de autoconhecimento.",
+            "impossibilidade de vivenciar experiências de pertencimento."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 65,
+        origem: "ENEM 2017",
+        texto: `No esporte-participação ou esporte popular, a manifestação ocorre no princípio do prazer lúdico, que tem como finalidade o bem-estar social dos seus praticantes. Está associado intimamente com o lazer e o tempo livre e ocorre em espaços não comprometidos com o tempo e fora das obrigações da vida diária. Tem como propósitos a descontração, a diversão, o desenvolvimento pessoal e o relacionamento com as pessoas. Pode-se afirmar que o esporte-participação, por ser a dimensão social do esporte mais inter-relacionada com os caminhos democráticos, equilibra o quadro de desigualdades de oportunidades esportivas encontrado na dimensão esporte-performance. Enquanto o esporte-performance só permite sucesso aos talentos ou àqueles que tiveram condições, o esporte-participação favorece o prazer a todos que dele desejarem tomar parte.\n\nGODTSFRIEDT, J. Esporte e sua relação com a sociedade: uma síntese bibliográfica. EFDeportes, n. 142, mar. 2010.\n\nO sentido de esporte-participação construído no texto está fundamentalmente presente:`,
+        alternativas: [
+            "nos Jogos Olímpicos, uma vez que reúnem diversos países na disputa de diferentes modalidades esportivas.",
+            "nas competições de esportes individuais, uma vez que o sucesso de um indivíduo incentiva a participação dos demais.",
+            "nos campeonatos oficiais de futebol, regionais e nacionais, por se tratar de uma modalidade esportiva muito popular no país.",
+            "nas competições promovidas pelas federações e confederações, cujo objetivo é a formação e a descoberta de talentos.",
+            "nas modalidades esportivas adaptadas, cujo objetivo é o maior engajamento dos cidadãos."
+        ],
+        correta: 4 // Índice 4 corresponde à alternativa (e)
+    },
+    {
+        id: 66,
+        origem: "ENEM 2017",
+        texto: `Segundo quadro\nUma sala da prefeitura. O ambiente é modesto. Durante a mutação, ouve-se um dobrado e vivas a Odorico, “viva o prefeito” etc. Estão em cena Dorotéa, Juju, Dirceu, Dulcinéa, o vigário e Odorico. Este último, à janela, discursa.\n\nODORICO — Povo sucupirano! Agoramente já investido no cargo de Prefeito, aqui estou para receber a confirmação, a ratificação, a autenticação e por que não dizer a sagração do povo que me elegeu.\nAplausos vêm de fora.\nODORICO — Eu prometi que o meu primeiro ato como prefeito seria ordenar a construção do cemitério.\nAplausos, aos quais se incorporam as personagens em cena.\nODORICO — (Continuando o discurso:) Botando de lado os entretantos e partindo pros finalmente, é uma alegria poder anunciar que prafrentemente vocês já poderão morrer descansados, tranquilos e desconstrangidos, na certeza de que vão ser sepultados aqui mesmo, nesta terra morna e cheirosa de Sucupira. E quem votou em mim, basta dizer isso ao padre na hora da extrema-unção, que tem enterro e cova de graça, conforme o prometido.\n\nGOMES, D. O bem amado. Rio de Janeiro: Ediouro, 2012.\n\nO gênero peça teatral tem o entretenimento como uma de suas funções. Outra função relevante do gênero, explícita nesse trecho de O bem amado, é:`,
+        alternativas: [
+            "criticar satiricamente o comportamento de pessoas públicas.",
+            "denunciar a escassez de recursos públicos nas prefeituras do interior.",
+            "censurar a falta de domínio da língua padrão em eventos sociais.",
+            "despertar a preocupação da plateia com a expectativa de vida dos cidadãos.",
+            "questionar o apoio irrestrito de agentes públicos aos gestores governamentais."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 67,
+        origem: "ENEM 2017",
+        texto: `João/Zero (Wagner Moura) é um cientista genial, mas infeliz porque há 20 anos atrás foi humilhado publicamente durante uma festa e perdeu Helena (Alinne Moraes), uma antiga e eterna paixão. Certo dia, uma experiência com um de seus inventos permite que ele faça uma viagem no tempo, retornando para aquela época e podendo interferir no seu destino. Mas quando ele retorna, descobre que sua vida mudou totalmente e agora precisa encontrar um jeito de mudar essa história, nem que para isso tenha que voltar novamente ao passado. Será que ele conseguirá acertar as coisas?\n\nDisponível em: http://adorocinema.com. Acesso em: 4 out. 2011.\n\nQual aspecto da organização gramatical atualiza os eventos apresentados na resenha, contribuindo para despertar o interesse do leitor pelo filme?`,
+        alternativas: [
+            "O emprego do verbo haver, em vez de ter, em “há 20 anos atrás foi humilhado”.",
+            "A descrição dos fatos com verbos no presente do indicativo, como “retorna” e “descobre”.",
+            "A repetição do emprego da conjunção “mas” para contrapor ideias.",
+            "A finalização do texto com a frase de efeito “Será que ele conseguirá acertar as coisas?”.",
+            "O uso do pronome de terceira pessoa “ele” ao longo do texto para fazer referência ao protagonista “João/Zero”."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+    {
+        id: 68,
+        origem: "ENEM 2017",
+        texto: `Aí pelas três da tarde\nNesta sala atulhada de mesas, máquinas e papéis, onde invejáveis escreventes dividiram entre si o bom-senso do mundo, aplicando-se em ideias claras apesar do ruído e do mormaço, seguros ao se pronunciarem sobre problemas que afligem o homem moderno (espécie da qual você, milenarmente cansado, talvez se sinta um tanto excluído), largue tudo de repente sob os olhares a sua volta, componha uma cara de louco quieto e perigoso, faça os gestos mais calmos quanto os tais escribas mais severos, dê um largo “ciao” ao trabalho do dia, assim como quem se despede da vida, e surpreenda pouco mais tarde, com sua presença em hora tão insólita, os que estiveram em casa ocupados na limpeza dos armários, que você não sabia antes como era conduzida. Convém não responder aos olhares interrogativos, deixando crescer, por instantes, a intensa expectativa que se instala. Mas não exagere na medida e suba sem demora ao quarto, libertando aí os pés das meias e dos sapatos, tirando a roupa do corpo como se retirasse a importância das coisas, pondo-se enfim em vestes mínimas, quem sabe até em pelo, mas sem ferir o decoro (o seu decoro, está claro), e aceitando ao mesmo tempo, como boa verdade provisória, toda mudança de comportamento.\n\nNASSAR, R. Menina a caminho. São Paulo: Cia. das Letras, 1997.\n\nEm textos de diferentes gêneros, algumas estratégias argumentativas referem-se a recursos linguístico-discursivos mobilizados para envolver o leitor. No texto, caracteriza-se como estratégia de envolvimento a:`,
+        alternativas: [
+            "prescrição de comportamentos, como em: “[...] largue tudo de repente sob os olhares a sua volta [...]”.",
+            "apresentação de contraposição, como em: “Mas não exagere na medida e suba sem demora ao quarto [...]”.",
+            "explicitação do interlocutor, como em: “[...] (espécie da qual você, milenarmente cansado, talvez se sinta um tanto excluído) [...]”.",
+            "descrição do espaço, como em: “Nesta sala atulhada de mesas, máquinas e papéis, onde invejáveis escreventes dividiram entre si o bom-senso do mundo [...]”.",
+            "construção de comparações, como em: “[...] libertando aí os pés das meias e dos sapatos, tirando a roupa do corpo como se retirasse a importância das coisas [...]”."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+    {
+        id: 69,
+        origem: "ENEM 2017",
+        texto: `Naquela manhã de céu limpo e ar leve, devido à chuva torrencial da noite anterior, saí a caminhar com o sol ainda escondido para tomar tenência dos primeiros movimentos da vida na roça. Num demorou nem um tiquinho e o cheiro intenso do café passado por Dona Linda me invadiu as narinas e fez a fome se acordar daquela rema letárgica derivada da longa noite de sono. Levei as mãos até a água que corria pela bica feita de bambu e o contato gelado foi de arrepiar. Mas fui em frente e levei as mãos em concha até o rosto. Com o impacto, recuei e me faltou o fôlego por alguns instantes, mas o despertar foi imediato. Já aceso, entrei na cozinha na buscação de derrubar a fome e me acercar do aconchego do calor do fogão à lenha. Foi quando dei reparo da figura esguia e discreta de uma senhora acompanhada de um garoto aparentando uns cinco anos de idade já aboletada na ponta da mesa em proseio íntimo com a dona da casa. Depois de um vigoroso “Bom dia!”, de um vaporoso aperto de mãos nas apresentações de praxe, fiquei sabendo que Dona Flor de Maio levava o filho Adão para tratamento das feridas que pipocavam por seu corpo, provocando pequenas pústulas de bordas avermelhadas.\n\nGUIÃO, M. Disponível em: www.revistaecologico.com.br. Acesso em: 10 mar. 2014 (adaptado).\n\nA variedade linguística da narrativa é adequada à descrição dos fatos. Por isso, a escolha de determinadas palavras e expressões usadas no texto está a serviço da:`,
+        alternativas: [
+            "localização dos eventos de fala no tempo ficcional.",
+            "composição da verossimilhança do ambiente retratado.",
+            "restrição do papel do narrador à observação das cenas relatadas.",
+            "construção mística das personagens femininas pelo autor do texto.",
+            "caracterização das preferências linguísticas da personagem masculina."
+        ],
+        correta: 1 // Índice 1 corresponde à alternativa (b)
+    },
+{
+        id: 70,
+        origem: "ENEM 2017",
+        texto: `Zé Araújo começou a cantar num tom triste, dizendo aos curiosos que começaram a chegar que uma mulher tinha se ajoelhado aos pés da santa cruz e jurado em nome de Jesus um grande amor, mas jurou e não cumpriu, fingiu e me enganou, pra mim você mentiu, pra Deus você pecou, o coração tem razões que a própria razão desconhece, faz promessas e juras, depois esquece.\nO caboclo estava triste e inspirado. Depois dessa canção que arrepiou os cabelos da Neusa, emendou com uma valsa mais arretada ainda, cheia de palavras difíceis, mas bonita que só a gota serena. Era a história de uma boneca encantadora vista numa vitrine de cristal sobre o soberbo pedestal. Zé Araújo fechava os olhos e soltava a voz:\nSeus cabelos tinham a cor/ Do sol a irradiar/\nFulvos raios de amor./ Seus olhos eram circúnvagos/\nDo romantismo azul dos lagos/ Mãos liriais, uns\nbraços divinais,/ Um corpo alvo sem par/ E os pés\nmuito pequenos./ Enfim eu vi nesta boneca/ Uma perfeita\nVênus.\n\nCASTRO, N. L. As pelejas de Ojuara: o homem que desafiou o diabo. São Paulo: Arx, 2006 (adaptado).\n\nO comentário do narrador do romance “[...] emendou com uma valsa mais arretada ainda, cheia de palavras difíceis, mas bonita que só a gota serena” relaciona-se ao fato de que essa valsa é representativa de uma variedade linguística:`,
+        alternativas: [
+            "detentora de grande prestígio social.",
+            "específica da modalidade oral da língua.",
+            "previsível para o contexto social da narrativa.",
+            "constituída de construções sintáticas complexas.",
+            "valorizadora do conteúdo em detrimento da forma."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 71,
+        origem: "ENEM 2017",
+        texto: `A lavadeira começou a viver como uma serviçal que impõe respeito e não mais como escrava. Mas essa regalia súbita foi efêmera. Meus irmãos, nos frequentes deslizes que adulteravam este novo relacionamento, eram dardejados pelo olhar severo de Emilie; eles nunca suportaram de bom grado que uma índia passasse a comer na mesa da sala, usando os mesmos talheres e pratos, e comprimindo com os lábios o mesmo cristal dos copos e a mesma porcelana das xícaras de café. Uma espécie de asco e repulsa tingia-lhes o rosto, já não comiam com a mesma saciedade e recusavam-se a elogiar os pastéis de picadinho de carneiro, os folheados de nata e tâmara, e o arroz com amêndoas, dourado, exalando um cheiro de cebola tostada. Aquela mulher, sentada e muda, com o rosto rastreado de rugas, era capaz de tirar o sabor e o odor dos alimentos e de suprimir a voz e o gesto como se o seu silêncio ou a sua presença que era só silêncio impedisse o outro de viver.\n\nHATOUM, M. Relato de um certo Oriente. São Paulo: Cia. das Letras, 2000.\n\nAo apresentar uma situação de tensão em família, o narrador destila, nesse fragmento, uma percepção das relações humanas e sociais demarcada pelo:`,
+        alternativas: [
+            "predomínio dos estigmas de classe e de raça sobre a intimidade da convivência.",
+            "discurso da manutenção de uma ética doméstica contra a subversão dos valores.",
+            "desejo de superação do passado de escassez em prol do presente de abastança.",
+            "sentimento de insubordinação à autoridade representada pela matriarca da família.",
+            "rancor com a ingratidão e a hipocrisia geradas pelas mudanças nas regras da casa."
+        ],
+        correta: 0 // Índice 0 corresponde à alternativa (a)
+    },
+    {
+        id: 72,
+        origem: "ENEM 2017",
+        texto: `Fim de semana no parque\nOlha o meu povo nas favelas e vai perceber\nDaqui eu vejo uma caranga do ano\nToda equipada e o tiozinho guiando\nCom seus filhos ao lado estão indo ao parque\nEufóricos brinquedos eletrônicos\nAutomaticamente eu imagino\nA molecada lá da área como é que tá\nProvavelmente correndo pra lá e pra cá\nJogando bola descalços nas ruas de terra\nÉ, brincam do jeito que dá\n[...]\nOlha só aquele clube, que da hora\nOlha aquela quadra, olha aquele campo, olha\nOlha quanta gente\nTem sorveteria, cinema, piscina quente [...]\nAqui não vejo nenhum clube poliesportivo\nPra molecada frequentar nenhum incentivo\nO investimento no lazer é muito escasso\nO centro comunitário é um fracasso\n\nRACIONAIS MCs. Racionais MCs. São Paulo: Zimbabwue, 1994 (fragmento).\n\nA letra da canção apresenta uma realidade social quanto à distribuição distinta dos espaços de lazer que:`,
+        alternativas: [
+            "retrata a ausência de opções de lazer para a população de baixa renda, por falta de espaço adequado.",
+            "ressalta a irrelevância das opções de lazer para diferentes classes sociais, que o acessam à sua maneira.",
+            "expressa o desinteresse das classes sociais menos favorecidas economicamente pelas atividades de lazer.",
+            "implica condições desiguais de acesso ao lazer, pela falta de infraestrutura e investimentos em equipamentos.",
+            "aponta para o predomínio do lazer contemplativo, nas classes favorecidas economicamente; e do prático, nas menos favorecidas."
+        ],
+        correta: 3 // Índice 3 corresponde à alternativa (d)
+    },
+    {
+        id: 73,
+        origem: "ENEM 2017",
+        texto: `O homem disse, Está a chover, e depois, Quem é você, Não sou daqui, Anda à procura de comida, Sim, há quatro dias que não comemos, E como sabe que são quatro dias, É um cálculo, Está sozinha, Estou com o meu marido e uns companheiros, Quantos são, Ao todo, sete, Se estão a pensar em ficar conosco, tirem daí o sentido, já somos muitos, Só estamos de passagem, Donde vêm, Estivemos internados desde que a cegueira começou, Ah, sim, a quarentena, não serviu de nada, Por que diz isso, Deixaram-nos sair, Houve um incêndio e nesse momento percebemos que os soldados que nos vigiavam tinham desaparecido, E saíram, Sim, Os vossos soldados devem ter sido dos últimos a cegar, toda a gente está cega, Toda a gente, a cidade toda, o país,\n\nSARAMAGO, J. Ensaio sobre a cegueira. São Paulo: Cia. das Letras, 1995.\n\nA cena retrata as experiências das personagens em um país atingido por uma epidemia. No diálogo, a violação de determinadas regras de pontuação:`,
+        alternativas: [
+            "revela uma incompatibilidade entre o sistema de pontuação convencional e a produção do gênero romance.",
+            "provoca uma leitura equivocada das frases interrogativas e prejudica a verossimilhança.",
+            "singulariza o estilo do autor e auxilia na representação do ambiente caótico.",
+            "representa uma exceção às regras do sistema de pontuação canônica.",
+            "colabora para a construção da identidade do narrador pouco escolarizado."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa (c)
+    },
+
+
+
+
+
+
+
+
+
+
+
+<!-- questões linguagens 2016 -->
+
+
+
+
+
+
+
+
+
+
+
+        ];
+
+        /* Lógica e Variáveis Globais de Execução */
+        let questoesSelecionadas = [];
+        let respostasEstudante = {};
+        let tempoSegundos = 0;
+        let cronometroInterval;
+
+        // Contagem automática pelo tamanho da lista
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('total-banco').textContent = bancoQuestoes.length;
+        });
+
+        // Inicia o Simulado e Escolhe as questões aleatoriamente
+        function iniciarSimulado() {
+            const qtdDesejada = parseInt(document.getElementById('qtd-questoes').value);
+            const divErro = document.getElementById('erro-mensagem');
+
+            if (bancoQuestoes.length < qtdDesejada) {
+                divErro.innerText = `Erro: O banco de dados possui apenas ${bancoQuestoes.length} questões cadastradas. Não é possível gerar um simulado de ${qtdDesejada} questões.`;
+                divErro.style.display = 'block';
+                return;
+            }
+
+            divErro.style.display = 'none';
+            document.getElementById('config-card').style.display = 'none';
+            document.getElementById('simulado-container').style.display = 'block';
+
+            questoesSelecionadas = [...bancoQuestoes].sort(() => 0.5 - Math.random()).slice(0, qtdDesejada);
+            
+            document.getElementById('contador-questoes').innerText = `Simulado: ${qtdDesejada} Questões Selecionadas`;
+            
+            renderizarQuestoes();
+            iniciarCronometro();
+        }
+
+        // Renderiza as questões tratadas no HTML dinamicamente
+        function renderizarQuestoes() {
+            const container = document.getElementById('questoes-lista');
+            container.innerHTML = '';
+            const letras = ['A', 'B', 'C', 'D', 'E'];
+
+            questoesSelecionadas.forEach((questao, indexGrid) => {
+                const card = document.createElement('div');
+                card.className = 'questao-card';
+                card.id = `q-card-${questao.id}`;
+
+                const header = document.createElement('div');
+                header.className = 'questao-header';
+                header.innerText = `Questão ${indexGrid + 1} • ${questao.origem}`;
+
+                const texto = document.createElement('div');
+                texto.className = 'questao-texto';
+                texto.innerText = questao.texto;
+
+                const listaAlternativas = document.createElement('ul');
+                listaAlternativas.className = 'alternativas-lista';
+
+                questao.alternativas.forEach((alternativa, indexAlt) => {
+                    const item = document.createElement('li');
+                    item.className = 'alternativa-item';
+                    item.id = `alt-${questao.id}-${indexAlt}`;
+                    item.onclick = () => selecionarAlternativa(questao.id, indexAlt);
+
+                    const letra = document.createElement('span');
+                    letra.className = 'letra-opcao';
+                    letra.innerText = letras[indexAlt];
+
+                    const textoOpcao = document.createElement('span');
+                    textoOpcao.innerText = alternativa;
+
+                    item.appendChild(letra);
+                    item.appendChild(textoOpcao);
+                    listaAlternativas.appendChild(item);
+                });
+
+                card.appendChild(header);
+                card.appendChild(texto);
+                card.appendChild(listaAlternativas);
+                container.appendChild(card);
+            });
+        }
+
+        // Registra a alternativa clicada pelo usuário
+        function selecionarAlternativa(questaoId, alternativaIndex) {
+            const q = questoesSelecionadas.find(item => item.id === questaoId);
+            q.alternativas.forEach((_, idx) => {
+                const el = document.getElementById(`alt-${questaoId}-${idx}`);
+                if (el) el.classList.remove('selecionada');
+            });
+
+            const itemSelecionado = document.getElementById(`alt-${questaoId}-${alternativaIndex}`);
+            if (itemSelecionado) itemSelecionado.classList.add('selecionada');
+
+            respostasEstudante[questaoId] = alternativaIndex;
+        }
+
+        // Gerenciamento de Tempo
+        function iniciarCronometro() {
+            tempoSegundos = 0;
+            cronometroInterval = setInterval(() => {
+                tempoSegundos++;
+                const minutos = Math.floor(tempoSegundos / 60).toString().padStart(2, '0');
+                const segundos = (tempoSegundos % 60).toString().padStart(2, '0');
+                document.getElementById('tempo').innerText = `${minutos}:${segundos}`;
+            }, 1000);
+        }
+
+        // Processa as respostas e aplica as formatações visuais pós-gabarito
+        function corrigirSimulado() {
+            clearInterval(cronometroInterval);
+            let acertos = 0;
+
+            questoesSelecionadas.forEach((questao) => {
+                const respostaUsuario = respostasEstudante[questao.id];
+                const respostaCorreta = questao.correta;
+
+                questao.alternativas.forEach((_, idx) => {
+                    const item = document.getElementById(`alt-${questao.id}-${idx}`);
+                    item.classList.add('bloqueada');
+
+                    if (idx === respostaCorreta) {
+                        item.classList.add('correta');
+                        if (respostaUsuario === respostaCorreta && idx === respostaUsuario) {
+                            const span = document.createElement('span');
+                            span.className = 'feedback-label';
+                            span.innerHTML = '<i class="fa-solid fa-check"></i> Você Acertou';
+                            item.appendChild(span);
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'feedback-label';
+                            span.innerText = 'Gabarito Oficial';
+                            item.appendChild(span);
+                        }
+                    }
+
+                    if (respostaUsuario !== undefined && respostaUsuario !== respostaCorreta && idx === respostaUsuario) {
+                        item.classList.add('errada');
+                        const span = document.createElement('span');
+                        span.className = 'feedback-label';
+                        span.innerHTML = '<i class="fa-solid fa-xmark"></i> Sua Resposta';
+                        item.appendChild(span);
+                    }
+                });
+
+                if (respostaUsuario === respostaCorreta) {
+                    acertos++;
+                }
+            });
+
+            const cardResultado = document.getElementById('resultado-card');
+            document.getElementById('score-text').innerText = `Você acertou ${acertos} de ${questoesSelecionadas.length} questões!`;
+            cardResultado.style.display = 'block';
+
+            document.getElementById('btn-corrigir').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
