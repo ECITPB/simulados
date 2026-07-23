@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploradores do Conhecimento 🚀</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #f59e0b;
+            --bg-body: #0f172a; /* Fundo escuro para destacar as cores */
+            --card-front-bg: #ffffff;
+            --card-back-bg: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --text-main: #1e293b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            color: #f8fafc;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 900px;
+            z-index: 10;
+        }
+
+        h1 { 
+            font-size: 3.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc, #fb923c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            font-weight: 900;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3));
+        }
+
+        .controls {
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow);
+        }
+
+        .control-group label { color: #e2e8f0; }
+
+        select {
+            padding: 12px 20px;
+            border-radius: 14px;
+            border: none;
+            background: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        select:hover { transform: scale(1.05); }
+
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+        }
+
+        .stat-item span { color: #818cf8; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 1100px;
+            perspective: 1000px;
+            padding: 20px;
+        }
+
+        .card {
+            height: 110px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .card:hover { transform: rotateY(10deg) translateY(-10px); }
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .card-back { 
+            background: var(--card-back-bg); 
+            color: white; 
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-front {
+            background: #fff;
+            color: var(--primary);
+            transform: rotateY(180deg);
+            border: 4px solid var(--primary);
+        }
+
+        .card.used { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
+
+        /* MODAL ANIMADO */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 35px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            color: var(--text-main);
+            position: relative;
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .option-btn {
+            padding: 18px;
+            border: 2px solid #f1f5f9;
+            border-radius: 18px;
+            background: #f8fafc;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover { background: #e2e8f0; transform: translateX(5px); }
+
+        .close-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* EMOJIS DANÇANTES */
+        .floating-emoji {
+            position: fixed;
+            font-size: 80px;
+            pointer-events: none;
+            z-index: 2000;
+            animation: dance 2s ease-out forwards;
+        }
+
+        @keyframes dance {
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            50% { transform: translateY(20vh) rotate(20deg) scale(1.5); }
+            100% { transform: translateY(-100vh) rotate(-20deg) scale(1.2); opacity: 0; }
+        }
+
+        .no-more-msg {
+            background: #ef4444;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .grid-container { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🚀 Exploradores da Geografia</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label><b>Tema:</b></label>
+                <select id="tema-selector" onchange="resetGame()">
+                    <option value="GERAIS">🌎 GERAIS</option>
+                    <option value="GEOGRAFIA">🗺️ GEOGRAFIA</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label><b>⚠️ Risco:</b></label>
+                <select id="punicao-selector">
+                    <option value="0">Sem Punição</option>
+                    <option value="0.1">Leve (10%)</option>
+                    <option value="0.2" selected>Médio (20%)</option>
+                    <option value="0.5">Pesado (50%)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">Banco: <span id="total-db">0</span></div>
+            <div class="stat-item">Disponíveis: <span id="avail-db">0</span></div>
+        </div>
+        <p id="alert-msg" class="no-more-msg">⚠️ Não há mais perguntas para este tema!</p>
+    </header>
+
+    <div class="grid-container" id="grid"></div>
+
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-question-text">Pergunta aqui...</h3>
+            <div class="options-container" id="options-box" style="display: grid; gap: 12px; margin-top: 20px;"></div>
+            <button class="close-btn" onclick="closeModal()">PRÓXIMO ➔</button>
+        </div>
+    </div>
+
+    <script>
+        const bancoPerguntas = [
+
+{ categoria: "GEOGRAFIA", pergunta: "Quantos estados tem a região Nordeste?", opcoes: ["7", "8", "9", "10"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual o bioma predominante na região Nordeste?", opcoes: ["Pampa", "Caatinga", "Pantanal", "Mata Atlântica"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual o tipo climático predominante em Paulista-PB?", opcoes: ["Pampa", "Semiárido", "Pantanal", "Subtropical"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual a capital do Brasil?", opcoes: ["Rio de Janeiro", "São Paulo", "Brasília", "Salvador"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O clima é definido como:", opcoes: ["As condições atmosféricas observadas em um curto período de tempo", "Condições atmosféricas observadas ao longo de anos", "Vegetação", "Altitude"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Fator MAIS IMPORTANTE que influencia a temperatura:", opcoes: ["Latitude", "Cor do solo", "Urbanismo", "Rios"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o maior bioma do Brasil?", opcoes: ["Cerrado", "Amazônia", "Caatinga", "Pantanal"], correta: 1 },
+            
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a capital do estado de Pernambuco?", opcoes: ["Recife", "Olinda", "Caruaru", "Petrolina"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual o maior país da América do Sul em território?", opcoes: ["Brasil", "Argentina", "Colômbia", "Peru"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Em qual região do Brasil fica o estado da Bahia?", opcoes: ["Sudeste", "Nordeste", "Sul", "Centro-Oeste"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual destes é um bioma brasileiro?", opcoes: ["Taiga", "Tundra", "Amazônia", "Deserto do Saara"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Sobre o Brasil, assinale a alternativa INCORRETA:", opcoes: ["O Brasil é o maior país da América do Sul", "O Brasil faz fronteira com todos os países da América do Sul", "O Brasil é dividido em 5 regiões", "O Brasil é banhado pelo Oceano Atlântico"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Sobre os biomas brasileiros, assinale a alternativa INCORRETA:", opcoes: ["A Amazônia é o maior bioma do Brasil", "O Cerrado é um bioma brasileiro", "A Caatinga ocorre apenas em regiões frias", "O Pantanal é uma área alagada sazonalmente"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Sobre os continentes, assinale a alternativa INCORRETA (EXCETO):", opcoes: ["A África é um continente", "A Europa é um continente", "A Oceania é um país", "A Ásia é o maior continente do mundo"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a capital da Austrália?", opcoes: ["Sydney", "Melbourne", "Canberra", "Brisbane"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o rio mais extenso do mundo?", opcoes: ["Rio Nilo", "Rio Amazonas", "Rio Mississippi", "Rio Yangtzé"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o ponto mais alto do Brasil?", opcoes: ["Pico da Neblina", "Pico 31 de Março", "Pico da Bandeira", "Monte Roraima"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o país com maior número de fusos horários oficiais no mundo?", opcoes: ["China", "Estados Unidos", "França", "Rússia"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o maior deserto quente do mundo?", opcoes: ["Deserto da Arábia", "Deserto Kalahari", "Deserto de Gobi", "Deserto do Saara"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o ponto mais oriental das Américas, localizado na Paraíba?", opcoes: ["Ponta do Seixas", "Cabo Branco", "Farol de Santa Marta", "Ponta do Calcanhar"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual cidade paraibana é conhecida como o principal polo do São João?", opcoes: ["João Pessoa", "Campina Grande", "Sousa", "Cabedelo"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Sobre os períodos geológicos da Terra, assinale a alternativa correta:", opcoes: ["A Terra atualmente não está em nenhuma era glacial", "A última era glacial terminou há milhões de anos e não existe mais esse ciclo", "Estamos tecnicamente em uma era glacial", "As eras glaciais ocorreram apenas no período Pré-Cambriano"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Em qual continente se localiza o Deserto do Saara?", opcoes: ["Ásia", "América", "Oceania", "África"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O Monte Everest, ponto mais alto do planeta, fica em qual cordilheira?", opcoes: ["Andes", "Himalaia", "Alpes", "Rocosas"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual a capital da França?", opcoes: ["Londres", "Berlim", "Roma", "Paris"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual bioma brasileiro é conhecido como a savana mais rica em biodiversidade do mundo?", opcoes: ["Caatinga", "Cerrado", "Pantanal", "Pampa"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O bioma que apresenta vegetação adaptada à aridez (xerófila) e é exclusivo do Brasil é a:", opcoes: ["Amazônia", "Mata de Araucárias", "Caatinga", "Pantanal"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual bioma é considerado a maior planície de inundação contínua do planeta?", opcoes: ["Amazônia", "Cerrado", "Pantanal", "Mata Atlântica"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A vegetação de restinga e os manguezais são ecossistemas associados a qual bioma principal?", opcoes: ["Pampa", "Mata Atlântica", "Caatinga", "Cerrado"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a camada interna da Terra, composta principalmente por ferro e níquel, que possui uma parte sólida e outra líquida?", opcoes: ["Crosta", "Manto", "Núcleo", "Litosfera"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Como é chamado o processo de desgaste, transporte e sedimentação das rochas e do solo por agentes como água e vento?", opcoes: ["Intemperismo", "Erosão", "Metamorfismo", "Vulcanismo"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o nome do supercontinente que, segundo a teoria da deriva continental, existiu há milhões de anos?", opcoes: ["Laurásia", "Gondwana", "Pangeia", "Tétis"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O 'Cinturão de Fogo do Pacífico' é uma região conhecida pela grande ocorrência de quais fenômenos?", opcoes: ["Furacões e tornados", "Secas prolongadas", "Terremotos e atividades vulcânicas", "Inundações sazonais"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o principal bioma brasileiro afetado pelo processo de 'arenização' no Rio Grande do Sul?", opcoes: ["Cerrado", "Pampa", "Caatinga", "Pantanal"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual país é o maior produtor mundial de soja e um dos maiores exportadores de minério de ferro?", opcoes: ["China", "Brasil", "Argentina", "Austrália"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O conceito de 'Densidade Demográfica' é obtido através da relação entre:", opcoes: ["Total de mortes e total de nascimentos", "Número de habitantes e a área do território", "População urbana e população rural", "Número de imigrantes e emigrantes"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual rio possui a maior bacia hidrográfica do mundo e atravessa vários países da América do Sul?", opcoes: ["Rio Nilo", "Rio Mississipi", "Rio Amazonas", "Rio Congo"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A projeção cartográfica de Mercator é muito criticada por qual motivo principal?", opcoes: ["Deformar as formas dos continentes", "Exagerar o tamanho das áreas de altas latitudes (países ricos)", "Não representar os oceanos corretamente", "Ser uma projeção equivalente e não conforme"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual fenômeno climático consiste no resfriamento anormal das águas do Oceano Pacífico Equatorial?", opcoes: ["El Niño", "La Niña", "Monções", "Ciclone"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o nome da linha imaginária que divide a Terra nos hemisférios Norte e Sul?", opcoes: ["Meridiano de Greenwich", "Trópico de Capricórnio", "Linha do Equador", "Círculo Polar Ártico"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O processo de desertificação é mais comum em quais tipos de zonas climáticas?", opcoes: ["Zonas polares", "Zonas úmidas", "Zonas áridas e semiáridas", "Zonas temperadas"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o principal gás responsável pelo efeito estufa cuja concentração aumenta com a queima de combustíveis fósseis?", opcoes: ["Oxigênio", "Dióxido de Carbono", "Nitrogênio", "Argônio"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Como se chama o movimento de deslocamento populacional que ocorre diariamente entre cidades vizinhas (ida e volta)?", opcoes: ["Migração Pendular", "Êxodo Rural", "Transumância", "Migração Definitiva"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual destes países possui o maior número de fusos horários em seu território devido à sua extensão longitudinal?", opcoes: ["Brasil", "China", "Rússia", "Índia"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o nome do maior bloco econômico do mundo em termos de integração, que possui moeda única e livre circulação de pessoas?", opcoes: ["Mercosul", "União Europeia", "NAFTA", "ASEAN"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Como se chama o fenômeno climático urbano caracterizado pelo aumento da temperatura nas áreas centrais das grandes cidades?", opcoes: ["Inversão Térmica", "El Niño", "Ilha de Calor", "Efeito Estufa"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a principal fonte de energia utilizada na matriz elétrica brasileira?", opcoes: ["Energia Eólica", "Energia Nuclear", "Energia Hidrelétrica", "Energia Solar"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O conceito de 'Pegada Ecológica' serve para medir o quê?", opcoes: ["A profundidade dos oceanos", "O rastro deixado por animais em extinção", "O impacto do consumo humano sobre os recursos naturais", "A quantidade de lixo espacial"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o nome do oceano que banha toda a costa leste do Brasil?", opcoes: ["Oceano Índico", "Oceano Pacífico", "Oceano Glacial Ártico", "Oceano Atlântico"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o país mais populoso do mundo atualmente?", opcoes: ["Indonésia", "China", "Estados Unidos", "Índia"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Como se chama o movimento de saída de pessoas de um país para morar em outro?", opcoes: ["Imigração", "Emigração", "Migração interna", "Êxodo rural"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O que indica o conceito de 'densidade demográfica'?", opcoes: ["O número total de nascimentos", "A quantidade de idosos em um país", "A média de habitantes por quilômetro quadrado", "O crescimento da população urbana"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O que é o crescimento vegetativo de uma população?", opcoes: ["Diferença entre imigração e emigração", "Diferença entre a taxa de natalidade e a de mortalidade", "Aumento da produção agrícola", "Soma de todos os habitantes de um país"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Países com elevada densidade demográfica são classificados como:", opcoes: ["Povoados", "Populosos", "Subdesenvolvidos", "Emergentes"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O deslocamento diário de pessoas entre cidades vizinhas para trabalhar ou estudar é chamado de:", opcoes: ["Migração definitiva", "Migração pendular", "Êxodo rural", "Transumância"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o bioma predominante no interior da Paraíba, especificamente na região do Sertão?", opcoes: ["Mata Atlântica", "Cerrado", "Caatinga", "Pantanal"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual formação de relevo atua como barreira à umidade do oceano e contribui para o clima semiárido do Sertão paraibano?", opcoes: ["Serra do Mar", "Planalto da Borborema", "Chapada Diamantina", "Serra da Mantiqueira"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Em relação à economia, qual setor é historicamente forte na região de Campina Grande?", opcoes: ["Extração de petróleo", "Indústria de calçados e tecnologia", "Cultivo de soja", "Mineração de ferro"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Em qual região do estado da Paraíba se localiza o município de Paulista?", opcoes: ["Litoral", "Sertão", "Agreste", "Brejo"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o principal rio que banha o município de Paulista no sertão paraibano?", opcoes: ["Rio Piranhas", "Rio Paraíba", "Rio Taperoá", "Rio Curimataú"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Historicamente, qual atividade econômica foi fundamental para a formação do município de Paulista?", opcoes: ["Mineração de ouro", "Turismo religioso", "Pecuária e agricultura", "Indústria automobilística"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Com qual destes estados a região de Paulista-PB possui proximidade geográfica por estar no alto sertão?", opcoes: ["Pernambuco", "Rio Grande do Norte", "Alagoas", "Bahia"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o gentílico de quem nasce na cidade de Paulista, na Paraíba?", opcoes: ["Paulista", "Paulistano", "Paulistense", "Paulistino"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "De acordo com o Censo 2022 do IBGE, a população residente em Paulista-PB é de aproximadamente:", opcoes: ["5 mil habitantes", "12 mil habitantes", "25 mil habitantes", "50 mil habitantes"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A maior parte da população de Paulista-PB vive em qual tipo de ambiente?", opcoes: ["Área Urbana", "Área Rural", "Reservas Indígenas", "Comunidades Quilombolas"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "De acordo com o Censo 2022 do IBGE, a população residente em João Pessoa é de aproximadamente:", opcoes: ["500 mil pessoas", "833 mil pessoas", "1,2 milhão de pessoas", "2 milhões de pessoas"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o gentílico de quem nasce na cidade de João Pessoa?", opcoes: ["Pessoense", "João-pessoense", "Paraibano", "Capixaba"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a capital do estado do Tocantins?", opcoes: ["Palmas", "Araguaína", "Gurupi", "Porto Nacional"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A cidade de Vitória é a capital de qual estado brasileiro?", opcoes: ["Rio de Janeiro", "Bahia", "Espírito Santo", "Sergipe"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a capital do estado do Mato Grosso?", opcoes: ["Campo Grande", "Cuiabá", "Sinop", "Rondonópolis"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual destas cidades é a capital do estado de Alagoas?", opcoes: ["Aracaju", "Recife", "Natal", "Maceió"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a capital do estado de Santa Catarina?", opcoes: ["Joinville", "Florianópolis", "Blumenau", "Chapecó"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O conceito que define o espaço apropriado e delimitado por relações de poder é:", opcoes: ["Lugar", "Território", "Região", "Paisagem"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Como se chama o conjunto de elementos naturais e culturais que a vista alcança em um determinado momento?", opcoes: ["Espaço Geográfico", "Território", "Rede", "Paisagem"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O conceito que se refere à dimensão afetiva do espaço, onde as pessoas criam laços e identidade, é:", opcoes: ["Lugar", "Fronteira", "Região", "Ecossistema"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual conceito geográfico é utilizado para agrupar áreas com características semelhantes (físicas, sociais ou econômicas)?", opcoes: ["Nação", "Rede urbana", "Região", "Território"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O espaço que foi modificado pelo trabalho humano ao longo da história é chamado de:", opcoes: ["Espaço Natural", "Espaço Geográfico", "Bioma", "Domínio Morfoclimático"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O que melhor define o conceito de 'Espaço Geográfico' para a Geografia?", opcoes: ["A natureza intocada pelo homem", "O espaço produzido e transformado pelas atividades humanas", "Apenas o relevo e o clima de um local", "Um espaço vazio onde as pessoas moram"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o maior e mais profundo oceano da Terra?", opcoes: ["Oceano Atlântico", "Oceano Índico", "Oceano Glacial Ártico", "Oceano Pacífico"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual oceano banha toda a costa leste do Brasil?", opcoes: ["Oceano Pacífico", "Oceano Índico", "Oceano Atlântico", "Oceano Antártico"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A Fossa das Marianas, o ponto mais profundo dos oceanos, está localizada em qual deles?", opcoes: ["Oceano Pacífico", "Oceano Atlântico", "Oceano Índico", "Oceano Ártico"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual oceano é conhecido por ser cercado por importantes rotas comerciais entre a África, Ásia e Oceania?", opcoes: ["Oceano Pacífico", "Oceano Índico", "Oceano Ártico", "Oceano Atlântico"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Como se chama a corrente marítima que transporta águas quentes do Golfo do México para a Europa?", opcoes: ["Corrente de Humboldt", "Corrente das Malvinas", "Corrente do Golfo", "Corrente da Europa"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual formação vegetal brasileira é composta por árvores de troncos retorcidos, casca grossa e raízes profundas?", opcoes: ["Mata Atlântica", "Cerrado", "Pampa", "Mata de Araucária"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A vegetação que ocorre em áreas de transição entre o rio e o mar, com raízes aéreas, é chamada de:", opcoes: ["Restinga", "Floresta Tropical", "Manguezal", "Caatinga"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a principal característica das plantas xerófilas, comuns na Caatinga?", opcoes: ["Adaptação a ambientes com pouca água", "Crescimento em solos congelados", "Necessidade de sombra constante", "Grandes folhas para perder calor"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "As florestas coníferas (como a Taiga) são típicas de quais regiões climáticas?", opcoes: ["Equatoriais", "Desérticas", "Tropicais", "Temperadas e frias"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual bioma possui uma vegetação rasteira, composta basicamente por gramíneas e pequenos arbustos?", opcoes: ["Pantanal", "Pampas", "Floresta Amazônica", "Mata de Cocais"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual teoria demográfica defendia que a população cresceria em progressão geométrica e a produção de alimentos em progressão aritmética?", opcoes: ["Teoria Neomalthusiana", "Teoria Reformista", "Teoria Malthusiana", "Teoria Ecomalthusiana"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A teoria que associa o subdesenvolvimento como a causa do crescimento populacional exagerado é a:", opcoes: ["Teoria Malthusiana", "Teoria Reformista", "Teoria Neomalthusiana", "Teoria de Transição"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual teoria sugere o controle de natalidade rigoroso como solução para o desenvolvimento econômico de países pobres?", opcoes: ["Teoria Neomalthusiana", "Teoria Marxista", "Teoria Ecomalthusiana", "Teoria Natalista"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A Teoria Ecomalthusiana defende que o crescimento populacional acelerado causa qual impacto principal?", opcoes: ["Aumento da igualdade social", "Esgotamento dos recursos naturais e degradação ambiental", "Melhoria tecnológica na agricultura", "Urbanização planejada"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual formação vegetal brasileira é conhecida como 'savana brasileira' e possui solos ácidos?", opcoes: ["Mata Atlântica", "Cerrado", "Pampa", "Caatinga"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "As plantas que perdem suas folhas durante as estações secas ou frias para poupar água são chamadas de:", opcoes: ["Perenifólias", "Latifoliadas", "Caducifólias", "Aciculifoliadas"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A Floresta Amazônica é classificada como uma floresta equatorial e latifoliada. O que significa 'latifoliada'?", opcoes: ["Plantas com espinhos", "Plantas de folhas largas e grandes", "Plantas que não florescem", "Plantas que vivem na água"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual destas formações vegetais é considerada uma 'mata de transição' entre a Amazônia e o Sertão?", opcoes: ["Mata de Cocais", "Mata de Araucária", "Manguezal", "Restinga"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A vegetação característica do Rio Grande do Sul, formada principalmente por herbáceas e gramíneas, é o:", opcoes: ["Cerrado", "Pantanal", "Pampa", "Agreste"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a principal ameaça atual à preservação da vegetação nativa do Cerrado e da Amazônia?", opcoes: ["O avanço da fronteira agrícola", "O crescimento das geleiras", "A diminuição do gás carbônico", "O excesso de chuvas"], correta: 0 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A vegetação que se desenvolve em solos salinos e lodosos, servindo de berçário para espécies marinhas, é o:", opcoes: ["Cerrado", "Manguezal", "Mata Atlântica", "Caatinga"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual destas formações vegetais é considerada uma floresta ombrófila, caracterizada por chuvas abundantes e constantes?", opcoes: ["Caatinga", "Cerrado", "Floresta Amazônica", "Vegetação de Deserto"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "As plantas que vivem sobre outras plantas, como orquídeas e bromélias, comuns em florestas tropicais, são chamadas de:", opcoes: ["Parasitas", "Epífitas", "Rasteiras", "Xerófitas"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "A 'Mata de Araucária' é uma formação vegetal típica de qual região do Brasil devido ao clima mais frio?", opcoes: ["Nordeste", "Norte", "Centro-Oeste", "Sul"], correta: 3 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual termo define a vegetação que permanece verde durante o ano inteiro, sem perder as folhas em nenhuma estação?", opcoes: ["Caducifólia", "Decídua", "Perenifólia", "Xerófila"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "O Pantanal é considerado um complexo de vegetação por qual motivo?", opcoes: ["Possui apenas um tipo de planta", "Mescla influências do Cerrado, Floresta Tropical e Chaco", "É uma floresta totalmente fechada", "Não possui influência de rios"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o nome do bioma brasileiro caracterizado por árvores de troncos retorcidos, casca grossa e solo ácido?", opcoes: ["Mata Atlântica", "Cerrado", "Pampa", "Pantanal"], correta: 1 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a principal função das coordenadas geográficas (latitude e longitude)?", opcoes: ["Prever o clima", "Medir a profundidade do mar", "Localizar qualquer ponto na superfície terrestre", "Calcular a densidade demográfica"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é a principal característica das rochas sedimentares?", opcoes: ["Formadas pelo resfriamento do magma", "Resultantes da transformação de outras rochas sob pressão", "Formadas pelo acúmulo e compactação de detritos", "Surgem apenas em vulcões ativos"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o nome do canal artificial que liga o Oceano Atlântico ao Oceano Pacífico, facilitando o comércio marítimo?", opcoes: ["Canal de Suez", "Canal da Mancha", "Canal do Panamá", "Canal de Corinto"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual é o país que possui a maior população do mundo atualmente (dados de 2024)?", opcoes: ["China", "Estados Unidos", "Índia", "Indonésia"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Qual camada da atmosfera é onde ocorrem os fenômenos meteorológicos como chuva e vento?", opcoes: ["Estratosfera", "Mesosfera", "Troposfera", "Termosfera"], correta: 2 },
+
+{ categoria: "GEOGRAFIA", pergunta: "Como se chama o processo de valorização imobiliária de uma área urbana, que acaba por expulsar os moradores antigos de baixa renda?", opcoes: ["Segregação", "Gentrificação", "Urbanização", "Conurbação"], correta: 1 },
+
+
+
+
+
+
+
+{ categoria: "OUTROS", pergunta: "Qual o maior planeta?", opcoes: ["Terra", "Marte", "Júpiter", "Saturno"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual foi o principal tribunal militar internacional criado para julgar os líderes nazistas após a guerra?", opcoes: ["Tribunal de Haia", "Julgamento de Nuremberg", "Corte de Roma", "Tribunal de Versalhes"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Além de Nuremberg, qual cidade sediou o tribunal para julgar crimes de guerra cometidos no Extremo Oriente?", opcoes: ["Pequim", "Quioto", "Seul", "Tóquio"], correta: 3 },
+
+{ categoria: "OUTRAS", pergunta: "Qual era a principal linha de defesa utilizada por muitos oficiais julgados em Nuremberg?", opcoes: ["Inocência plena", "Apenas cumpriam ordens", "Legítima defesa", "Falta de provas"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual organização internacional foi criada em 1945 com o objetivo de evitar novos conflitos globais?", opcoes: ["Liga das Nações", "ONU", "OTAN", "União Europeia"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Qual país sediou a Copa do Mundo de 2014?", opcoes: ["Rússia", "Alemanha", "África do Sul", "Brasil"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Em que ano foi proclamada a República no Brasil?", opcoes: ["1822", "1889", "1930", "1500"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Em que ano começou a Primeira Guerra Mundial?", opcoes: ["1910", "1911", "1913", "1914"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Quem foi o primeiro presidente do Brasil após a Proclamação da República?", opcoes: ["Dom Pedro II", "Getúlio Vargas", "Marechal Deodoro da Fonseca", "Juscelino Kubitschek"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o oceano mais profundo do planeta Terra?", opcoes: ["Oceano Atlântico", "Oceano Índico", "Oceano Ártico", "Oceano Pacífico"], correta: 3 },
+
+{ categoria: "OUTRAS", pergunta: "Qual destas obras de arte foi pintada por Leonardo da Vinci?", opcoes: ["O Grito", "Mona Lisa", "A Noite Estrelada", "Guernica"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o processo pelo qual as plantas transformam luz solar em energia química?", opcoes: ["Respiração", "Transpiração", "Fotossíntese", "Combustão"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Em qual país surgiu a primeira democracia da história?", opcoes: ["Egito", "Grécia", "Roma", "França"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o maior órgão do corpo humano?", opcoes: ["Coração", "Pele", "Fígado", "Pulmão"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Em que ano terminou a Segunda Guerra Mundial?", opcoes: ["1942", "1945", "1939", "1950"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Qual civilização antiga construiu as pirâmides de Gizé?", opcoes: ["Romanos", "Gregos", "Egípcios", "Mesopotâmicos"], correta: 2 },
+
+{ categoria: "OUTROS", pergunta: "Em que ano foi assinada a ATUAL Constituição Brasileira", opcoes: ["1982", "1986", "1987", "1988"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual evento marcou o início da Idade Média na Europa?", opcoes: ["Renascimento", "Descobrimento da América", "Revolução Industrial", "Queda do Império Romano do Ocidente"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual foi o principal motivo das Grandes Navegações no século XV?", opcoes: ["Buscar novas rotas comerciais para as Índias", "Expandir o território europeu na África", "Encontrar ouro na América do Norte", "Evitar guerras na Europa"], correta: 0 },
+
+{ categoria: "OUTROS", pergunta: "Qual foi a causa direta da Revolução Francesa em 1789?", opcoes: ["A independência dos Estados Unidos", "A Primeira Guerra Mundial", "A invasão da Rússia por Napoleão", "A crise econômica e desigualdade social"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual foi o principal objetivo da Inconfidência Mineira?", opcoes: ["Defender a monarquia portuguesa", "Expandir o território brasileiro", "Aumentar impostos sobre o ouro", "independência da Capitania de Minas Gerais em relação a Portugal"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Quem liderou a Inconfidência Mineira?", opcoes: ["Dom Pedro I", "Zumbi dos Palmares", "Duque de Caxias", "Tiradentes"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Quem foi o primeiro presidente civil do Brasil após o período militar?", opcoes: ["Getúlio Vargas", "Juscelino Kubitschek", "Tancredo Neves", "José Sarney"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual evento marcou o fim da Segunda Guerra Mundial?", opcoes: ["Invasão da Normandia", "Batalha de Stalingrado", "Ataque a Pearl Harbor", "Rendição da Alemanha em 1945"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual foi o período conhecido como Brasil Colônia?", opcoes: ["1500 a 1822", "1822 a 1889", "1889 a 1930", "1930 a 1964"], correta: 0 },
+
+{ categoria: "OUTROS", pergunta: "Qual foi a principal atividade econômica no início da colonização do Brasil?", opcoes: ["Mineração", "Café", "Pau-brasil", "Pecuária"], correta: 2 },
+
+{ categoria: "OUTROS", pergunta: "Qual era o principal destino da expedição portuguesa liderada por Pedro Álvares Cabral quando chegou ao Brasil em 1500?", opcoes: ["A Oceania, para exploração territorial", "O continente africano, para colonização imediata", "A América do Norte, para fundar colônias", "A Índia, buscando rotas comerciais de especiarias"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual é o metal mais abundante na crosta terrestre?", opcoes: ["Ferro", "Zinco", "Cobre", "Alumínio"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual é o processo pelo qual as plantas produzem seu próprio alimento?", opcoes: ["Respiração", "Fotossíntese", "Fermentação", "Transpiração"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Qual é o maior osso do corpo humano?", opcoes: ["Coluna vertebral", "Tíbia", "Úmero", "Fêmur"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual é o principal gás responsável pelo efeito estufa na Terra?", opcoes: ["Oxigênio", "Nitrogênio", "Hélio", "Dióxido de carbono"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual é o livro mais vendido no mundo, depois da Bíblia?", opcoes: ["O Senhor dos Anéis", "Dom Quixote", "O Pequeno Príncipe", "Um Conto de Duas Cidades"], correta: 1 },
+
+{ categoria: "CONHECIMENTOS GERAIS", pergunta: "Qual é o metal cujo símbolo químico é 'Hg' e que se apresenta em estado líquido à temperatura ambiente?", opcoes: ["Prata", "Mercúrio", "Chumbo", "Zinco"], correta: 1 },
+
+{ categoria: "CONHECIMENTOS GERAIS", pergunta: "Em que ano ocorreu a queda do Muro de Berlim, simbolizando o fim da Guerra Fria?", opcoes: ["1985", "1989", "1991", "1994"], correta: 1 },
+
+{ categoria: "CONHECIMENTOS GERAIS", pergunta: "Qual é a capital da Austrália?", opcoes: ["Sydney", "Melbourne", "Camberra", "Perth"], correta: 2 },
+
+{ categoria: "CONHECIMENTOS GERAIS", pergunta: "Qual é o maior planeta do nosso Sistema Solar?", opcoes: ["Saturno", "Neptuno", "Júpiter", "Urano"], correta: 2 },
+
+{ categoria: "CONHECIMENTOS GERAIS", pergunta: "Quantos ossos tem, em média, o corpo humano de um adulto?", opcoes: ["106", "206", "306", "406"], correta: 1 },
+
+{ categoria: "CONHECIMENTOS GERAIS", pergunta: "Qual é a montanha mais alta da América do Sul?", opcoes: ["Monte Fitz Roy", "Pico da Neblina", "Aconcágua", "Monte Roraima"], correta: 2 },
+
+{ categoria: "OUTROS", pergunta: "Quantos corações tem um polvo?", opcoes: ["Um", "Dois", "Três", "Quatro"], correta: 2 },
+
+{ categoria: "OUTROS", pergunta: "Em que país nasceu o filósofo Friedrich Nietzsche?", opcoes: ["Áustria", "Alemanha", "França", "Suíça"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Qual é o nome do protagonista da franquia The Legend of Zelda?", opcoes: ["Zelda", "Link", "Ganon", "Epona"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Em que mês e ano ocorreu o descobrimento do Brasil pelos portugueses?", opcoes: ["Março de 1500", "Abril de 1500", "Maio de 1500", "Junho de 1500"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Qual filme apresenta o personagem Neo?", opcoes: ["Matrix", "Inception", "Blade Runner", "O Exterminador do Futuro"], correta: 0 },
+
+{ categoria: "OUTROS", pergunta: "Em qual filme tem um personagem chamado Jack Dawson?", opcoes: ["Titanic", "Avatar", "O Grande Gatsby", "Pearl Harbor"], correta: 0 },
+
+{ categoria: "OUTROS", pergunta: "Qual é o elemento químico representado pelo símbolo O?", opcoes: ["Ouro", "Oxigênio", "Ozônio", "Ósmio"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Quantos minutos tem uma hora?", opcoes: ["50", "60", "100", "120"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Em que ano o homem pisou na Lua pela primeira vez?", opcoes: ["1961", "1975", "1958", "1969"], correta: 3 },
+
+{ categoria: "OUTROS", pergunta: "Qual é o maior animal terrestre?", opcoes: ["Elefante africano", "Rinoceronte", "Hipopótamo", "Girafa"], correta: 0 },
+
+{ categoria: "OUTRAS", pergunta: "Qual o nome da galáxia onde se localiza o planeta Terra?", opcoes: ["Andrômeda", "Via Láctea", "Sombreiro", "Galáxia de Bode"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é a estrela mais próxima da Terra depois do Sol?", opcoes: ["Sirius", "Betelgeuse", "Proxima Centauri", "Polaris"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o planeta do Sistema Solar conhecido por seus grandes e brilhantes anéis?", opcoes: ["Urano", "Júpiter", "Saturno", "Netuno"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Como se chama o fenômeno em que a Lua se posiciona entre a Terra e o Sol, bloqueando a luz solar?", opcoes: ["Eclipse Lunar", "Equinócio", "Solstício", "Eclipse Solar"], correta: 3 },
+
+{ categoria: "OUTRAS", pergunta: "Qual destes planetas é classificado como um 'planeta rochoso'?", opcoes: ["Vênus", "Saturno", "Urano", "Netuno"], correta: 0 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o nome do primeiro satélite artificial a ser lançado ao espaço, em 1957?", opcoes: ["Explorer 1", "Sputnik 1", "Vostok 1", "Apollo 11"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "O 'Cinturão de Asteroides' do nosso Sistema Solar está localizado principalmente entre quais planetas?", opcoes: ["Terra e Marte", "Júpiter e Saturno", "Marte e Júpiter", "Saturno e Urano"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual foi o nome do projeto secreto dos Estados Unidos responsável pelo desenvolvimento das primeiras bombas atômicas?", opcoes: ["Projeto Apollo", "Projeto Manhattan", "Projeto Overlord", "Projeto Mercury"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Quais foram as duas cidades japonesas atingidas por bombas atômicas em agosto de 1945?", opcoes: ["Tóquio e Quioto", "Osaka e Yokohama", "Hiroshima e Nagasaki", "Nagoya e Kobe"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual elemento químico foi utilizado como combustível na bomba 'Little Boy', lançada sobre Hiroshima?", opcoes: ["Plutônio", "Urânio-235", "Hidrogênio", "Lítio"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual foi o estopim imediato para o início da Primeira Guerra Mundial em 1914?", opcoes: ["A invasão da Polônia", "O assassinato do arquiduque Francisco Ferdinando", "A queda do Muro de Berlim", "O bombardeio de Pearl Harbor"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Como ficou conhecida a fase da guerra caracterizada pela escavação de extensas linhas de defesa onde os soldados viviam?", opcoes: ["Guerra de Movimento", "Guerra Relâmpago", "Guerra de Trincheiras", "Guerra Naval"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Quais países formavam a 'Tríplice Entente' no início do conflito?", opcoes: ["Alemanha, Itália e Áustria-Hungria", "França, Reino Unido e Rússia", "EUA, Japão e China", "Brasil, Argentina e Chile"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual tratado, assinado em 1919, impôs duras sanções à Alemanha e encerrou oficialmente o conflito?", opcoes: ["Tratado de Tordesilhas", "Tratado de Madri", "Tratado de Versalhes", "Pacto de Varsóvia"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual destas tecnologias militares foi utilizada pela primeira vez em larga escala na Primeira Guerra Mundial?", opcoes: ["Drones", "Tanques de guerra e aviões", "Mísseis nucleares", "Satélites espiões"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual sistema de posicionamento global foi inicialmente desenvolvido para fins militares e hoje é essencial em smartphones?", opcoes: ["Bluetooth", "Wi-Fi", "GPS", "Infravermelho"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual medicamento, conhecido como 'droga milagrosa', teve sua produção em massa acelerada durante a Segunda Guerra Mundial para tratar soldados feridos?", opcoes: ["Aspirina", "Penicilina", "Insulina", "Ibuprofeno"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual foi o pior acidente nuclear da história, ocorrido na Ucrânia em 1986?", opcoes: ["Three Mile Island", "Fukushima", "Chernobyl", "Césio-137"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Em 1987, um grave acidente radioativo ocorreu no Brasil após a abertura de um aparelho de radioterapia em qual cidade?", opcoes: ["São Paulo", "Goiânia", "Rio de Janeiro", "Curitiba"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual elemento químico foi o responsável pelo acidente radioativo em Goiânia?", opcoes: ["Urânio-235", "Plutônio", "Césio-137", "Rádio"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "O acidente de Fukushima, em 2011, foi provocado por qual fenômeno natural?", opcoes: ["Um furacão", "Um terremoto seguido de tsunami", "Uma erupção vulcânica", "Um incêndio florestal"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Como se chama a área circular ao redor de Chernobyl onde a habitação humana permanece proibida?", opcoes: ["Zona de Silêncio", "Zona de Exclusão", "Área Vermelha", "Círculo de Radiação"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o país com a maior área territorial do mundo?", opcoes: ["Canadá", "China", "Rússia", "Estados Unidos"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual destas substâncias é a mais dura encontrada na natureza?", opcoes: ["Grafite", "Diamante", "Aço", "Quartzo"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Em qual continente está localizado o deserto do Saara?", opcoes: ["Ásia", "Oceania", "África", "América do Sul"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Quem é o autor da famosa obra 'Dom Quixote'?", opcoes: ["Machado de Assis", "William Shakespeare", "Miguel de Cervantes", "Dante Alighieri"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o elemento químico representado pelo símbolo 'Au' na tabela periódica?", opcoes: ["Prata", "Cobre", "Ouro", "Alumínio"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "O motor a jato, que revolucionou a aviação comercial, teve seu desenvolvimento acelerado para equipar quais veículos?", opcoes: ["Tanques de guerra", "Aviões de carga", "Aviões de caça", "Navios encouraçados"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o oceano mais profundo do planeta Terra?", opcoes: ["Oceano Atlântico", "Oceano Índico", "Oceano Ártico", "Oceano Pacífico"], correta: 3 },
+
+{ categoria: "OUTRAS", pergunta: "Qual destas obras de arte foi pintada por Leonardo da Vinci?", opcoes: ["O Grito", "Mona Lisa", "A Noite Estrelada", "Guernica"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o processo pelo qual as plantas transformam luz solar em energia química?", opcoes: ["Respiração", "Transpiração", "Fotossíntese", "Combustão"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Em qual país surgiu a primeira democracia da história?", opcoes: ["Egito", "Grécia", "Roma", "França"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o maior órgão do corpo humano?", opcoes: ["Coração", "Pele", "Fígado", "Pulmão"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Qual é o maior mamífero do mundo?", opcoes: ["Elefante Africano", "Tubarão-Baleia", "Baleia Azul", "Girafa"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Qual destas línguas é a mais falada no mundo (considerando falantes nativos)?", opcoes: ["Inglês", "Espanhol", "Hindi", "Mandarim"], correta: 3 },
+
+{ categoria: "OUTRAS", pergunta: "Em qual cidade italiana está localizado o Coliseu?", opcoes: ["Veneza", "Florença", "Roma", "Milão"], correta: 2 },
+
+{ categoria: "OUTRAS", pergunta: "Quantos planetas compõem o nosso Sistema Solar?", opcoes: ["7", "8", "9", "10"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "Quem foi o cientista que desenvolveu a Teoria da Relatividade?", opcoes: ["Isaac Newton", "Albert Einstein", "Galileu Galilei", "Stephen Hawking"], correta: 1 },
+
+{ categoria: "OUTRAS", pergunta: "A rede precursora da Internet, chamada ARPANET, foi criada por qual departamento governamental?", opcoes: ["Departamento de Saúde", "Departamento de Defesa dos EUA", "Ministério da Educação", "Departamento de Comércio"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Quanto é 7 x 8?", opcoes: ["54", "56", "64", "62"], correta: 1 },
+
+{ categoria: "OUTROS", pergunta: "Quem pintou a Mona Lisa?", opcoes: ["Van Gogh", "Picasso", "Da Vinci", "Monet"], correta: 2 }
+        ];
+
+        let perguntasUsadasIndices = [];
+        const totalCards = 80;
+        const grid = document.getElementById('grid');
+
+        function init() {
+            createGrid();
+            updateStats();
+        }
+
+        function spawnEmoji(type) {
+            const emojis = type === 'win' ? ['🥳', '🎉', '✨', '🏆', '🤩'] : ['😢', '💥', '👎', '💔', '😵'];
+            for(let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'floating-emoji';
+                    el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.left = Math.random() * 90 + 'vw';
+                    el.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 2500);
+                }, i * 100);
+            }
+        }
+
+        function resetGame() {
+            perguntasUsadasIndices = [];
+            grid.innerHTML = '';
+            document.getElementById('alert-msg').style.display = 'none';
+            createGrid();
+            updateStats();
+        }
+
+        function getPerguntasFiltradas() {
+            const tema = document.getElementById('tema-selector').value;
+            if (tema === "GERAIS") return bancoPerguntas;
+            return bancoPerguntas.filter(p => p.categoria === "GEOGRAFIA");
+        }
+
+        function updateStats() {
+            const filtradas = getPerguntasFiltradas();
+            const disponiveis = filtradas.filter(p => !perguntasUsadasIndices.includes(p.pergunta));
+            document.getElementById('total-db').innerText = filtradas.length;
+            document.getElementById('avail-db').innerText = disponiveis.length;
+        }
+
+        function createGrid() {
+            for (let i = 1; i <= totalCards; i++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-face card-back">${i}</div>
+                    <div class="card-face card-front">🚀</div>
+                `;
+                card.onclick = () => handleCardClick(card);
+                grid.appendChild(card);
+            }
+        }
+
+        function handleCardClick(cardElement) {
+            if (cardElement.classList.contains('flipped')) return;
+
+            const chancePunicao = parseFloat(document.getElementById('punicao-selector').value);
+            
+            if (Math.random() < chancePunicao) {
+                const objPunicao = { categoria: "PUNIÇÃO", pergunta: "BUM! VOCÊ PERDEU PONTO! ⚠️", punicao: true };
+                cardElement.classList.add('flipped', 'used');
+                showQuestion(objPunicao);
+                spawnEmoji('lose');
+                return;
+            }
+
+            const filtradas = getPerguntasFiltradas();
+            const disponiveis = filtradas.filter(p => !perguntasUsadasIndices.includes(p.pergunta));
+
+            if (disponiveis.length === 0) {
+                document.getElementById('alert-msg').style.display = 'block';
+                return;
+            }
+
+            const sorteada = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+            perguntasUsadasIndices.push(sorteada.pergunta);
+            cardElement.classList.add('flipped', 'used');
+            showQuestion(sorteada);
+            updateStats();
+        }
+
+        function showQuestion(obj) {
+            const modal = document.getElementById('modal-overlay');
+            const qText = document.getElementById('modal-question-text');
+            const oBox = document.getElementById('options-box');
+            
+            oBox.innerHTML = '';
+
+            if (obj.punicao) {
+                qText.innerHTML = `<span style="font-size: 4rem;">💥</span><br><b style="color:#ef4444">${obj.pergunta}</b>`;
+            } else {
+                qText.innerHTML = `<small style="color: var(--primary)">${obj.categoria}</small><br>${obj.pergunta}`;
+                obj.opcoes.forEach((opt, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = opt;
+                    btn.onclick = () => {
+                        if (index === obj.correta) {
+                            btn.style.background = '#22c55e';
+                            btn.style.color = 'white';
+                            btn.style.borderColor = '#16a34a';
+                            spawnEmoji('win');
+                     } else {
+    btn.style.background = '#ef4444';
+    btn.style.color = 'white';
+    btn.style.borderColor = '#dc2626';
+    spawnEmoji('lose');
+
+    // 🔥 AQUI É A PARTE QUE VOCÊ QUER
+    Array.from(oBox.children).forEach((b, i) => {
+        if (i === obj.correta) {
+            b.style.background = 'yellow';
+            b.style.color = '#000';
+            b.style.borderColor = '#eab308';
+        }
+    });
+}
+                        Array.from(oBox.children).forEach(b => b.style.pointerEvents = 'none');
+                    };
+                    oBox.appendChild(btn);
+                });
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+
+        init();
+    </script>
+</body>
+</html>
