@@ -38,7 +38,7 @@
             background: radial-gradient(circle at top, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
             color: white;
             text-align: center;
-            padding: 70px 20px 90px;
+            padding: 60px 20px 100px;
             position: relative;
         }
 
@@ -65,18 +65,20 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Ajuste para manter o texto em 1 linha */
         .hero p {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 300;
             color: #94a3b8;
-            max-width: 600px;
+            max-width: 850px;
             margin: 0 auto;
+            white-space: normal;
         }
 
-        /* Layout Container */
+        /* Layout Container (Subido mais um pouco) */
         .container {
             max-width: 1200px;
-            margin: -35px auto 40px;
+            margin: -60px auto 40px;
             padding: 0 20px;
             position: relative;
             z-index: 10;
@@ -297,10 +299,16 @@
 
         /* Ajustes Responsivos */
         @media (max-width: 640px) {
+            .container {
+                margin-top: -40px;
+            }
             .boas-vindas {
                 flex-direction: column;
                 text-align: center;
                 padding: 25px;
+            }
+            .hero p {
+                font-size: 1rem;
             }
         }
     </style>
