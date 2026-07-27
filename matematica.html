@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado de Matemática - Portal ENEM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Configuração e Suporte Avançado para Notação Matemática (MathJax v3) -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            chtml: {
+                scale: 1.05 // Melhora a legibilidade visual das fórmulas
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* Estilos Globais */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #0f172a);
+            background-size: 400% 400%;
+            color: #f1f5f9;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        .header-simulado {
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 4px solid #f59e0b;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-simulado h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .config-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .config-card h2 {
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+
+        .config-card p {
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        .badge-total {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #f59e0b;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .select-wrapper {
+            margin-bottom: 30px;
+        }
+
+        select {
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 2px solid #f59e0b;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .erro-mensagem {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 35px;
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px 25px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cronometro {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #simulado-container {
+            display: none;
+        }
+
+        .questao-card {
+            background: rgba(30, 41, 59, 0.35);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .questao-header {
+            font-size: 0.9rem;
+            color: #f59e0b;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* Suporte Responsivo para Equações em Bloco */
+        .questao-texto {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            white-space: pre-line;
+            text-align: justify;
+            overflow-x: auto; /* Permite scroll se a fórmula for muito larga */
+        }
+
+        /* Garante ajuste correto de equações matemáticas inline/bloco */
+        .mjx-chtml {
+            outline: none;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .alternativas-lista {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alternativa-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alternativa-item:hover {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        .alternativa-item.selecionada {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+        }
+
+        .letra-opcao {
+            font-weight: 700;
+            color: #f59e0b;
+            background: rgba(15, 23, 42, 0.4);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .texto-opcao {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        .actions-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .resultado-card {
+            background: rgba(30, 41, 59, 0.75);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 2px solid #f59e0b;
+            display: none;
+        }
+
+        .resultado-card h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .score-text {
+            font-size: 1.5rem;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        .alternativa-item.correta {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: #10b981 !important;
+            color: #a7f3d0 !important;
+            cursor: not-allowed;
+        }
+
+        .alternativa-item.correta .letra-opcao {
+            color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .alternativa-item.errada {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5 !important;
+            cursor: not-allowed;
+        }
+
+        .alternativa-item.errada .letra-opcao {
+            color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .alternativa-item.bloqueada {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .feedback-label {
+            margin-left: auto;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-simulado">
+        <h1><i class="fa-solid fa-calculator"></i> Matemática e suas Tecnologias</h1>
+        <p>Matemática e todas as suas tecnologias, conceitos geométricos, algébricos e análise estatística.</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="config-card" class="config-card">
+            <h2>Configurar seu Simulado</h2>
+            <p>Selecione a quantidade de questões aleatórias que deseja resolver para iniciar o teste cronometrado.</p>
+            
+            <div class="badge-total">
+                <i class="fa-solid fa-database"></i> <span id="total-banco">0</span> Questões cadastradas no banco
+            </div>
+
+            <div id="erro-mensagem" class="erro-mensagem"></div>
+
+            <div class="select-wrapper">
+                <label for="qtd-questoes" style="display:block; margin-bottom:10px; color:#94a3b8;">Quantidade de Questões:</label>
+                <select id="qtd-questoes">
+                    <option value="5">5 Questões</option>
+                    <option value="10">10 Questões</option>
+                    <option value="20">20 Questões</option>
+                    <option value="30">30 Questões</option>
+                    <option value="50">50 Questões</option>
+                    <option value="80">80 Questões</option>
+                    <option value="100">100 Questões</option>
+                </select>
+            </div>
+
+            <button id="btn-iniciar" class="btn" onclick="iniciarSimulado()">Iniciar Simulado</button>
+        </div>
+
+        <div id="simulado-container">
+            <div class="status-bar">
+                <span id="contador-questoes" style="color: #94a3b8; font-weight: 500;">Questões</span>
+                <div class="cronometro">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="tempo">00:00</span>
+                </div>
+            </div>
+
+            <div id="resultado-card" class="resultado-card">
+                <h2>Resultado do Simulado 🎉</h2>
+                <div class="score-text" id="score-text">Você acertou 0 de 0 questões.</div>
+                <button class="btn" style="margin-top: 15px;" onclick="window.location.reload()">Refazer Novo Simulado</button>
+            </div>
+
+            <div id="questoes-lista" class="tex2jax_process"></div>
+
+            <div class="actions-container">
+                <button id="btn-corrigir" class="btn" onclick="corrigirSimulado()">Corrigir e Verificar Nota</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        /* ==========================================================================
+           BANCO DE QUESTÕES (Sintaxe segura com barras duplas \\ para LaTeX)
+           ========================================================================== */
+        const bancoQuestoes = [
+           
+
+
+
+
+
+
+
+
+
+
+
+
+
+ {
+                id: 1,
+                origem: "ENEM 2020 - Matemática",
+                texto: `A equação quadrática genérica é dada pela expressão $f(x) = ax^2 + bx + c$. Suponha que uma das raízes seja calculada utilizando a fórmula de Bhaskara:
+                $$x = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$$
+                Onde o discriminante $\\Delta$ é definido como $\\Delta = b^2 - 4ac$.
+                Se $\\Delta > 0$, quantas raízes reais e distintas a função possui e qual a relação da soma dessas raízes $S = x_1 + x_2$?`,
+                alternativas: [
+                    "Possui $1$ raiz real e a soma é $S = \\frac{b}{a}$.",
+                    "Possui $2$ raízes reais distintas e a soma é $S = -\\frac{b}{a}$.",
+                    "Possui $2$ raízes reais distintas e a soma é $S = \\frac{c}{a}$.",
+                    "Não possui raízes reais e a soma é $S = 0$.",
+                    "Possui infinitas raízes reais e $S = -b$."
+                ],
+                correta: 1
+            },
+            {
+                id: 2,
+                origem: "Geometria Espacial - Geometria Analítica",
+                texto: `Considere a esfera definida pela equação cartesiana $x^2 + y^2 + z^2 = r^2$. O volume $V$ contido no interior dessa esfera pode ser calculado pela seguinte integral:
+                $$V = \\int_{-r}^{r} \\pi (r^2 - z^2) \\, dz$$
+                Qual o valor final do volume $V$ em função do raio $r$?`,
+                alternativas: [
+                    "$V = \\frac{1}{3}\\pi r^3$",
+                    "$V = \\frac{4}{3}\\pi r^3$",
+                    "$V = 2\\pi r^2$",
+                    "$V = \\frac{3}{4}\\pi r^3$",
+                    "$V = \\pi r^3$"
+                ],
+                correta: 1
+            },
+            {
+                id: 3,
+                origem: "Álgebra Linear - Sistemas",
+                texto: `Dado o sistema linear homogêneo:
+                $$\\begin{cases} 2x + 3y = 0 \\\\ 4x + ky = 0 \\end{cases}$$
+                Para qual valor da constante $k$ o sistema admite infinitas soluções (Sistemas Possíveis e Indeterminados)?`,
+                alternativas: [
+                    "$k = 0$",
+                    "$k = 3$",
+                    "$k = 6$",
+                    "$k = -6$",
+                    "$k = 12$"
+                ],
+                correta: 2
+            },
+{
+    id: 4,
+    origem: "Inédita - Porcentagem e Matemática Financeira",
+    texto: "Um motorista de aplicativo registrou o valor total gasto com combustível ao longo dos primeiros quatro meses do ano. No mês de janeiro, ele gastou R$ 800,00.\n\nEm fevereiro, houve um aumento de 10% no valor total gasto em relação a janeiro. Em março, devido a uma redução na rodagem, o gasto caiu 5% em relação a fevereiro. Por fim, em abril, um reajuste no preço da gasolina elevou o custo em 15% em relação ao mês de março.\n\nQual foi o valor total aproximado gasto com combustível por esse motorista no mês de abril?",
+    alternativas: [
+        "R$ 836,00",
+        "R$ 920,00",
+        "R$ 961,40",
+        "R$ 990,00",
+        "R$ 1.012,00"
+    ],
+    correta: 2
+},
+{
+    id: 5,
+    origem: "ENEM 2025 - Matemática",
+    texto: "Uma distribuidora de combustível possui caminhões-tanque com capacidade de 30 000 litros cada. Em qualquer transporte realizado por esses caminhões, um mesmo volume de combustível é descartado, pois fica com muitas impurezas. Esse volume descartado independe da quantidade transportada.\n\nUm posto de combustível encomendou 10 000 litros de gasolina dessa distribuidora, que enviou 10 200 litros, considerando o volume descartado no transporte. Mesmo assim, a quantidade de gasolina entregue ao posto foi de 9 900 litros.\n\nEm um novo pedido, esse posto solicitou que fosse entregue exatamente o dobro do volume de gasolina encomendado no pedido anterior.\n\nUtilizando o mesmo caminhão da entrega anterior, qual é o volume mínimo de gasolina, em litro, que a distribuidora deverá enviar para garantir a entrega da quantidade encomendada nesse novo pedido?",
+    alternativas: [
+        "20 100",
+        "20 200",
+        "20 300",
+        "20 400",
+        "20 600"
+    ],
+    correta: 2
+},
+{
+    id: 6,
+    origem: "ENEM 2025",
+    texto: "Em um laboratório, um recipiente contém 10 litros de uma solução composta apenas pelas substâncias $S_1$ e $S_2$. Dessa solução, 99,95% é de $S_1$. Uma quantidade de $S_1$ será retirada dessa solução, mantendo a quantidade inicial de $S_2$, de modo que 99,90% da nova solução seja de $S_1$.\n\nQual é a quantidade de $S_1$, em litro, que será retirada?",
+    alternativas: [
+        "0,0050",
+        "0,0100",
+        "0,5000",
+        "4,9775",
+        "5,0000"
+    ],
+    correta: 4
+},
+{
+    id: 7,
+    origem: "ENEM 2025",
+    texto: "Uma fábrica utilizou uma impressora 3D para produzir o protótipo de uma peça. O protótipo tem forma de um poliedro convexo, obtido pela justaposição de dois sólidos distintos, um com a forma de um prisma hexagonal regular reto e o outro com a forma de um tronco de pirâmide hexagonal reta. A base maior do tronco de pirâmide coincide com uma das bases do prisma.\n\nApós a impressão do protótipo, ele foi encaminhado ao setor de customização para realização da pintura de sua superfície. O critério definido para realização da pintura considera que faces congruentes entre si devem ser pintadas com uma mesma cor, e faces não congruentes entre si devem apresentar cores distintas.\n\nQual é a quantidade de cores utilizadas para pintar o protótipo?",
+    alternativas: [
+        "9",
+        "8",
+        "6",
+        "4",
+        "3"
+    ],
+    correta: 3
+},
+{
+    id: 8,
+    origem: "ENEM 2025",
+    texto: "No atletismo, um grande desafio da prova de 100 metros rasos é a sua conclusão num tempo abaixo da marca de referência dos 10,00 segundos. Vários atletas já alcançaram esse feito. Em 2009, o jamaicano Usain Bolt estabeleceu o recorde mundial masculino dessa prova, com o tempo de 9,58 segundos.\n\nQual é a diferença, em segundo, entre a marca de referência e a marca estabelecida por Usain Bolt em 2009?",
+    alternativas: [
+        "0,02",
+        "0,42",
+        "0,52",
+        "1,02",
+        "1,42"
+    ],
+    correta: 1
+},
+{
+    id: 9,
+    origem: "ENEM 2025",
+    texto: "Uma pessoa pretende instalar um kit de gás natural veicular (GNV) em seu carro. Na loja que escolheu para realizar a compra e instalação desse kit, havia cinco modelos de cilindro para armazenamento do gás, cujas capacidades, em metro cúbico, eram, respectivamente: 10, 14, 17, 21 e 25. O preço do cilindro é proporcional à sua capacidade. Esse carro rodará 30 km diariamente, 7 dias por semana, e o consumo do GNV é de 1 m3 a cada 13 km rodados. A pessoa escolherá o modelo de cilindro de menor preço e que garanta apenas um abastecimento semanal.\n\nNessas condições, qual será a capacidade, em metro cúbico, do cilindro escolhido por essa pessoa?",
+    alternativas: [
+        "10",
+        "14",
+        "17",
+        "21",
+        "25"
+    ],
+    correta: 2
+},
+{
+    id: 10,
+    origem: "ENEM 2025",
+    texto: "Para acompanhar o fluxo de visitantes em seu prédio, uma empresa estabeleceu um código de identificação para a visitação. De acordo com a regra estabelecida, cada visitante será identificado com um código sequencial numérico com 7 dígitos, determinado, da esquerda para a direita, da seguinte forma:\n\n• o primeiro dígito indica o andar ao qual o visitante se dirige, que é um número de 1 a 4;\n• os dois próximos dígitos correspondem ao número do setor da empresa ao qual o visitante se destina. Esse número varia de 01 a 20;\n• os três dígitos seguintes correspondem ao número do funcionário da empresa com quem o visitante irá se reunir. Esse número varia de 001 a 135;\n• o último dígito indica se o visitante chegou à empresa pela manhã, dígito 0, ou à tarde, dígito 1.\n\nUm visitante chegou à empresa às 10 horas da manhã para se reunir com o funcionário identificado pelo número 109, que trabalha no setor 08 da empresa, localizado no 2º andar.\n\nO código de identificação desse visitante é",
+    alternativas: [
+        "0109082",
+        "0281090",
+        "1010982",
+        "2081090",
+        "2810910"
+    ],
+    correta: 3
+},
+{
+    id: 11,
+    origem: "ENEM 2025",
+    texto: "Quatro candidatos se apresentaram para realizar a prova de um concurso. Antes de iniciar a prova, os celulares dos quatro candidatos foram recolhidos pelo aplicador, que os guardou, cada um, dentro de um envelope preto. Ao término da prova, o aplicador devolveu os quatro envelopes com os celulares aos quatro candidatos, de maneira aleatória, já que não havia feito a identificação dos envelopes.\n\nA probabilidade de que todos os candidatos tenham recebido de volta os envelopes com os seus respectivos celulares é",
+    alternativas: [
+        "$\\frac{1}{2}$",
+        "$\\frac{1}{10}$",
+        "$\\frac{1}{16}$",
+        "$\\frac{1}{24}$",
+        "$\\frac{1}{256}$"
+    ],
+    correta: 3
+},
+{
+    id: 12,
+    origem: "ENEM 2025",
+    texto: "Uma fábrica de tijolos ecológicos com 3 funcionários, cada um trabalhando 6 horas diárias, produz 720 unidades por dia. Para atender ao crescimento da demanda por esse tipo de tijolo, essa fábrica passou a ter 5 funcionários, cada um trabalhando 9 horas por dia, aumentando, assim, sua capacidade de produção. Todos os funcionários produzem igual quantidade de tijolos a cada hora, independentemente de trabalharem 6 ou 9 horas diárias.\n\nO número de tijolos fabricados diariamente após o aumento da capacidade de produção é",
+    alternativas: [
+        "800.",
+        "1 080.",
+        "1 200.",
+        "1 800.",
+        "2 520."
+    ],
+    correta: 3
+},
+{
+    id: 13,
+    origem: "ENEM 2025",
+    texto: "Uma empresa produziu, em um determinado mês, 110 toneladas de plástico a partir de derivados de petróleo e 80 toneladas a partir de plásticos reciclados. O custo para reciclar uma tonelada de plástico é de R$ 500,00, que equivale a 5% do custo para produzir a mesma quantidade de plástico a partir de derivados de petróleo. Para o mês seguinte, a meta dessa empresa é produzir a mesma quantidade de plástico que foi produzida nesse mês, mas com redução de, pelo menos, 50% no custo de produção.\n\nPara que no mês seguinte a empresa atinja a meta, a quantidade mínima de toneladas de plástico que devem ser produzidas a partir de reciclagem deverá ser",
+    alternativas: [
+        "135.",
+        "140.",
+        "155.",
+        "160.",
+        "175."
+    ],
+    correta: 1
+},
+{
+    id: 14,
+    origem: "ENEM 2025",
+    texto: "Dez casais fundaram um grupo de dança e decidiram constituir uma diretoria com três cargos: presidente, secretário e tesoureiro. Para maior representatividade, decidiu-se que no máximo uma pessoa por casal poderá ocupar um cargo nessa diretoria.\n\nQuantas diretorias diferentes podem ser constituídas por esses 10 casais?",
+    alternativas: [
+        "10 × 9 × 8",
+        "20 × 18 × 16",
+        "20 × 19 × 18",
+        "10 × 9 × 8 × 2",
+        "20 × 18 × 16 × 2"
+    ],
+    correta: 1
+},
+{
+    id: 15,
+    origem: "ENEM 2025",
+    texto: "O cortisol é um hormônio produzido pelas glândulas adrenais e pode ser considerado um importante marcador do estresse fisiológico. Em um estudo desenvolvido com enfermeiros, foi verificado que a concentração de cortisol salivar em um dia de trabalho, denotada por $T$, era, em média, 1,59 vezes a concentração de cortisol salivar em um dia de folga, denotada por $F$.\n\nROCHA, M. C. P. et al. Estresse em enfermeiros: o uso do cortisol salivar no dia de trabalho e de folga. **Rev. Esc. Enferm. USP**, n. 5, 2013 (adaptado).\n\nNesse estudo, a relação obtida entre $T$ e $F$ foi",
+    alternativas: [
+        "$T = 1,59 + F$",
+        "$F = 1,59 + T$",
+        "$\\frac{T}{F} = 1,59$",
+        "$\\frac{F}{T} = 1,59$",
+        "$F \\cdot T = 1,59$"
+    ],
+    correta: 2
+},
+{
+    id: 17,
+    origem: "ENEM 2025",
+    texto: "O dono de uma sorveteria armazena sorvete em potes de $20\\ 000\\text{ cm}^3$. Ele serve o sorvete em taças, em porções de 250 mL.\n\nA quantidade de taças que ele consegue servir a partir de um pote cheio de sorvete é",
+    alternativas: [
+        "5.",
+        "8.",
+        "50.",
+        "80.",
+        "800."
+    ],
+    correta: 3
+},
+{
+    id: 18,
+    origem: "ENEM 2025",
+    texto: "A luminância de um objeto é a grandeza que descreve a quantidade de luz produzida ou refletida por sua superfície. Ela está definida como a razão entre a intensidade luminosa, medida em candela (cd), e o quadrado da distância do objeto até o foco de luz, medida em metro (m).\n\nA unidade de medida da luminância de um objeto é",
+    alternativas: [
+        "$\\frac{\\text{cd}}{\\text{m}^2}$",
+        "$\\frac{\\text{m}^2}{\\text{cd}}$",
+        "$\\frac{\\text{cd}}{\\text{m}}$",
+        "$\\frac{\\text{m}}{\\text{cd}}$",
+        "$\\frac{\\text{m}}{\\text{cd}^2}$"
+    ],
+    correta: 0
+},
+{
+    id: 19,
+    origem: "ENEM 2025",
+    texto: "Três dados cúbicos, com faces numeradas de 1 a 6, foram utilizados em um jogo. Artur escolheu dois dados, e João ficou com o terceiro. O jogo consiste em ambos lançarem seus dados, observarem os números nas faces voltadas para cima e compararem o maior número obtido por Artur com o número obtido por João. Vence o jogador que obter o maior número. Em caso de empate, a vitória é de João.\n\nO jogador que tem a maior probabilidade de vitória é",
+    alternativas: [
+        "Artur, com probabilidade de $\\frac{2}{3}$",
+        "João, com probabilidade de $\\frac{4}{9}$",
+        "Artur, com probabilidade de $\\frac{91}{216}$",
+        "João, com probabilidade de $\\frac{91}{216}$",
+        "Artur, com probabilidade de $\\frac{125}{216}$"
+    ],
+    correta: 4
+},
+{
+    id: 20,
+    origem: "ENEM 2025",
+    texto: "Em um país, a primeira etapa para obtenção da carteira de motorista é a contratação de três produtos:\n\n• pacote com 20 aulas teóricas;\n• pacote com 10 aulas práticas;\n• aluguel do veículo para realização das aulas práticas.\n\nUma pessoa que pretende obter a carteira de motorista pesquisou o valor do aluguel do veículo e os valores de cada aula teórica e de cada aula prática em três autoescolas. O quadro apresenta esses valores.\n\n<table style='width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #444; color: inherit;'><thead style='background-color: #2b3035; color: #ffffff;'><tr><th style='padding: 8px; border: 1px solid #444;'>Autoescola</th><th style='padding: 8px; border: 1px solid #444;'>Valor de cada aula teórica (R$)</th><th style='padding: 8px; border: 1px solid #444;'>Valor de cada aula prática (R$)</th><th style='padding: 8px; border: 1px solid #444;'>Aluguel do veículo (R$)</th></tr></thead><tbody><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>I</td><td style='padding: 8px; border: 1px solid #444;'>10</td><td style='padding: 8px; border: 1px solid #444;'>80</td><td style='padding: 8px; border: 1px solid #444;'>400</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>II</td><td style='padding: 8px; border: 1px solid #444;'>30</td><td style='padding: 8px; border: 1px solid #444;'>50</td><td style='padding: 8px; border: 1px solid #444;'>200</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>III</td><td style='padding: 8px; border: 1px solid #444;'>20</td><td style='padding: 8px; border: 1px solid #444;'>40</td><td style='padding: 8px; border: 1px solid #444;'>400</td></tr></tbody></table>\n\nEla contratará os três produtos numa mesma autoescola de modo que o custo total nessa primeira etapa seja o menor possível.\n\nA autoescola que será contratada é a",
+    alternativas: [
+        "I, com o custo total de R$ 1 400,00.",
+        "II, com o custo total de R$ 280,00.",
+        "II, com o custo total de R$ 1 300,00.",
+        "III, com o custo total de R$ 460,00.",
+        "III, com o custo total de R$ 1 200,00."
+    ],
+    correta: 4
+},
+{
+    id: 21,
+    origem: "ENEM 2025",
+    texto: "Um confeiteiro passou a produzir tortas em formato de cilindro circular reto, com raio da base variando entre 12 cm e 16 cm e altura de 6 cm. Essas tortas deverão ser embaladas em caixas com formato de prisma reto de base quadrada, de modo que seja possível acomodar a torta em seu interior e ainda restar pelo menos 1 cm de distância entre a torta e as superfícies internas da caixa, lateral e superior. Ele dispõe, originalmente, de caixas no formato pretendido, cujas dimensões internas são 14 cm de comprimento do lado da base e 7 cm de altura, que não atendem às suas necessidades. Portanto, ele comprará novas caixas, com o mesmo formato das caixas originais, mas com comprimento do lado da base maior, que sejam adequadas para embalar todos os tipos de torta que produz.\n\nA aresta da base das novas caixas deve ser, no mínimo, quantos centímetros maior do que a das caixas originais?",
+    alternativas: [
+        "4",
+        "12",
+        "16",
+        "18",
+        "20"
+    ],
+    correta: 4
+},
+{
+    id: 22,
+    origem: "ENEM 2025",
+    texto: "Um empresário utiliza máquinas cuja pressão interna $P$, em atmosfera, depende do tempo contínuo de utilização $t$, em hora, e de um parâmetro positivo $K$, que define o modelo da máquina, segundo a expressão:\n\n$$P = 4 \\cdot \\log[-K \\cdot (t + 1) \\cdot (t - 19)]$$\n\nO fabricante dessas máquinas recomenda ao usuário que a pressão interna desse tipo de máquina não ultrapasse 10 atmosferas durante seu funcionamento.\n\nO empresário pretende comprar novas máquinas desse tipo que deverão funcionar, diariamente, por um período contínuo de 10 horas. Para isso, precisa definir o modelo de máquina a ser adquirida escolhendo o maior valor possível do parâmetro $K$, atendendo à recomendação do fabricante.\n\nO maior valor a ser escolhido para $K$ é",
+    alternativas: [
+        "$10^{0,5}$",
+        "$10^8$",
+        "$\\frac{10^{2,5}}{84}$",
+        "$\\frac{10^{2,5}}{99}$",
+        "$25 \\times 10^{-2}$"
+    ],
+    correta: 0
+},
+{
+    id: 23,
+    origem: "ENEM 2025",
+    texto: "Um carro que custa 60 mil reais é comercializado por uma revendedora que oferece duas opções de pagamento, todas sem entrada e sem juros:\n\n<ul style='margin: 10px 0; padding-left: 20px;'><li>opção 1: pagamento em $n$ parcelas iguais;</li><li>opção 2: pagamento em 6 parcelas a mais do que na opção 1 e, com isso, o valor de cada parcela se torna R$ 500,00 menor do que o valor da parcela na opção 1.</li></ul>\nNas duas opções de pagamento, o valor total a ser pago pelo carro é o mesmo.\n\nQual é a quantidade $n$ de parcelas contidas na opção 1 de pagamento?",
+    alternativas: [
+        "18",
+        "24",
+        "30",
+        "42",
+        "48"
+    ],
+    correta: 1
+},
+{
+    id: 24,
+    origem: "ENEM 2025",
+    texto: "Um pai comprou oito presentes diferentes (dentre os quais, uma bicicleta e um celular) para dar a seus três filhos. Ele pretende distribuir os presentes de modo que o filho mais velho e o mais novo recebam três presentes cada um, e o do meio receba os dois presentes restantes. O mais velho ganhará, entre seus presentes, ou uma bicicleta ou um celular, mas não ambos.\n\nDe quantas maneiras distintas a distribuição dos presentes pode ser feita?",
+    alternativas: [
+        "36",
+        "53",
+        "300",
+        "360",
+        "560"
+    ],
+    correta: 2
+},
+{
+    id: 25,
+    origem: "ENEM 2025",
+    texto: "A final de um campeonato de futebol foi disputada em 2 tempos regulamentares, de 45 minutos cada, sem acréscimos, com uma prorrogação de 30 minutos, também sem acréscimos. Um jogador entrou no início do segundo tempo, com um equipamento para medir a distância percorrida durante sua participação no jogo. Ao final do segundo tempo regulamentar, esse jogador havia percorrido 4,5 km. Ele manteve na prorrogação a mesma velocidade média que havia mantido no segundo tempo regulamentar.\n\nA distância percorrida por esse jogador durante sua participação na partida, em quilômetro, foi",
+    alternativas: [
+        "4,5.",
+        "6,0.",
+        "7,5.",
+        "9,0.",
+        "12,0."
+    ],
+    correta: 2
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- QUESTÕES GERADAS POR I.A -->
+
+
+{
+    id: 26,
+    origem: "Questão gerada por I.A",
+    texto: "Uma cooperativa de catadores de materiais reciclaveis comercializa fardos de papelão para uma indústria de embalagens. O contrato estipula que a renda diária $R$, em reais, obtida pela venda desses fardos depende do número $x$ de fardos produzidos e comercializados no dia, segundo a função polinomial de 2º grau:\n\n$$R(x) = -2x^2 + 120x - 1000$$\n\nPara cobrir os custos operacionais fixos da coleta e triagem, a cooperativa precisa garantir uma renda diária mínima de R$ 600,00.\n\nQual é a quantidade máxima de fardos de papelão que a cooperativa pode produzir em um dia sem descumprir essa meta de renda mínima?",
+    alternativas: [
+        "20",
+        "30",
+        "40",
+        "50",
+        "60"
+    ],
+    correta: 2
+},
+{
+    id: 27,
+    origem: "Questão gerada por I.A",
+    texto: "Um arquiteto apresentou a um cliente a planta baixa de um futuro apartamento, desenhada na escala de 1 : 50. Na planta, a sala de estar tem formato retangular com dimensões de 8 cm de largura por 10 cm de comprimento. O cliente decidiu comprar um tapete retangular que ocupará exatamente 50% da área real do piso dessa sala.\n\nA área do tapete que o cliente comprará, em metro quadrado, deverá ser igual a",
+    alternativas: [
+        "10.",
+        "20.",
+        "40.",
+        "50.",
+        "100."
+    ],
+    correta: 0
+},
+{
+    id: 28,
+    origem: "Questão gerada por I.A",
+    texto: "Em uma universidade, o sistema de avaliação de uma disciplina é composto por quatro provas com pesos crescentes: a primeira tem peso 1, a segunda peso 2, a terceira peso 3 e a quarta peso 4. Para ser aprovado sem necessidade de prova final, o estudante precisa atingir uma média ponderada igual ou superior a 7,0.\n\nUm aluno obteve as notas 6,0, 7,5 e 5,0 nas três primeiras provas, respectivamente. Qual é a nota mínima que esse aluno precisará tirar na quarta prova para ser aprovado sem final?",
+    alternativas: [
+        "7,0",
+        "7,5",
+        "8,0",
+        "8,5",
+        "9,0"
+    ],
+    correta: 3
+},
+{
+    id: 29,
+    origem: "Questão gerada por I.A",
+    texto: "Um reservatório de captação de água da chuva tem o formato de um prisma reto de base retangular, com dimensões internas de 2 metros de largura por 3 metros de comprimento e 1,5 metro de profundidade. Durante um período de seca, o reservatório operava com apenas 40% de sua capacidade total. Com o início de uma tempestade contínua, a água passou a entrar no reservatório a uma taxa constante de 500 litros por hora.\n\nSupondo que não haja retirada de água durante a chuva, o tempo necessário para que o reservatório encha completamente, a partir do início da tempestade, será de",
+    alternativas: [
+        "5,4 horas.",
+        "9,0 horas.",
+        "10,8 horas.",
+        "12,5 horas.",
+        "18,0 horas."
+    ],
+    correta: 2
+},
+{
+    id: 30,
+    origem: "Questão gerada por I.A",
+    texto: "Em uma dinâmica de sala de aula, um professor colocou em uma urna 30 bolinhas idênticas, numeradas de 1 a 30. O professor sorteia uma bolinha e, sem mostrar o número aos alunos, dá a seguinte dica: \"O número sorteado é um múltiplo de 4\".\n\nSabendo que a dica do professor é verdadeira, qual é a probabilidade de que o número sorteado seja, simultaneamente, um múltiplo de 3?",
+    alternativas: [
+        "$\\frac{2}{7}$",
+        "$\\frac{1}{15}$",
+        "$\\frac{2}{15}$",
+        "$\\frac{1}{3}$",
+        "$\\frac{1}{4}$"
+    ],
+    correta: 0
+},
+{
+    id: 31,
+    origem: "Questão gerada por I.A",
+    texto: "A meia-vida de um medicamento no organismo é o tempo necessário para que a sua concentração na corrente sanguínea caia pela metade. Certo antibiótico possui uma meia-vida de 4 horas. Um paciente recebeu uma dose inicial intravenosa que gerou uma concentração de 400 mg/L no sangue. Sabe-se que esse medicamento perde o seu efeito terapêutico quando a concentração sanguínea se torna inferior a 25 mg/L.\n\nConsiderando a função exponencial de decaimento, o tempo exato, em hora, durante o qual o medicamento manterá o efeito terapêutico nesse paciente após a aplicação da dose é de",
+    alternativas: [
+        "8",
+        "12",
+        "16",
+        "20",
+        "24"
+    ],
+    correta: 2
+},
+    {
+        id: 34,
+        origem: "Questão gerada por I.A",
+        texto: "Um artesão fabrica luminárias no formato de um cone circular reto de madeira maciça. Ele precisa pintar a superfície lateral externa de 50 dessas luminárias. Cada luminária possui raio da base medindo 6 cm e altura medindo 8 cm.\n\nConsidere 3,14 como aproximação para $\\pi$.\n\nA área total da superfície lateral externa que o artesão precisará pintar nas 50 luminárias, em centímetro quadrado, é igual a",
+        alternativas: [
+            "3 768.",
+            "7 536.",
+            "9 420.",
+            "12 560.",
+            "15 072."
+        ],
+        correta: 2
+    },
+    {
+        id: 35,
+        origem: "Questão gerada por I.A",
+        texto: "A comissão organizadora de uma feira de tecnologia possui uma lista com 6 engenheiros e 5 designers. Para compor o júri avaliador dos projetos, a comissão precisa escolher uma equipe de 4 membros, sendo obrigatoriamente 2 engenheiros e 2 designers.\n\nDe quantas maneiras diferentes essa equipe do júri avaliador pode ser formada?",
+        alternativas: [
+            "20",
+            "150",
+            "300",
+            "330",
+            "1 200"
+        ],
+        correta: 1
+    },
+    {
+        id: 36,
+        origem: "Questão gerada por I.A",
+        texto: "O gráfico da velocidade $v$, em metros por segundo, em função do tempo $t$, em segundos, de um móvel que se desloca em linha reta é representado por um segmento de reta que conecta os pontos $(0, 4)$ e $(8, 20)$.\n\nA distância total percorrida por esse móvel no intervalo de tempo de $t = 0$ s até $t = 8$ s, em metros, foi de",
+        alternativas: [
+            "32.",
+            "64.",
+            "96.",
+            "128.",
+            "160."
+        ],
+        correta: 2
+    },
+{
+        id: 37,
+        origem: "Questão gerada por I.A",
+        texto: "Uma loja de calçados comercializa um determinado modelo de tênis cujo preço de venda é de R$ 250,00. Durante uma promoção de fim de ano, a gerência concedeu um desconto de 20% sobre esse preço. Como as vendas superaram as expectativas, ao término da promoção a loja reajustou o preço promocional com um aumento de 15%.\n\nApós o reajuste, o preço final desse tênis passou a ser de",
+        alternativas: [
+            "R$ 230,00.",
+            "R$ 237,50.",
+            "R$ 240,00.",
+            "R$ 245,00.",
+            "R$ 250,00."
+        ],
+        correta: 0
+    },
+    {
+        id: 38,
+        origem: "Questão gerada por I.A",
+        texto: "Uma empresa de logística armazena caixas cúbicas idênticas de 0,5 metro de aresta em um contêiner retangular cujas dimensões internas são 3 metros de largura, 4 metros de comprimento e 2,5 metros de altura. O gerente precisa garantir que o contêiner seja carregado com o número máximo possível dessas caixas, de modo que fiquem perfeitamente alinhadas e sem ultrapassar a altura máxima permitida.\n\nA quantidade máxima de caixas cúbicas que podem ser armazenadas nesse contêiner é",
+        alternativas: [
+            "240.",
+            "288.",
+            "300.",
+            "480.",
+            "600."
+        ],
+        correta: 0
+    },
+    {
+        id: 39,
+        origem: "Questão gerada por I.A",
+        texto: "Uma clínica médica registrou a temperatura corporal de um paciente monitorado ao longo de um dia. A função $T(t) = -0,1t^2 + 1,2t + 35$ descreve a variação da temperatura $T$, em grau Celsius, em função do tempo $t$, em horas decorridas a partir das 00:00 h, no intervalo $0 \\le t \\le 12$.\n\nQual foi a temperatura máxima atingida por esse paciente no período monitorado?",
+        alternativas: [
+            "36,2 °C",
+            "37,4 °C",
+            "38,6 °C",
+            "39,2 °C",
+            "40,0 °C"
+        ],
+        correta: 2
+    },
+    {
+        id: 40,
+        origem: "Questão gerada por I.A",
+        texto: "Em uma maratona de programação, uma equipe resolveu 12 problemas no primeiro dia de prova. A cada dia seguinte, a quantidade de problemas resolvidos por essa equipe aumentou em uma progressão aritmética de razão 4. A maratona durou exatamente 5 dias.\n\nO número total de problemas resolvidos por essa equipe ao longo de toda a maratona foi igual a",
+        alternativas: [
+            "28.",
+            "60.",
+            "80.",
+            "100.",
+            "120."
+        ],
+        correta: 3
+    },
+    {
+        id: 41,
+        origem: "Questão gerada por I.A",
+        texto: "Um gráfico estatístico apresenta a distribuição das idades dos funcionários de uma startup de tecnologia:\n\n<table style='width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #444; color: inherit;'><thead style='background-color: #2b3035; color: #ffffff;'><tr><th style='padding: 8px; border: 1px solid #444;'>Idade (anos)</th><th style='padding: 8px; border: 1px solid #444;'>Número de funcionários</th></tr></thead><tbody><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>22</td><td style='padding: 8px; border: 1px solid #444;'>5</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>25</td><td style='padding: 8px; border: 1px solid #444;'>8</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>30</td><td style='padding: 8px; border: 1px solid #444;'>4</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>35</td><td style='padding: 8px; border: 1px solid #444;'>3</td></tr></tbody></table>\n\nA mediana das idades dos funcionários dessa startup é igual a",
+        alternativas: [
+            "22 anos.",
+            "25 anos.",
+            "27,5 anos.",
+            "28 anos.",
+            "30 anos."
+        ],
+        correta: 1
+    },
+    {
+        id: 42,
+        origem: "Questão gerada por I.A",
+        texto: "Para medir a altura de um prédio, um estudante fincou uma estaca vertical de 1,5 metro de altura no chão plano e observou que sua sombra projetada media 2,0 metros. No mesmo instante, ele mediu a sombra projetada pelo prédio e encontrou o valor de 32,0 metros.\n\nA altura real desse prédio, em metros, é igual a",
+        alternativas: [
+            "18,0.",
+            "21,3.",
+            "24,0.",
+            "42,6.",
+            "48,0."
+        ],
+        correta: 2
+    },
+        {
+        id: 44,
+        origem: "Questão gerada por I.A",
+        texto: "Um fabricante de tintas deseja produzir latinhas cilíndricas de alumínio com capacidade para 500 mL ($500 \\text{ cm}^3$). Por razões de ergonomia e design, a altura da latinha deve ser ajustada para ser exatamente igual a quatro vezes o raio da sua base circular.\n\nConsiderando 3,14 como aproximação para $\\pi$, o raio da base dessas latinhas, em centímetro, deve ser aproximadamente igual à raiz cúbica de",
+        alternativas: [
+            "39,8.",
+            "79,6.",
+            "125,0.",
+            "159,2.",
+            "398,0."
+        ],
+        correta: 0
+    },
+    {
+        id: 45,
+        origem: "Questão gerada por I.A",
+        texto: "Uma empresa de transporte coletivo registrou a quantidade diária de passageiros em uma linha de ônibus ao longo de cinco dias úteis da semana: 1 200, 1 350, 1 100, 1 450 e 1 400. O diretor de operações deseja prever a demanda do próximo sábado, estimando-a como sendo igual ao desvio padrão amostral dos valores registrados durante a semana.\n\nQual é o desvio padrão amostral dessa distribuição de passageiros?",
+        alternativas: [
+            "100",
+            "120",
+            "150",
+            "180",
+            "200"
+        ],
+        correta: 2
+    },
+    {
+        id: 46,
+        origem: "Questão gerada por I.A",
+        texto: "Uma senha bancária de segurança é composta por exatamente 4 dígitos numéricos distintos (de 0 a 9). O titular da conta lembra que o primeiro dígito é um número ímpar e o último dígito é um número par, mas não se recorda dos dois dígitos centrais.\n\nQuantas senhas diferentes atendem às condições lembradas pelo titular?",
+        alternativas: [
+            "800",
+            "1 400",
+            "1 600",
+            "2 000",
+            "2 500"
+        ],
+        correta: 1
+    },
+
+
+
+
+
+
+    {
+        id: 47,
+        origem: "Questão gerada por I.A",
+        texto: "Um fabricante de lâmpadas LED realizou um teste de durabilidade em um lote de 1 000 unidades. A probabilidade de uma lâmpada desse lote apresentar defeito antes de completar 10 000 horas de uso é de 2%. Um cliente comprou um conjunto com 3 dessas lâmpadas para instalar em sua residência.\n\nA probabilidade de que pelo menos uma das 3 lâmpadas compradas apresente defeito antes de completar 10 000 horas de uso é dada por",
+        alternativas: [
+            "$1 - (0,02)^3$",
+            "$1 - (0,98)^3$",
+            "$(0,02)^3$",
+            "$3 \\cdot (0,02) \\cdot (0,98)^2$",
+            "$(0,98)^3$"
+        ],
+        correta: 1
+    },
+    {
+        id: 48,
+        origem: "Questão gerada por I.A",
+        texto: "Para irrigar uma lavoura retangular de 120 metros de comprimento por 80 metros de largura, um produtor rural instalou um aspersor circular no centro do terreno. O alcance do raio de irrigação desse aspersor é de 40 metros.\n\nConsidere 3,14 como aproximação para $\\pi$.\n\nA porcentagem da área total dessa lavoura que NÃO é alcançada pela irrigação do aspersor é de, aproximadamente,",
+        alternativas: [
+            "32,5%.",
+            "47,6%.",
+            "52,4%.",
+            "67,5%.",
+            "78,5%."
+        ],
+        correta: 1
+    },
+    {
+        id: 49,
+        origem: "Questão gerada por I.A",
+        texto: "Uma empresa de entregas por aplicativo utiliza a função trigonométrica $f(t) = 150 + 50 \\cdot \\sin\\left(\\frac{\\pi \\cdot t}{6}\\right)$ para modelar a quantidade de entregadores ativos $f(t)$ em uma grande cidade, onde $t$ representa a hora do dia ($0 \\le t \\le 24$).\n\nEm qual horário do dia ocorre o pico máximo de entregadores ativos nessa cidade?",
+        alternativas: [
+            "03:00 h",
+            "06:00 h",
+            "09:00 h",
+            "12:00 h",
+            "15:00 h"
+        ],
+        correta: 0
+    },
+    {
+        id: 50,
+        origem: "Questão gerada por I.A",
+        texto: "Um restaurante de self-service cobra R$ 60,00 por quilo de refeição. No entanto, o prato vazio (tara) pesa exatamente 200 gramas e o sistema da balança desconta esse peso automaticamente. Um cliente montou seu prato e a balança registrou um peso bruto total de 750 gramas.\n\nO valor correto cobrado pela refeição desse cliente foi de",
+        alternativas: [
+            "R$ 33,00.",
+            "R$ 35,00.",
+            "R$ 42,00.",
+            "R$ 45,00.",
+            "R$ 57,00."
+        ],
+        correta: 0
+    },
+    {
+        id: 51,
+        origem: "Questão gerada por I.A",
+        texto: "Em um campeonato de basquete, a média de pontos marcados por um time nas primeiras 4 partidas foi de 82 pontos por jogo. Para alcançar uma média de pelo menos 85 pontos por jogo ao final das 6 primeiras partidas, a média de pontos que o time precisa ter nas duas partidas restantes deve ser de, no mínimo,",
+        alternativas: [
+            "88 pontos.",
+            "90 pontos.",
+            "91 pontos.",
+            "92 pontos.",
+            "94 pontos."
+        ],
+        correta: 2
+    },
+    {
+        id: 52,
+        origem: "Questão gerada por I.A",
+        texto: "Um reservatório de água em formato esférico possui raio interno de 3 metros. Ele precisa ser esvaziado para manutenção por meio de uma bomba hidráulica que retira água a uma vazão constante de 1 000 litros por minuto ($1 \\text{ m}^3 = 1\\ 000 \\text{ litros}$).\n\nConsidere 3,14 como aproximação para $\\pi$.\n\nO tempo aproximado necessário para esvaziar totalmente o reservatório cheio é de",
+        alternativas: [
+            "38 minutos.",
+            "75 minutos.",
+            "113 minutos.",
+            "151 minutos.",
+            "226 minutos."
+        ],
+        correta: 2
+    },
+    {
+        id: 53,
+        origem: "Questão gerada por I.A",
+        texto: "Uma operadora de telefonia móvel oferece um plano no qual o cliente paga um valor mensal fixo e tem direito a $100$ minutos de ligações. Caso exceda esse limite, paga uma tarifa adicional por minuto excedente. O gráfico a seguir representa o valor total da conta $C(m)$, em reais, em função do tempo total $m$ de ligações no mês:\n\n<table style='width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #444; color: inherit;'><thead style='background-color: #2b3035; color: #ffffff;'><tr><th style='padding: 8px; border: 1px solid #444;'>Minutos ($m$)</th><th style='padding: 8px; border: 1px solid #444;'>Valor da Conta $C(m)$ (R$)</th></tr></thead><tbody><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>0 a 100</td><td style='padding: 8px; border: 1px solid #444;'>50,00</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>150</td><td style='padding: 8px; border: 1px solid #444;'>75,00</td></tr></tbody></table>\n\nSe um cliente falar um total de 180 minutos em um mês, o valor total de sua conta será de",
+        alternativas: [
+            "R$ 80,00.",
+            "R$ 85,00.",
+            "R$ 90,00.",
+            "R$ 95,00.",
+            "R$ 100,00."
+        ],
+        correta: 2
+    },
+    {
+        id: 54,
+        origem: "Questão gerada por I.A",
+        texto: "Um terreno em formato retangular tem o comprimento medindo 12 metros a mais do que a sua largura. Sabendo que a área total desse terreno é de $288 \\text{ m}^2$, o perímetro desse terreno é igual a",
+        alternativas: [
+            "48 metros.",
+            "60 metros.",
+            "72 metros.",
+            "84 metros.",
+            "96 metros."
+        ],
+        correta: 2
+    },
+    {
+        id: 55,
+        origem: "Questão gerada por I.A",
+        texto: "Uma cultura de bactérias em laboratório cresce segundo a lei exponencial $N(t) = N_0 \\cdot 3^{0,5t}$, em que $N(t)$ é o número de bactérias no tempo $t$ (em horas) e $N_0$ é a população inicial. O cientista iniciou o experimento com 500 bactérias.\n\nApós quantas horas a população de bactérias atingirá o total de 13 500 indivíduos?",
+        alternativas: [
+            "3 horas.",
+            "4 horas.",
+            "6 horas.",
+            "8 horas.",
+            "9 horas."
+        ],
+        correta: 2
+    },
+    {
+        id: 56,
+        origem: "Questão gerada por I.A",
+        texto: "Uma empresa montou cinco estandes retangulares para uma feira de negócios. A tabela apresenta as dimensões de cada estande:\n\n<table style='width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #444; color: inherit;'><thead style='background-color: #2b3035; color: #ffffff;'><tr><th style='padding: 8px; border: 1px solid #444;'>Estande</th><th style='padding: 8px; border: 1px solid #444;'>Largura (m)</th><th style='padding: 8px; border: 1px solid #444;'>Comprimento (m)</th></tr></thead><tbody><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>A</td><td style='padding: 8px; border: 1px solid #444;'>4</td><td style='padding: 8px; border: 1px solid #444;'>9</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>B</td><td style='padding: 8px; border: 1px solid #444;'>5</td><td style='padding: 8px; border: 1px solid #444;'>8</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>C</td><td style='padding: 8px; border: 1px solid #444;'>6</td><td style='padding: 8px; border: 1px solid #444;'>6</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>D</td><td style='padding: 8px; border: 1px solid #444;'>3</td><td style='padding: 8px; border: 1px solid #444;'>11</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>E</td><td style='padding: 8px; border: 1px solid #444;'>2</td><td style='padding: 8px; border: 1px solid #444;'>16</td></tr></tbody></table>\n\nQual desses estandes apresenta o MENOR perímetro?",
+        alternativas: [
+            "Estande A",
+            "Estande B",
+            "Estande C",
+            "Estande D",
+            "Estande E"
+        ],
+        correta: 2
+    },
+    {
+        id: 58,
+        origem: "Questão gerada por I.A",
+        texto: "Em um mapa cartográfico desenhado na escala $1 : 250\\ 000$, a distância em linha reta entre duas cidades é de 8 cm. Um motorista pretende viajar entre essas duas cidades mantendo uma velocidade média de $80\\text{ km/h}$.\n\nO tempo estimado de viagem para percorrer essa distância em linha reta será de",
+        alternativas: [
+            "15 minutos.",
+            "20 minutos.",
+            "30 minutos.",
+            "45 minutos.",
+            "60 minutos."
+        ],
+        correta: 0
+    },
+    {
+        id: 59,
+        origem: "Questão gerada por I.A",
+        texto: "Um fazendeiro construirá um silo para armazenar grãos. O projeto prevê o formato de um cilindro circular reto sobreposto por um cone reto de mesma base e mesma altura. O raio da base mede 3 metros e a altura do cilindro é de 4 metros (portanto a altura do cone também é de 4 metros).\n\nConsidere 3,14 como aproximação para $\\pi$.\n\nO volume total de armazenamento desse silo, em metro cúbico, é de",
+        alternativas: [
+            "113,04.",
+            "150,72.",
+            "226,08.",
+            "301,44.",
+            "452,16."
+        ],
+        correta: 1
+    },
+    {
+        id: 60,
+        origem: "Questão gerada por I.A",
+        texto: "Um dado honesto de 6 caras (numeradas de 1 a 6) é lançado duas vezes consecutivas. Qual é a probabilidade de que a soma dos dois números obtidos seja igual a 8?",
+        alternativas: [
+            "$\\frac{1}{6}$",
+            "$\\frac{5}{36}$",
+            "$\\frac{1}{9}$",
+            "$\\frac{7}{36}$",
+            "$\\frac{1}{12}$"
+        ],
+        correta: 1
+    },
+    {
+        id: 62,
+        origem: "Questão gerada por I.A",
+        texto: "Para azulejar uma parede retangular de 3,0 metros de altura por 4,5 metros de largura, um pedreiro utilizará azulejos quadrados de 30 cm de lado. Ele prevê que 10% do total de azulejos serão perdidos devido a cortes e quebras durante a instalação.\n\nA quantidade mínima de azulejos que deve ser comprada para realizar o serviço é de",
+        alternativas: [
+            "150.",
+            "165.",
+            "180.",
+            "200.",
+            "220."
+        ],
+        correta: 1
+    },
+    {
+        id: 63,
+        origem: "Questão gerada por I.A",
+        texto: "A distância entre dois pontos $A(2, 3)$ e $B(8, 11)$ no plano cartesiano ortogonal representa o trajeto em linha reta de um drone de entregas.\n\nA distância percorrida pelo drone entre esses dois pontos, na unidade de medida do plano, é igual a",
+        alternativas: [
+            "8.",
+            "10.",
+            "12.",
+            "14.",
+            "100."
+        ],
+        correta: 1
+    },
+    {
+        id: 64,
+        origem: "Questão gerada por I.A",
+        texto: "Um clube de futebol registrou o número de gols marcados em suas últimas 10 partidas:\n\n$$1, 0, 3, 2, 1, 4, 2, 1, 0, 2$$\n\nO valor da moda e da média aritmética do número de gols por partida são, respectivamente,",
+        alternativas: [
+            "1 e 1,6.",
+            "2 e 1,6.",
+            "1 e 2,0.",
+            "2 e 2,0.",
+            "1,5 e 1,6."
+        ],
+        correta: 0
+    },
+    {
+        id: 65,
+        origem: "Questão gerada por I.A",
+        texto: "Um comerciante comprou um lote de produtos por R$ 2 000,00 e deseja revendê-los com uma margem de lucro de 25% calculada sobre o **preço de venda** (e não sobre o preço de custo).\n\nO valor total de venda desse lote deve ser fixado em",
+        alternativas: [
+            "R$ 2 250,00.",
+            "R$ 2 400,00.",
+            "R$ 2 500,00.",
+            "R$ 2 666,67.",
+            "R$ 2 800,00."
+        ],
+        correta: 2
+    },
+    {
+        id: 66,
+        origem: "Questão gerada por I.A",
+        texto: "Três lâmpadas sinalizadoras em uma pista de aeroporto piscam em intervalos regulares: a primeira a cada 6 segundos, a segunda a cada 8 segundos e a terceira a cada 10 segundos. Às 20h 00min 00s, as três lâmpadas piscaram juntas no mesmo instante.\n\nQual é o próximo horário em que as três lâmpadas voltarão a piscar juntas novamente?",
+        alternativas: [
+            "20h 01min 20s",
+            "20h 02min 00s",
+            "20h 04min 00s",
+            "20h 08min 00s",
+            "20h 10min 00s"
+        ],
+        correta: 1
+    },
+    {
+        id: 67,
+        origem: "Questão gerada por I.A",
+        texto: "Uma usina fotovoltaica gera energia elétrica a partir de painéis solares. A produção diária de energia $E(t)$, em quilowatt-hora (kWh), varia ao longo das 12 horas de luz solar ($0 \\le t \\le 12$) segundo a função $E(t) = -5t^2 + 60t$. O engenheiro responsável precisa saber em qual hora do dia a usina atinge sua produção máxima de energia.\n\nA produção máxima de energia ocorre quando $t$ é igual a",
+        alternativas: [
+            "4 horas.",
+            "5 horas.",
+            "6 horas.",
+            "8 horas.",
+            "10 horas."
+        ],
+        correta: 2
+    },
+    {
+        id: 68,
+        origem: "Questão gerada por I.A",
+        texto: "Em um jogo de tabuleiro, um jogador lança um octaedro regular honesto (dado de 8 faces numeradas de 1 a 8). Se o número sorteado for primo, o jogador avança 3 casas. Caso contrário, ele recua 1 casa.\n\nA probabilidade de esse jogador avançar 3 casas em um lançamento é de",
+        alternativas: [
+            "$\\frac{1}{4}$",
+            "$\\frac{3}{8}$",
+            "$\\frac{1}{2}$",
+            "$\\frac{5}{8}$",
+            "$\\frac{3}{4}$"
+        ],
+        correta: 2
+    },
+    {
+        id: 69,
+        origem: "Questão gerada por I.A",
+        texto: "Um reservatório em formato de paralelepípedo retângulo com base quadrada de 2 metros de lado contém 12 000 litros de água ($1 \\text{ m}^3 = 1\\ 000 \\text{ litros}$). O nível da água atinge exatamente $75\\%$ da altura total do reservatório.\n\nA altura total desse reservatório, em metros, é de",
+        alternativas: [
+            "3,0.",
+            "4,0.",
+            "4,5.",
+            "5,0.",
+            "6,0."
+        ],
+        correta: 1
+    },
+    {
+        id: 70,
+        origem: "Questão gerada por I.A",
+        texto: "Para organizar a entrega de marmitas em uma obra, 4 cozinheiras trabalhando com o mesmo ritmo preparam 120 refeições em 3 horas. Para atender a um novo contrato, a cozinha precisará fornecer 300 refeições em apenas 2 horas.\n\nQuantas cozinheiras a mais, com a mesma produtividade das anteriores, deverão ser contratadas?",
+        alternativas: [
+            "6",
+            "8",
+            "11",
+            "12",
+            "15"
+        ],
+        correta: 2
+    },
+    {
+        id: 71,
+        origem: "Questão gerada por I.A",
+        texto: "O lucro $L$, em milhares de reais, de uma pequena empresa de doces artesanais em função da quantidade $x$ de caixas vendidas é modelado por $L(x) = -x^2 + 14x - 24$. A empresa opera com lucro estritamente positivo apenas para um determinado intervalo de vendas.\n\nQual é a quantidade mínima de caixas que a empresa deve vender para começar a ter lucro positivo?",
+        alternativas: [
+            "2",
+            "3",
+            "7",
+            "12",
+            "14"
+        ],
+        correta: 1
+    },
+    {
+        id: 73,
+        origem: "Questão gerada por I.A",
+        texto: "Um mapa topográfico utiliza a escala de $1 : 50\\ 000$. Uma área de preservação ambiental retangular mede $4\\text{ cm}$ por $6\\text{ cm}$ no mapa.\n\nA área real dessa reserva ambiental, em quilômetro quadrado, é de",
+        alternativas: [
+            "6.",
+            "12.",
+            "24.",
+            "60.",
+            "120."
+        ],
+        correta: 0
+    },
+    {
+        id: 74,
+        origem: "Questão gerada por I.A",
+        texto: "Um tanque de combustível tem o formato de um cilindro circular reto horizontal de raio $1\\text{ m}$ e comprimento $5\\text{ m}$. O tanque está com combustível até a metade de sua capacidade total.\n\nConsidere $3,14$ como aproximação para $\\pi$.\n\nO volume de combustível contido no tanque, em metros cúbicos, é aproximadamente igual a",
+        alternativas: [
+            "3,92.",
+            "7,85.",
+            "11,77.",
+            "15,70.",
+            "31,40."
+        ],
+        correta: 1
+    },
+    {
+        id: 75,
+        origem: "Questão gerada por I.A",
+        texto: "A tabela a seguir apresenta os salários dos funcionários de uma microempresa:\n\n<table style='width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #444; color: inherit;'><thead style='background-color: #2b3035; color: #ffffff;'><tr><th style='padding: 8px; border: 1px solid #444;'>Cargo</th><th style='padding: 8px; border: 1px solid #444;'>Número de Funcionários</th><th style='padding: 8px; border: 1px solid #444;'>Salário Individual (R$)</th></tr></thead><tbody><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>Auxiliar</td><td style='padding: 8px; border: 1px solid #444;'>5</td><td style='padding: 8px; border: 1px solid #444;'>1 500,00</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>Técnico</td><td style='padding: 8px; border: 1px solid #444;'>3</td><td style='padding: 8px; border: 1px solid #444;'>2 500,00</td></tr><tr style='text-align: center;'><td style='padding: 8px; border: 1px solid #444;'>Gerente</td><td style='padding: 8px; border: 1px solid #444;'>2</td><td style='padding: 8px; border: 1px solid #444;'>5 000,00</td></tr></tbody></table>\n\nO salário médio dos funcionários dessa empresa é de",
+        alternativas: [
+            "R$ 2 200,00.",
+            "R$ 2 500,00.",
+            "R$ 2 800,00.",
+            "R$ 3 000,00.",
+            "R$ 3 333,33."
+        ],
+        correta: 1
+    },
+    {
+        id: 76,
+        origem: "Questão gerada por I.A",
+        texto: "Em uma promoção \"Leve 4 e Pague 3\", um supermercado oferece 4 unidades de um mesmo detergente pelo preço de 3 unidades convencionais. O valor unitário fora da promoção é de R$ 4,00.\n\nQual é o percentual efetivo de desconto obtido pelo cliente ao comprar o pacote promocional com 4 unidades?",
+        alternativas: [
+            "15,0%",
+            "20,0%",
+            "25,0%",
+            "30,0%",
+            "33,3%"
+        ],
+        correta: 2
+    },
+    {
+        id: 77,
+        origem: "Questão gerada por I.A",
+        texto: "Uma escada dobrável de $5\\text{ metros}$ de comprimento está apoiada em uma parede vertical. A base da escada dista $3\\text{ metros}$ da parede. Se o topo da escada escorregar $1\\text{ metro}$ para baixo na parede, quantos metros a base da escada se afastará a mais da parede?",
+        alternativas: [
+            "$1,0\\text{ m}$",
+            "$\\sqrt{7} - 3\\text{ m}$",
+            "$\\sqrt{14} - 3\\text{ m}$",
+            "$2,0\\text{ m}$",
+            "$\\sqrt{16} - 3\\text{ m}$"
+        ],
+        correta: 1
+    },
+    {
+        id: 79,
+        origem: "Questão gerada por I.A",
+        texto: "A intensidade sonora $I$, medida em watts por metro quadrado (W/m²), relaciona-se com o nível sonoro $N$, em decibéis (dB), pela fórmula $N = 10 \\cdot \\log_{10}\\left(\\frac{I}{I_0}\\right)$, em que $I_0 = 10^{-12}\\text{ W/m}^2$.\n\nUm show de rock atingiu um nível sonoro de $110\\text{ dB}$. A intensidade sonora $I$ correspondente a esse evento foi de",
+        alternativas: [
+            "$10^{-1}\\text{ W/m}^2$",
+            "$10^{-2}\\text{ W/m}^2$",
+            "$10^{1}\\text{ W/m}^2$",
+            "$10^{11}\\text{ W/m}^2$",
+            "$10^{110}\\text{ W/m}^2$"
+        ],
+        correta: 0
+    },
+    {
+        id: 80,
+        origem: "Questão gerada por I.A",
+        texto: "Uma lanchonete oferece um combo promocional no qual o cliente escolhe 1 hambúrguer (entre 4 opções), 1 acompanhamento (entre 3 opções) e 1 bebida (entre 5 opções).\n\nDe quantas maneiras distintas um cliente pode montar esse combo promocional?",
+        alternativas: [
+            "12",
+            "20",
+            "35",
+            "60",
+            "120"
+        ],
+        correta: 3
+    },
+    {
+        id: 81,
+        origem: "Questão gerada por I.A",
+        texto: "Um prisma reto tem como base um triângulo retângulo cujos catetos medem $6\\text{ cm}$ e $8\\text{ cm}$. Sabendo que a altura do prisma é igual a $10\\text{ cm}$, a área total da sua superfície (incluindo as duas bases) é de",
+        alternativas: [
+            "$240\\text{ cm}^2$",
+            "$288\\text{ cm}^2$",
+            "$336\\text{ cm}^2$",
+            "$384\\text{ cm}^2$",
+            "$480\\text{ cm}^2$"
+        ],
+        correta: 1
+    },
+    {
+        id: 82,
+        origem: "Questão gerada por I.A",
+        texto: "Um atleta realiza corridas diárias em uma pista circular de $400\\text{ metros}$ de extensão. Ele deseja manter um ritmo tal que complete cada volta em exatamente $1\\text{ minuto e } 20\\text{ segundos}$.\n\nA velocidade média desse atleta na pista, em quilômetros por hora, é de",
+        alternativas: [
+            "12 km/h.",
+            "15 km/h.",
+            "18 km/h.",
+            "20 km/h.",
+            "24 km/h."
+        ],
+        correta: 2
+    },
+    {
+        id: 83,
+        origem: "Questão gerada por I.A",
+        texto: "Em um grupo de 100 estudantes, 60 estudam Inglês, 40 estudam Espanhol e 15 estudam ambas as línguas. Um estudante desse grupo é escolhido ao acaso.\n\nQual é a probabilidade de que ele NÃO estude nenhuma dessas duas línguas?",
+        alternativas: [
+            "15%",
+            "20%",
+            "25%",
+            "30%",
+            "85%"
+        ],
+        correta: 0
+    },
+    {
+        id: 85,
+        origem: "Questão gerada por I.A",
+        texto: "Considere as retas de equações $r: 2x - y + 4 = 0$ e $s: kx + 2y - 6 = 0$ no plano cartesiano. Para que essas duas retas sejam **perpendiculares**, o valor da constante $k$ deve ser igual a",
+        alternativas: [
+            "-4",
+            "-1",
+            "1",
+            "2",
+            "4"
+        ],
+        correta: 2
+    },
+    {
+        id: 86,
+        origem: "Questão gerada por I.A",
+        texto: "Um reservatório em formato de tronco de cone circular reto tem raio da base inferior medindo $2\\text{ m}$, raio da base superior medindo $4\\text{ m}$ e altura igual a $3\\text{ m}$.\n\nConsidere $3,14$ como aproximação para $\\pi$.\n\nO volume interno desse reservatório, em metros cúbicos, é de",
+        alternativas: [
+            "25,12.",
+            "50,24.",
+            "87,92.",
+            "113,04.",
+            "200,96."
+        ],
+        correta: 2
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ];
+
+        /* Lógica e Variáveis Globais de Execução */
+        let questoesSelecionadas = [];
+        let respostasEstudante = {};
+        let tempoSegundos = 0;
+        let cronometroInterval;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('total-banco').textContent = bancoQuestoes.length;
+        });
+
+        function iniciarSimulado() {
+            const selectQtd = document.getElementById('qtd-questoes');
+            let qtdDesejada = parseInt(selectQtd.value);
+            const divErro = document.getElementById('erro-mensagem');
+
+            // Ajuste dinâmico: se o banco for menor que o selecionado, avisa o usuário e carrega o total do banco
+            if (bancoQuestoes.length === 0) {
+                divErro.innerText = "Erro: Nenhum teste cadastrado no banco de dados.";
+                divErro.style.display = 'block';
+                return;
+            }
+
+            if (bancoQuestoes.length < qtdDesejada) {
+                qtdDesejada = bancoQuestoes.length;
+            }
+
+            divErro.style.display = 'none';
+            document.getElementById('config-card').style.display = 'none';
+            document.getElementById('simulado-container').style.display = 'block';
+
+            questoesSelecionadas = [...bancoQuestoes].sort(() => 0.5 - Math.random()).slice(0, qtdDesejada);
+            
+            document.getElementById('contador-questoes').innerText = `Simulado: ${qtdDesejada} Questão(ões) Selecionada(s)`;
+            
+            renderizarQuestoes();
+            iniciarCronometro();
+        }
+
+        function renderizarQuestoes() {
+            const container = document.getElementById('questoes-lista');
+            container.innerHTML = '';
+            const letras = ['A', 'B', 'C', 'D', 'E'];
+
+            questoesSelecionadas.forEach((questao, indexGrid) => {
+                const card = document.createElement('div');
+                card.className = 'questao-card';
+                card.id = `q-card-${questao.id}`;
+
+                const header = document.createElement('div');
+                header.className = 'questao-header';
+                header.innerText = `Questão ${indexGrid + 1} • ${questao.origem}`;
+
+                const texto = document.createElement('div');
+                texto.className = 'questao-texto';
+                texto.innerHTML = questao.texto;
+
+                const listaAlternativas = document.createElement('ul');
+                listaAlternativas.className = 'alternativas-lista';
+
+                questao.alternativas.forEach((alternativa, indexAlt) => {
+                    const item = document.createElement('li');
+                    item.className = 'alternativa-item';
+                    item.id = `alt-${questao.id}-${indexAlt}`;
+                    item.onclick = () => selecionarAlternativa(questao.id, indexAlt);
+
+                    const letra = document.createElement('span');
+                    letra.className = 'letra-opcao';
+                    letra.innerText = letras[indexAlt];
+
+                    const textoOpcao = document.createElement('span');
+                    textoOpcao.className = 'texto-opcao';
+                    textoOpcao.innerHTML = alternativa;
+
+                    item.appendChild(letra);
+                    item.appendChild(textoOpcao);
+                    listaAlternativas.appendChild(item);
+                });
+
+                card.appendChild(header);
+                card.appendChild(texto);
+                card.appendChild(listaAlternativas);
+                container.appendChild(card);
+            });
+
+            // Execução segura e otimizada do re-renderizador do MathJax
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetClear([container]);
+                MathJax.typesetPromise([container]).catch((err) => console.error("Erro ao renderizar equações:", err));
+            }
+        }
+
+        function selecionarAlternativa(questaoId, alternativaIndex) {
+            const q = questoesSelecionadas.find(item => item.id === questaoId);
+            q.alternativas.forEach((_, idx) => {
+                const el = document.getElementById(`alt-${questaoId}-${idx}`);
+                if (el) el.classList.remove('selecionada');
+            });
+
+            const itemSelecionado = document.getElementById(`alt-${questaoId}-${alternativaIndex}`);
+            if (itemSelecionado) itemSelecionado.classList.add('selecionada');
+
+            respostasEstudante[questaoId] = alternativaIndex;
+        }
+
+        function iniciarCronometro() {
+            tempoSegundos = 0;
+            cronometroInterval = setInterval(() => {
+                tempoSegundos++;
+                const minutos = Math.floor(tempoSegundos / 60).toString().padStart(2, '0');
+                const segundos = (tempoSegundos % 60).toString().padStart(2, '0');
+                document.getElementById('tempo').innerText = `${minutos}:${segundos}`;
+            }, 1000);
+        }
+
+        function corrigirSimulado() {
+            clearInterval(cronometroInterval);
+            let acertos = 0;
+
+            questoesSelecionadas.forEach((questao) => {
+                const respostaUsuario = respostasEstudante[questao.id];
+                const respostaCorreta = questao.correta;
+
+                questao.alternativas.forEach((_, idx) => {
+                    const item = document.getElementById(`alt-${questao.id}-${idx}`);
+                    item.classList.add('bloqueada');
+
+                    if (idx === respostaCorreta) {
+                        item.classList.add('correta');
+                        if (respostaUsuario === respostaCorreta && idx === respostaUsuario) {
+                            const span = document.createElement('span');
+                            span.className = 'feedback-label';
+                            span.innerHTML = '<i class="fa-solid fa-check"></i> Você Acertou';
+                            item.appendChild(span);
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'feedback-label';
+                            span.innerText = 'Gabarito Oficial';
+                            item.appendChild(span);
+                        }
+                    }
+
+                    if (respostaUsuario !== undefined && respostaUsuario !== respostaCorreta && idx === respostaUsuario) {
+                        item.classList.add('errada');
+                        const span = document.createElement('span');
+                        span.className = 'feedback-label';
+                        span.innerHTML = '<i class="fa-solid fa-xmark"></i> Sua Resposta';
+                        item.appendChild(span);
+                    }
+                });
+
+                if (respostaUsuario === respostaCorreta) {
+                    acertos++;
+                }
+            });
+
+            const cardResultado = document.getElementById('resultado-card');
+            document.getElementById('score-text').innerText = `Você acertou ${acertos} de ${questoesSelecionadas.length} questões!`;
+            cardResultado.style.display = 'block';
+
+            document.getElementById('btn-corrigir').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
