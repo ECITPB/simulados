@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Linguagens - Portal ENEM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Estilos Globais baseados na identidade Premium */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #0f172a);
+            background-size: 400% 400%;
+            color: #f1f5f9;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* Topo da página de Simulado */
+        .header-simulado {
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 4px solid #38bdf8; /* Tom Linguagens */
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-simulado h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Card de Configuração Inicial */
+        .config-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .config-card h2 {
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+
+        .config-card p {
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        /* Badge para total de questões do banco */
+        .badge-total {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        /* Select customizado e controles */
+        .select-wrapper {
+            margin-bottom: 30px;
+        }
+
+        select {
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 2px solid #38bdf8;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Mensagem de Erro */
+        .erro-mensagem {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Botão Estilizado */
+        .btn {
+            display: inline-block;
+            padding: 14px 35px;
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Botão desabilitado */
+        .btn:disabled {
+            background: #475569 !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Barra de Informações do Simulado Ativo */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px 25px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cronometro {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Container de Questões */
+        #simulado-container {
+            display: none;
+        }
+
+        .questao-card {
+            background: rgba(30, 41, 59, 0.35);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .questao-header {
+            font-size: 0.9rem;
+            color: #38bdf8;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .questao-texto {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            white-space: pre-line;
+            text-align: justify;
+        }
+
+        .alternativas-lista {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alternativa-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alternativa-item:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .alternativa-item.selecionada {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        .letra-opcao {
+            font-weight: 700;
+            color: #38bdf8;
+            background: rgba(15, 23, 42, 0.4);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Área do Botão de Ação Inferior */
+        .actions-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        /* Resultados e Gabarito Estilizado */
+        .resultado-card {
+            background: rgba(30, 41, 59, 0.75);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 2px solid #38bdf8;
+            display: none;
+        }
+
+        .resultado-card h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .score-text {
+            font-size: 1.5rem;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        /* Classes de Correção aplicadas via JS */
+        .alternativa-item.correta {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: #10b981 !important;
+            color: #a7f3d0 !important;
+            cursor: not-allowed;
+        }
+
+        .alternativa-item.correta .letra-opcao {
+            color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .alternativa-item.errada {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5 !important;
+            cursor: not-allowed;
+        }
+
+        .alternativa-item.errada .letra-opcao {
+            color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .alternativa-item.bloqueada {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .feedback-label {
+            margin-left: auto;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-simulado">
+        <h1>Ciências da Natureza e suas Tecnologias</h1>
+        <p>Biologia • Química • Física</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="config-card" class="config-card">
+            <h2>Configurar seu Simulado</h2>
+            <p>Selecione a quantidade de questões aleatórias que deseja resolver para iniciar o teste cronometrado.</p>
+            
+            <div class="badge-total">
+                <i class="fa-solid fa-database"></i> <span id="total-banco">0</span> Questões cadastradas no banco
+            </div>
+
+            <div id="erro-mensagem" class="erro-mensagem"></div>
+
+            <div class="select-wrapper">
+                <label for="qtd-questoes" style="display:block; margin-bottom:10px; color:#94a3b8;">Quantidade de Questões:</label>
+                <select id="qtd-questoes">
+                    <option value="5">5 Questões</option>
+                    <option value="10">10 Questões</option>
+                    <option value="20">20 Questões</option>
+                    <option value="30">30 Questões</option>
+                    <option value="50">50 Questões</option>
+                </select>
+            </div>
+
+            <button id="btn-iniciar" class="btn" onclick="iniciarSimulado()">Iniciar Simulado</button>
+        </div>
+
+        <div id="simulado-container">
+            <div class="status-bar">
+                <span id="contador-questoes" style="color: #94a3b8; font-weight: 500;">Questões</span>
+                <div class="cronometro">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="tempo">00:00</span>
+                </div>
+            </div>
+
+            <div id="resultado-card" class="resultado-card">
+                <h2>Resultado do Simulado 🎉</h2>
+                <div class="score-text" id="score-text">Você acertou 0 de 0 questões.</div>
+                <button class="btn" style="background: #0284c7; margin-top: 15px;" onclick="window.location.reload()">Refazer Novo Simulado</button>
+            </div>
+
+            <div id="questoes-lista"></div>
+
+            <div class="actions-container">
+                <button id="btn-corrigir" class="btn" onclick="corrigirSimulado()">Corrigir e Verificar Nota</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        /* ==========================================================================
+           BANCO DE QUESTÕES (Linguagens e Códigos)
+           ========================================================================== */
+        const bancoQuestoes = [
+           
+
+
+
+
+
+
+
+
+
+<!-- QUESTÕES! -->
+
+
+
+
+
+{
+        id: 1,
+        origem: "Simulado ENEM — Física",
+        texto: `O uso de mantas térmicas aluminizadas é muito comum em operações de resgate de vítimas de hipotermia após acidentes em ambientes de baixas temperaturas. Essas mantas consistem em finas películas plásticas revestidas com uma camada microscópica de alumínio. Quando o corpo da vítima é envolvido por essa manta, o material atua de forma a minimizar a perda de calor corporal, mantendo a temperatura estável.\n\nO princípio físico que explica a principal forma de atuação da camada metálica de alumínio na retenção do calor corporal é a:`,
+        alternativas: [
+            "convecção térmica, impedindo a circulação do ar frio entre a pele e a manta.",
+            "condução térmica, uma vez que o metal possui alta condutividade térmica.",
+            "irradiação térmica, refletindo de volta para o corpo os raios infravermelhos emitidos.",
+            "absorção de calor, gerando reações exotérmicas ao entrar em contato com o suor.",
+            "mudança de fase, que absorve o calor excedente e estabiliza a temperatura."
+        ],
+        correta: 2 // Índice 2 corresponde à alternativa que fala sobre irradiação térmica (reflexão de infravermelho)
+    },
+    {
+        id: 2,
+        origem: "Simulado ENEM — Biologia",
+        texto: `A eutrofização é um processo ecológico caracterizado pelo enriquecimento excessivo de corpos d'água por nutrientes, principalmente nitrogênio e fósforo, provenientes de fertilizantes agrícolas e esgoto doméstico não tratado. Esse desequilíbrio desencadeia uma série de eventos sucessivos no ecossistema aquático.\n\nO evento determinante que provoca a mortandade massiva de peixes e outros organismos aeróbicos nas fases avançadas desse processo é a:`,
+        alternativas: [
+            "proliferação explosiva de plantas aquáticas flutuantes, que bloqueiam totalmente a entrada de luz solar.",
+            "degradação da matéria orgânica pelas bactérias aeróbicas, o que esgota o oxigênio dissolvido na água.",
+            "liberação de toxinas letais pelas algas fitoplanctônicas durante o processo de fotossíntese diurna.",
+            "acidificação drástica da água causada pela alta concentração de gás carbônico dissolvido.",
+            "precipitação de fosfatos insolúveis que bloqueiam as brânquias dos animais filtradores."
+        ],
+        correta: 1 // Índice 1 corresponde ao esgotamento de oxigênio pelas bactérias aeróbicas na decomposição
+    },
+    {
+        id: 3,
+        origem: "Simulado ENEM — Biologia",
+        texto: `No processo de digestão humana, os carboidratos complexos, como o amido ingerido nos alimentos, começam a ser quebrados ainda na boca por ação enzimática e continuam ao longo do trato gastrointestinal até serem convertidos em monossacarídeos absorvíveis, como a glicose. A liberação de energia a partir da glicose ocorre nas células por meio da respiração celular.\n\nDo ponto de vista bioquímico e energético, a etapa da respiração celular que ocorre no citoplasma da célula e antecede o ciclo de Krebs é a:`,
+        alternativas: [
+            "fosforilação oxidativa, que sintetiza moléculas de ATP através da cadeia transportadora de elétrons.",
+            "glicólise, processo anaeróbico que degrada a molécula de glicose em duas moléculas de piruvato.",
+            "beta-oxidação, responsável pela quebra de ácidos graxos para a produção de acetil-CoA.",
+            "fermentação alcoólica, que converte o piruvato diretamente em etanol e dióxido de carbono.",
+            "ciclo do ácido cítrico, que oxida completamente os carbonos provenientes do piruvato."
+        ],
+        correta: 1 // Índice 1 corresponde à glicólise
+    },
+    {
+        id: 4,
+        origem: "Simulado ENEM — Química",
+        texto: `A corrosão de estruturas metálicas de ferro, como cascos de navios e tubulações subterrâneas, gera grandes prejuízos econômicos e riscos estruturais. Para mitigar esse problema, é comum a aplicação da técnica de proteção catódica utilizando um "metal de sacrifício", que consiste na fixação física de barras de um metal mais reativo à estrutura de ferro.\n\nO princípio químico que garante a eficácia do metal de sacrifício na proteção da estrutura de ferro é o fato de o metal acoplado apresentar:`,
+        alternativas: [
+            "menor potencial de redução, oxidando-se preferencialmente no lugar do ferro.",
+            "maior potencial de redução, atuando como agente oxidante frente ao oxigênio do ar.",
+            "inércia química absoluta, criando uma barreira física impermeável ao vapor d'água.",
+            "menor eletronegatividade, impedindo a formação de ligações covalentes com o oxigênio.",
+            "capacidade de sofrer redução mais facilmente, impedindo o fluxo de elétrons livres."
+        ],
+        correta: 0 // Menor potencial de redução (oxida-se mais facilmente que o ferro)
+    },
+    {
+        id: 5,
+        origem: "Simulado ENEM — Física",
+        texto: `Uma ambulância se desloca em alta velocidade em direção a um observador parado na calçada, emitindo um som de frequência constante através de sua sirene. À medida que o veículo se aproxima do observador, este percebe um som mais agudo; após a passagem, quando o veículo se afasta, o som torna-se mais grave.\n\nO fenômeno ondulatório responsável por essa alteração na frequência percebida pelo observador devido ao movimento relativo entre a fonte e o receptor é denominado:`,
+        alternativas: [
+            "Difração, que consiste na capacidade de a onda contornar obstáculos geométricos.",
+            "Refração, caracterizada pela mudança de velocidade ao passar de um meio para outro.",
+            "Efeito Doppler, que descreve a variação da frequência aparente percebida.",
+            "Polarização, restrita à vibração das ondas eletromagnéticas em uma única direção.",
+            "Ressonância, que ocorre quando a frequência de excitação coincide com a natural."
+        ],
+        correta: 2 // Efeito Doppler
+    },
+    {
+        id: 6,
+        origem: "Simulado ENEM — Biologia",
+        texto: `A hemofilia A é uma doença hereditária recessiva ligada ao cromossomo X, caracterizada pela deficiência no fator VIII da coagulação sanguínea, o que provoca hemorragias prolongadas. Um homem saudável (não hemofílico) casa-se com uma mulher heterozigota para essa característica (portadora do gene recessivo).\n\nConsiderando as leis da hereditariedade, a probabilidade de que esse casal tenha uma criança do sexo feminino afetada pela hemofilia A é de:`,
+        alternativas: [
+            "0%, pois as filhas herdam obrigatoriamente um cromossomo X normal do pai.",
+            "25%, independentemente do sexo biológico da criança nascida na prole.",
+            "50%, já que o pai transmite o cromossomo X afetado para todas as descendentes.",
+            "50% considerando apenas os descendentes do sexo feminino.",
+            "100%, visto que a mãe é portadora e transmite o gene afetado a todas as filhas."
+        ],
+        correta: 0 // 0%, pois o pai é saudável (X^H Y) e transmite X^H para todas as filhas.
+    },
+    {
+        id: 7,
+        origem: "Simulado ENEM — Química",
+        texto: `O sangue humano mantém seu pH rigorosamente regulado entre 7,35 e 7,45 por meio de sistemas tampão, sendo o principal deles baseado no equilíbrio químico entre o dióxido de carbono dissolvido e o íon bicarbonato. Em situações de hiperventilação (respiração muito rápida e profunda), ocorre uma eliminação acelerada de dióxido de carbono pulmonar.\n\nDe acordo com o Princípio de Le Chatelier, a hiperventilação provoca no organismo um quadro clínico de alcalose respiratória porque a remoção de gás carbônico do sistema desloca o equilíbrio químico, resultando em:`,
+        alternativas: [
+            "aumento direto da concentração de íons hidrogênio livres no plasma sanguíneo.",
+            "redução da concentração de íons hidrogênio, elevando o valor do pH sanguíneo.",
+            "consumo total do bicarbonato disponível, paralisando o sistema tampão.",
+            "aumento na produção de ácido carbônico devido à alta pressão parcial de oxigênio.",
+            "deslocamento para o sentido que gera mais gás carbônico no tecido celular."
+        ],
+        correta: 1 // Redução da concentração de íons H+, elevando o pH (alcalose)
+    },
+    {
+        id: 8,
+        origem: "Simulado ENEM — Física",
+        texto: `O chuveiro elétrico é um dos eletrodomésticos que mais consome energia em uma residência. Ele funciona por meio do Efeito Joule, transformando energia elétrica em calor ao passar corrente elétrica por um resistor. Geralmente, esses chuveiros possuem chaves seletoras para as posições "verão" e "inverno".\n\nPara que a água saia mais aquecida na posição "inverno" sob a mesma ddp (tensão) da rede elétrica, o circuito interno do chuveiro deve ser ajustado para apresentar:`,
+        alternativas: [
+            "maior resistência elétrica, reduzindo a intensidade da corrente elétrica no circuito.",
+            "menor resistência elétrica, aumentando a intensidade da corrente elétrica e a potência dissipada.",
+            "maior comprimento do fio resistivo, diminuindo a taxa de conversão energética por unidade de tempo.",
+            "menor potência elétrica total, prolongando o tempo necessário para o aquecimento da água.",
+            "corrente elétrica constante, variando apenas a capacitância do sistema de aquecimento interno."
+        ],
+        correta: 1 // Menor resistência elétrica, aumentando corrente e potência dissipada (P = U^2 / R)
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ];
+
+        /* Lógica e Variáveis Globais de Execução */
+        let questoesSelecionadas = [];
+        let respostasEstudante = {};
+        let tempoSegundos = 0;
+        let cronometroInterval;
+
+        // Contagem automática pelo tamanho da lista
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('total-banco').textContent = bancoQuestoes.length;
+        });
+
+        // Inicia o Simulado e Escolhe as questões aleatoriamente
+        function iniciarSimulado() {
+            const qtdDesejada = parseInt(document.getElementById('qtd-questoes').value);
+            const divErro = document.getElementById('erro-mensagem');
+
+            if (bancoQuestoes.length < qtdDesejada) {
+                divErro.innerText = `Erro: O banco de dados possui apenas ${bancoQuestoes.length} questões cadastradas. Não é possível gerar um simulado de ${qtdDesejada} questões.`;
+                divErro.style.display = 'block';
+                return;
+            }
+
+            divErro.style.display = 'none';
+            document.getElementById('config-card').style.display = 'none';
+            document.getElementById('simulado-container').style.display = 'block';
+
+            questoesSelecionadas = [...bancoQuestoes].sort(() => 0.5 - Math.random()).slice(0, qtdDesejada);
+            
+            document.getElementById('contador-questoes').innerText = `Simulado: ${qtdDesejada} Questões Selecionadas`;
+            
+            renderizarQuestoes();
+            iniciarCronometro();
+        }
+
+        // Renderiza as questões tratadas no HTML dinamicamente
+        function renderizarQuestoes() {
+            const container = document.getElementById('questoes-lista');
+            container.innerHTML = '';
+            const letras = ['A', 'B', 'C', 'D', 'E'];
+
+            questoesSelecionadas.forEach((questao, indexGrid) => {
+                const card = document.createElement('div');
+                card.className = 'questao-card';
+                card.id = `q-card-${questao.id}`;
+
+                const header = document.createElement('div');
+                header.className = 'questao-header';
+                header.innerText = `Questão ${indexGrid + 1} • ${questao.origem}`;
+
+                const texto = document.createElement('div');
+                texto.className = 'questao-texto';
+                texto.innerText = questao.texto;
+
+                const listaAlternativas = document.createElement('ul');
+                listaAlternativas.className = 'alternativas-lista';
+
+                questao.alternativas.forEach((alternativa, indexAlt) => {
+                    const item = document.createElement('li');
+                    item.className = 'alternativa-item';
+                    item.id = `alt-${questao.id}-${indexAlt}`;
+                    item.onclick = () => selecionarAlternativa(questao.id, indexAlt);
+
+                    const letra = document.createElement('span');
+                    letra.className = 'letra-opcao';
+                    letra.innerText = letras[indexAlt];
+
+                    const textoOpcao = document.createElement('span');
+                    textoOpcao.innerText = alternativa;
+
+                    item.appendChild(letra);
+                    item.appendChild(textoOpcao);
+                    listaAlternativas.appendChild(item);
+                });
+
+                card.appendChild(header);
+                card.appendChild(texto);
+                card.appendChild(listaAlternativas);
+                container.appendChild(card);
+            });
+        }
+
+        // Registra a alternativa clicada pelo usuário
+        function selecionarAlternativa(questaoId, alternativaIndex) {
+            const q = questoesSelecionadas.find(item => item.id === questaoId);
+            q.alternativas.forEach((_, idx) => {
+                const el = document.getElementById(`alt-${questaoId}-${idx}`);
+                if (el) el.classList.remove('selecionada');
+            });
+
+            const itemSelecionado = document.getElementById(`alt-${questaoId}-${alternativaIndex}`);
+            if (itemSelecionado) itemSelecionado.classList.add('selecionada');
+
+            respostasEstudante[questaoId] = alternativaIndex;
+        }
+
+        // Gerenciamento de Tempo
+        function iniciarCronometro() {
+            tempoSegundos = 0;
+            cronometroInterval = setInterval(() => {
+                tempoSegundos++;
+                const minutos = Math.floor(tempoSegundos / 60).toString().padStart(2, '0');
+                const segundos = (tempoSegundos % 60).toString().padStart(2, '0');
+                document.getElementById('tempo').innerText = `${minutos}:${segundos}`;
+            }, 1000);
+        }
+
+        // Processa as respostas e aplica as formatações visuais pós-gabarito
+        function corrigirSimulado() {
+            clearInterval(cronometroInterval);
+            let acertos = 0;
+
+            questoesSelecionadas.forEach((questao) => {
+                const respostaUsuario = respostasEstudante[questao.id];
+                const respostaCorreta = questao.correta;
+
+                questao.alternativas.forEach((_, idx) => {
+                    const item = document.getElementById(`alt-${questao.id}-${idx}`);
+                    item.classList.add('bloqueada');
+
+                    if (idx === respostaCorreta) {
+                        item.classList.add('correta');
+                        if (respostaUsuario === respostaCorreta && idx === respostaUsuario) {
+                            const span = document.createElement('span');
+                            span.className = 'feedback-label';
+                            span.innerHTML = '<i class="fa-solid fa-check"></i> Você Acertou';
+                            item.appendChild(span);
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'feedback-label';
+                            span.innerText = 'Gabarito Oficial';
+                            item.appendChild(span);
+                        }
+                    }
+
+                    if (respostaUsuario !== undefined && respostaUsuario !== respostaCorreta && idx === respostaUsuario) {
+                        item.classList.add('errada');
+                        const span = document.createElement('span');
+                        span.className = 'feedback-label';
+                        span.innerHTML = '<i class="fa-solid fa-xmark"></i> Sua Resposta';
+                        item.appendChild(span);
+                    }
+                });
+
+                if (respostaUsuario === respostaCorreta) {
+                    acertos++;
+                }
+            });
+
+            const cardResultado = document.getElementById('resultado-card');
+            document.getElementById('score-text').innerText = `Você acertou ${acertos} de ${questoesSelecionadas.length} questões!`;
+            cardResultado.style.display = 'block';
+
+            document.getElementById('btn-corrigir').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
